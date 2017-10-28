@@ -34,7 +34,12 @@
     <tag>HEAD</tag>
   </scm>
   <build>
-    <sourceDirectory>javapng2/src/main</sourceDirectory>
+    <sourceDirectory>javapng2/src/main</sourceDirectory> 
+    <resources>
+      <resource>
+        <directory>javapng2/src/resources</directory>
+      </resource>
+    </resources>
     <pluginManagement>
       <plugins>
         <plugin>
