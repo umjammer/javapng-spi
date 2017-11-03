@@ -1,5 +1,4 @@
-![Release](https://jitpack.io/v/umjammer/javapng-spi.svg?style=flat-square)]
-(https://jitpack.io/#umjammer/javapng-spi)
+[![Release](https://jitpack.io/v/umjammer/javapng-spi.svg?style=flat-square)](https://jitpack.io/#umjammer/javapng-spi)
 
 # javapng-spi
 
