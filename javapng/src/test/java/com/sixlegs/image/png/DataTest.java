@@ -1,21 +1,25 @@
 package com.sixlegs.image.png;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.security.MessageDigest;
-import junit.framework.*;
-import java.awt.image.ColorModel;
 
-public class DataTest
-extends TestCase
-{
-    public void testImages()
-    throws Exception
-    {
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.fail;
+
+
+class DataTest {
+
+    @Test
+    void testImages() throws Exception {
         int[] buffer = new int[800 * 600]; // big enough to handle biggest image
-        final MessageDigest md5 = MessageDigest.getInstance("MD5");
+        MessageDigest md5 = MessageDigest.getInstance("MD5");
         BufferedReader r = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("/images.txt")));
         String line;
-        boolean fail = false;
+        int fail = 0;
+        int l = 0;
         while ((line = r.readLine()) != null) {
             int space = line.indexOf(' ');
             String image = line.substring(0, space).trim();
@@ -39,22 +43,22 @@ extends TestCase
                 String hash = toHexString(md5.digest());
                 if (!result.equals(hash)) {
                     System.err.println("Expected digest 0x" + result + " for image " + image + ", got 0x" + hash);
-                    fail = true;
+                    fail++;
                 }
-             } catch (Exception e) {
-                 if (!result.equals(e.getMessage())) {
-                     System.err.println("Caught exception while processing image " + image + ":");
-                     e.printStackTrace(System.err);
-                     fail = true;
-                 }
-             }
+            } catch (Exception e) {
+                if (!result.equals(e.getMessage())) {
+                    System.err.println("Caught exception while processing image " + image + ":");
+                    e.printStackTrace(System.err);
+                    fail++;
+                }
+            }
+            l++;
         }
-        if (fail)
-            fail("Failures detected.");
+        if (fail != 0)
+            fail("Failures detected: " + fail + "/" + l);
     }
 
-    private static String toHexString(byte[] b)
-    {
+    private static String toHexString(byte[] b) {
        StringBuffer hex = new StringBuffer(2 * b.length);
        for (int i = 0; i < b.length; i++) {
            byte n = b[i];
@@ -63,20 +67,5 @@ extends TestCase
            hex.append(Integer.toHexString(0xFF & n));
        }
        return hex.toString().toUpperCase();
-    }
-
-    public DataTest(String name)
-    {
-        super(name);
-    }
-
-    public static Test suite()
-    {
-        return new TestSuite(DataTest.class);
-    }
-
-    public static void main(String args[])
-    {
-        junit.textui.TestRunner.run(suite());
     }
 }

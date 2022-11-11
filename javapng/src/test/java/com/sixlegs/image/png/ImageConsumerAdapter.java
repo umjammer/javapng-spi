@@ -1,40 +1,33 @@
 package com.sixlegs.image.png;
 
-import java.awt.image.*;
+import java.awt.image.ColorModel;
+import java.awt.image.ImageConsumer;
 import java.util.Hashtable;
 
-abstract class ImageConsumerAdapter
-implements ImageConsumer
-{
-    protected ImageConsumerAdapter()
-    {
+
+abstract class ImageConsumerAdapter implements ImageConsumer {
+
+    protected ImageConsumerAdapter() {
     }
-    
-    public void imageComplete(int status)
-    {
+
+    public void imageComplete(int status) {
     }
-    
-    public void setColorModel(ColorModel model)
-    {
+
+    public void setColorModel(ColorModel model) {
     }
-    
-    public void setDimensions(int width, int height)
-    {
+
+    public void setDimensions(int width, int height) {
     }
-    
-    public void setHints(int hintflags)
-    {
+
+    public void setHints(int hintflags) {
     }
-    
-    public void setPixels(int x, int y, int w, int h, ColorModel model, byte[] pixels, int off, int scansize)
-    {
+
+    public void setPixels(int x, int y, int w, int h, ColorModel model, byte[] pixels, int off, int scansize) {
     }
-    
-    public void setPixels(int x, int y, int w, int h, ColorModel model, int[] pixels, int off, int scansize)
-    {
+
+    public void setPixels(int x, int y, int w, int h, ColorModel model, int[] pixels, int off, int scansize) {
     }
-    
-    public void setProperties(Hashtable props)
-    {
+
+    public void setProperties(Hashtable props) {
     }
 }

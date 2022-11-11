@@ -124,7 +124,7 @@ extends IIOMetadata
         Float gamma = (Float)get(PngConstants.GAMMA);
         if (gamma != null)
             appendSimpleNode(parent, "Gamma", "value", gamma.toString());
-        appendSimpleNode(parent, "BlackIsZero", "value", "true");
+        appendSimpleNode(parent, "BlackIsZero", "value", "TRUE");
 
         IIOMetadataNode node = getPalette("Palette", "PaletteEntry");
         if (node != null) {
@@ -183,7 +183,7 @@ extends IIOMetadata
     {
         IIOMetadataNode parent = new IIOMetadataNode("Compression");
         appendSimpleNode(parent, "CompressionTypeName", "value", "deflate");
-        appendSimpleNode(parent, "Lossless", "value", "true");
+        appendSimpleNode(parent, "Lossless", "value", "TRUE");
         appendSimpleNode(parent, "NumProgressiveScans", "value", isInterlaced() ? "7" : "1");
         return parent;
     }
@@ -285,7 +285,7 @@ extends IIOMetadata
                 
             //FIXME what about compressed iTXt?
             if (chunk.getType() == PngConstants.zTXt) {
-                child.setAttribute("compression", "deflate");
+                child.setAttribute("compression", "zip");
             } else {
                 child.setAttribute("compression", "none");
             }

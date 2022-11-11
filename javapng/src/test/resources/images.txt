@@ -155,8 +155,8 @@
 /images/suite/tp0n3p08.png       D50495CB12701A07E2FD2768514AD488
 /images/suite/tp1n3p08.png       D569136E00AD6677C365E1CF343F7424
 /images/suite/x00n0g01.png       Bad image size: 0x0
-/images/suite/xcrn0g04.png       Improper signature
-/images/suite/xlfn0g04.png       Improper signature
+/images/suite/xcrn0g04.png       Improper signature, byte 5 should be 0xa but is 0xd
+/images/suite/xlfn0g04.png       Improper signature, byte 4 should be 0xd but is 0xa
 /images/suite/z00n2c08.png       253CE9CAB7D15E0F334474E8E704BCCC
 /images/suite/z03n2c08.png       253CE9CAB7D15E0F334474E8E704BCCC
 /images/suite/z06n2c08.png       253CE9CAB7D15E0F334474E8E704BCCC

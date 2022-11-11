@@ -1,19 +1,23 @@
 package com.sixlegs.png;
 
+import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.AlphaComposite;
-import java.awt.image.*;
-import java.io.*;
+import java.awt.image.BufferedImage;
+import java.awt.image.Raster;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.security.MessageDigest;
-import junit.framework.*;
 
-public class TestData
-extends PngTestCase
-{
-    public void testImages()
-    throws Exception
-    {
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.fail;
+
+
+class TestData extends PngTestCase {
+    @Test
+    public void testImages() throws Exception {
         BufferedImage argb = new BufferedImage(800, 600, BufferedImage.TYPE_INT_ARGB);
         Raster raster = argb.getRaster();
         int[] data = new int[800 * 600];
@@ -71,25 +75,13 @@ extends PngTestCase
             fail("Failures detected.");
     }
 
-    private static String toHexString(byte[] b)
-    {
-       StringBuffer hex = new StringBuffer(2 * b.length);
-       for (int i = 0; i < b.length; i++) {
-           byte n = b[i];
-           if (n >= 0 && n <= 15)
-               hex.append("0");
-           hex.append(Integer.toHexString(0xFF & n));
-       }
+    private static String toHexString(byte[] b) {
+       StringBuilder hex = new StringBuilder(2 * b.length);
+        for (byte n : b) {
+            if (n >= 0 && n <= 15)
+                hex.append("0");
+            hex.append(Integer.toHexString(0xFF & n));
+        }
        return hex.toString().toUpperCase();
-    }
-
-    public TestData(String name)
-    {
-        super(name);
-    }
-
-    public static Test suite()
-    {
-        return getSuite(TestData.class);
     }
 }
