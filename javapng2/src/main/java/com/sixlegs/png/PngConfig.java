@@ -87,7 +87,7 @@ final public class PngConfig
 
     /**
      * Builder class used to construct {@link PngConfig PngConfig} instances.
-     * Each "setter" method returns an reference to the instance to enable
+     * Each "setter" method returns a reference to the instance to enable
      * chaining multiple calls.
      * Call {@link #build} to construct a new {@code PngConfig} instance
      * using the current {@code Builder} settings. Example:

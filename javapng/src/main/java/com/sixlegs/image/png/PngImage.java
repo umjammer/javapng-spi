@@ -24,14 +24,19 @@ import java.awt.Color;
 import java.awt.image.ImageConsumer;
 import java.awt.image.ImageProducer;
 import java.io.BufferedInputStream;
-import java.io.FileInputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.Vector;
+import java.util.Map;
+import java.util.List;
 
 /**
  * For more information visit <a href="http://www.sixlegs.com/">http://www.sixlegs.com/</a>
@@ -46,7 +51,7 @@ implements ImageProducer
     /* package */ static boolean allFatal = false;
     /* package */ static final int BUFFER_SIZE = 8192;
     private static boolean progressive = true;
-    private static Hashtable prototypes = new Hashtable();
+    private static final Map<Integer, Chunk> prototypes = new HashMap<>();
 
     /* package */ static final String ASCII_ENCODING = "US-ASCII";
     /* package */ static final String LATIN1_ENCODING = "8859_1";
@@ -56,11 +61,11 @@ implements ImageProducer
     private static double USER_EXPONENT = 1.0;
 
     /* package */ Data data = new Data();
-    private Vector errorList;
+    private List<IOException> errorList;
 
-    final class Data {
-        Vector consumers = new Vector();
-        Hashtable chunks = new Hashtable();
+    static final class Data {
+        List<ImageConsumer> consumers = new ArrayList<>();
+        Map<Integer, Chunk> chunks = new HashMap<>();
 
         int[] pixels;
         boolean produced;
@@ -72,10 +77,10 @@ implements ImageProducer
         /* package */ Chunk_IHDR header;
         /* package */ Chunk_PLTE palette;
         /* package */ int[] gammaTable = new int[256];
-        /* package */ Hashtable textChunks = new Hashtable();
-        /* package */ Hashtable properties = new Hashtable();
-        /* package */ Hashtable palettes = new Hashtable(1);
-        /* package */ Vector gifExtensions = new Vector();
+        /* package */ Map<String, Chunk> textChunks = new HashMap<>();
+        /* package */ Hashtable<String, Object> properties = new Hashtable<>();
+        /* package */ Map<String, int[][]> palettes = new HashMap<>(1);
+        /* package */ List<Chunk> gifExtensions = new ArrayList<>();
 
         private Data() {}
     }
@@ -114,7 +119,7 @@ implements ImageProducer
     public PngImage(String filename)
     throws IOException
     {
-        this(new BufferedInputStream(new FileInputStream(filename), BUFFER_SIZE));
+        this(new BufferedInputStream(Files.newInputStream(Paths.get(filename)), BUFFER_SIZE));
     }
 
     /** 
@@ -152,7 +157,7 @@ implements ImageProducer
     public PngImage(InputStream is, boolean close)
     {
         data.close = close;
-        data.properties.put("gamma", new Long(DEFAULT_GAMMA));
+        data.properties.put("gamma", DEFAULT_GAMMA);
         data.in_idat = new IDATInputStream(this, is, close);
     }
 
@@ -165,7 +170,7 @@ implements ImageProducer
     {
         if (data == null) return;
         if (data.consumers.contains(ic)) return;
-        data.consumers.addElement(ic);
+        data.consumers.add(ic);
     }
 
     /**
@@ -188,7 +193,7 @@ implements ImageProducer
     public void removeConsumer(ImageConsumer ic)
     {
         if (data == null) return;
-        data.consumers.removeElement(ic);
+        data.consumers.remove(ic);
     }
 
     /**
@@ -202,8 +207,7 @@ implements ImageProducer
         if (data == null)
             throw new IllegalStateException("Object has been flushed.");
         addConsumer(ic);
-        ImageConsumer[] ics = new ImageConsumer[data.consumers.size()];
-        data.consumers.copyInto(ics);
+        ImageConsumer[] ics = data.consumers.toArray(new ImageConsumer[0]);
         produceHelper(ics);
     }
   
@@ -261,13 +265,13 @@ implements ImageProducer
     public boolean hasErrors()
     {
         if (errorList == null) return false;
-        return errorList.size() > 0;
+        return !errorList.isEmpty();
     }
 
     public boolean hasFatalError()
     {
         return hasErrors() &&
-            !(errorList.elementAt(errorList.size() - 1) instanceof PngExceptionSoft);
+            !(errorList.get(errorList.size() - 1) instanceof PngExceptionSoft);
     }
 
     /**
@@ -275,12 +279,12 @@ implements ImageProducer
      * image production. This includes any non-fatal errors.
      * @see #hasErrors
      */
-    public Enumeration getErrors()
+    public Enumeration<IOException> getErrors()
     {
         
         if (errorList == null)
-            return EmptyEnumeration.getInstance();
-        return errorList.elements();
+            return Collections.enumeration(Collections.emptyList());
+        return Collections.enumeration(errorList);
     }
 
     /**
@@ -599,11 +603,11 @@ implements ImageProducer
      * Returns an <code>Enumeration</code> of the available properties.
      * @see #getProperty
      */
-    public Enumeration getProperties()
+    public Enumeration<String> getProperties()
     throws IOException
     {
         readToData();
-        return data.properties.keys();
+        return Collections.enumeration(data.properties.keySet());
     }
 
     /**
@@ -631,7 +635,7 @@ implements ImageProducer
     {
         startProduction(new DummyImageConsumer());
         if (hasFatalError())
-            throw (IOException)errorList.elementAt(errorList.size() - 1);
+            throw errorList.get(errorList.size() - 1);
     }
 
     /**
@@ -647,7 +651,7 @@ implements ImageProducer
     throws IOException
     {
         readToData();
-        return data.chunks.get(new Integer(Chunk.stringToType(type))) != null;
+        return data.chunks.get(Chunk.stringToType(type)) != null;
     }
 
     /**
@@ -669,7 +673,7 @@ implements ImageProducer
 
         int type_int = Chunk.stringToType(type);
 
-        if (prototypes.containsKey(new Integer(type_int))) {
+        if (prototypes.containsKey(type_int)) {
             throw new PngException("Chunk type already registered.");
         }
         if ((type_int & 0x20000000) == 0) {
@@ -683,11 +687,11 @@ implements ImageProducer
      * Returns an <code>Enumeration</code> of the available suggested palette names.
      * @see #getSuggestedPalette
      */
-    public Enumeration getSuggestedPalettes()
+    public Enumeration<String> getSuggestedPalettes()
     throws IOException
     {
         readToData();
-        return data.palettes.keys();
+        return Collections.enumeration(data.palettes.keySet());
     }
 
     /**
@@ -701,7 +705,7 @@ implements ImageProducer
     throws IOException
     {
         readToData();
-        return (int[][])data.palettes.get(name);
+        return data.palettes.get(name);
     }
 
     /**
@@ -735,11 +739,11 @@ implements ImageProducer
      * @see #getTextChunk
      * @return an <code>Enumeration</code> of the keys of text chunks read so far.
      */
-    public Enumeration getTextChunks()
+    public Enumeration<Chunk> getTextChunks()
     throws IOException
     {
         readToData();
-        return data.textChunks.elements();
+        return Collections.enumeration(data.textChunks.values());
     }
 
     /**
@@ -753,11 +757,11 @@ implements ImageProducer
      * @return an <code>Enumeration</code> of all GifExtension objects read so far.
      * @see GifExtension
      */
-    public Enumeration getGifExtensions()
+    public Enumeration<Chunk> getGifExtensions()
     throws IOException
     {
         readToData();
-        return data.gifExtensions.elements();
+        return Collections.enumeration(data.gifExtensions);
     }
 
     /**
@@ -840,14 +844,14 @@ implements ImageProducer
 
     private static void registerChunk(Chunk proto)
     {
-        prototypes.put(new Integer(proto.type), proto);
+        prototypes.put(proto.type, proto);
     }
 
     /* package */ static Chunk getRegisteredChunk(int type)
     {
-        Integer type_obj = new Integer(type);
+        Integer type_obj = type;
         if (prototypes.containsKey(type_obj)) {
-            return ((Chunk)prototypes.get(type_obj)).copy();
+            return prototypes.get(type_obj).copy();
         } else {
             try {
                 String clsName =
@@ -862,26 +866,26 @@ implements ImageProducer
 
     /* package */ Chunk getChunk(int type)
     {
-        return (Chunk)data.chunks.get(new Integer(type));
+        return data.chunks.get(type);
     }
 
     /* package */ void putChunk(int type, Chunk c)
     {
-        data.chunks.put(new Integer(type), c);
+        data.chunks.put(type, c);
     }
 
     /* package */ void addError(IOException e)
     {
         if (errorList == null) {
-            errorList = new Vector();
+            errorList = new ArrayList<>();
         }
-        errorList.addElement(e);
+        errorList.add(e);
     }
 
     /* package */ void fillGammaTable()
     {
         try {
-            long file_gamma = ((Long)getProperty("gamma")).longValue();
+            long file_gamma = (Long) getProperty("gamma");
             int max = (data.header.paletteUsed ? 0xFF : (1 << data.header.outputDepth) - 1);
             double decoding_exponent =
                 (USER_EXPONENT * 100000d / (file_gamma * DISPLAY_EXPONENT));
@@ -901,34 +905,34 @@ implements ImageProducer
     {
         try {
             readToData();
-            for (int i = 0; i < ics.length; i++) {
-                ics[i].setDimensions(data.header.width, data.header.height);
-                ics[i].setProperties(data.properties);
-                ics[i].setColorModel(data.header.model);
-                if (data.produceFailed) ics[i].imageComplete(ImageConsumer.IMAGEERROR);
+            for (ImageConsumer imageConsumer : ics) {
+                imageConsumer.setDimensions(data.header.width, data.header.height);
+                imageConsumer.setProperties(data.properties);
+                imageConsumer.setColorModel(data.header.model);
+                if (data.produceFailed) imageConsumer.imageComplete(ImageConsumer.IMAGEERROR);
             }
             if (data.produceFailed) return;
             if (!data.produced) {
                 firstProduction(ics);
             } else {
                 setHints(ics);
-                for (int i = 0; i < ics.length; i++) {
-                    ics[i].setPixels(0, 
-                                     0, 
-                                     data.header.width, 
-                                     data.header.height, 
-                                     data.header.model, 
-                                     data.pixels, 
-                                     0,
-                                     data.header.width);
-                    ics[i].imageComplete(ImageConsumer.STATICIMAGEDONE);
+                for (ImageConsumer ic : ics) {
+                    ic.setPixels(0,
+                            0,
+                            data.header.width,
+                            data.header.height,
+                            data.header.model,
+                            data.pixels,
+                            0,
+                            data.header.width);
+                    ic.imageComplete(ImageConsumer.STATICIMAGEDONE);
                 }
             }
         } catch (IOException e) {
             data.produceFailed = true;
             addError(e);
-            for (int i = 0; i < ics.length; i++) {
-                ics[i].imageComplete(ImageConsumer.IMAGEERROR);
+            for (ImageConsumer ic : ics) {
+                ic.imageComplete(ImageConsumer.IMAGEERROR);
             }
         }
         if (data.useFlush) flush();
@@ -955,23 +959,23 @@ implements ImageProducer
             produceInterlaced(ics, pis);
         }
 
-        for (int i = 0; i < ics.length; i++) {
-            ics[i].imageComplete(ImageConsumer.STATICIMAGEDONE);
+        for (ImageConsumer ic : ics) {
+            ic.imageComplete(ImageConsumer.STATICIMAGEDONE);
         }
     }
 
     private void setHints(ImageConsumer[] ics)
     {
-        for (int i = 0; i < ics.length; i++) {
+        for (ImageConsumer ic : ics) {
             if (progressive &&
-                data.pixels == null &&
-                (data.header.interlace != INTERLACE_TYPE_NONE)) {
-                ics[i].setHints(ImageConsumer.RANDOMPIXELORDER);
+                    data.pixels == null &&
+                    (data.header.interlace != INTERLACE_TYPE_NONE)) {
+                ic.setHints(ImageConsumer.RANDOMPIXELORDER);
             } else {
-                ics[i].setHints(ImageConsumer.TOPDOWNLEFTRIGHT | 
-                                ImageConsumer.SINGLEPASS |
-                                ImageConsumer.SINGLEFRAME |
-                                ImageConsumer.COMPLETESCANLINES);
+                ic.setHints(ImageConsumer.TOPDOWNLEFTRIGHT |
+                        ImageConsumer.SINGLEPASS |
+                        ImageConsumer.SINGLEFRAME |
+                        ImageConsumer.COMPLETESCANLINES);
             }
         }
     }
@@ -994,8 +998,8 @@ implements ImageProducer
             if (data.pixels != null) {
                 System.arraycopy(rowbuf, 0, data.pixels, w * y, w);
             }
-            for (int i = 0; i < ics.length; i++) {
-                ics[i].setPixels(0, y, w, 1, data.header.model, rowbuf, 0, pixelsWidth);
+            for (ImageConsumer ic : ics) {
+                ic.setPixels(0, y, w, 1, data.header.model, rowbuf, 0, pixelsWidth);
             }
         }
     }
@@ -1047,14 +1051,14 @@ implements ImageProducer
                 row += rowIncrement;
             }
             if (progressive) {
-                for (int i = 0; i < ics.length; i++) {
-                    ics[i].setPixels(0, 0, w, h, data.header.model, data.pixels, 0, w);
+                for (ImageConsumer ic : ics) {
+                    ic.setPixels(0, 0, w, h, data.header.model, data.pixels, 0, w);
                 }
             }
         }
         if (!progressive) {
-            for (int i = 0; i < ics.length; i++) {
-                ics[i].setPixels(0, 0, w, h, data.header.model, data.pixels, 0, w);
+            for (ImageConsumer ic : ics) {
+                ic.setPixels(0, 0, w, h, data.header.model, data.pixels, 0, w);
             }
         }
     }

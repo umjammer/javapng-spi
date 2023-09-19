@@ -41,7 +41,6 @@ import com.sixlegs.png.PngImage;
 import com.sixlegs.png.AnimatedPngImage;
 import com.sixlegs.png.Animator;
 import java.awt.*;
-import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -54,18 +53,14 @@ public class Viewer
     private ImagePanel imagePanel;
     private Paint checker;
 
-    public static void main(final String[] args)
+    public static void main(String[] args)
     throws Exception
     {
         if (args.length != 1) {
             System.err.println("Usage: java -jar pngviewer.jar <example.png>");
             return;
         }
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                new Viewer(args);
-            }
-        });
+        SwingUtilities.invokeLater(() -> new Viewer(args));
     }
 
     private Viewer(String[] args)
@@ -105,7 +100,7 @@ public class Viewer
     private void open(File file)
     {
         new Thread(new ReadPngAction(new AnimatedPngImage(config){
-            protected boolean handlePass(final BufferedImage image, int pass) {
+            protected boolean handlePass(BufferedImage image, int pass) {
                 if (isAnimated())
                     return true;
                 SwingUtilities.invokeLater(new UpdateImageAction(imagePanel, image));
@@ -159,18 +154,14 @@ public class Viewer
                 BufferedImage[] frames = png.readAllFrames(file);
                 if (png.isAnimated()) {
                     panel.setPreferredSize(new Dimension(png.getWidth(), png.getHeight()));
-                    final BufferedImage target =
+                    BufferedImage target =
                         panel.getGraphicsConfiguration().createCompatibleImage(png.getWidth(), png.getHeight(),
                                                                                Transparency.TRANSLUCENT);
-                    final Animator animator = new Animator(png, frames, target);
+                    Animator animator = new Animator(png, frames, target);
                     Timer timer = new Timer(50, null);
                     timer.setInitialDelay(0);
                     timer.addActionListener(animator);
-                    timer.addActionListener(new ActionListener() {
-                        public void actionPerformed(ActionEvent e) {
-                            panel.setImage(target);
-                        }
-                    });
+                    timer.addActionListener(e -> panel.setImage(target));
                     timer.start();
                 }
             } catch (IOException e) {

@@ -24,7 +24,7 @@ import java.util.Enumeration;
 import java.util.NoSuchElementException;
 
 public class EmptyEnumeration
-implements Enumeration
+implements Enumeration<Object>
 {
     private static final EmptyEnumeration INSTANCE = new EmptyEnumeration();
     

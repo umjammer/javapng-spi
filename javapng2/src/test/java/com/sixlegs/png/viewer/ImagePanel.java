@@ -37,8 +37,6 @@ exception statement from your version.
 package com.sixlegs.png.viewer;
 
 import java.awt.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import javax.swing.*;
 

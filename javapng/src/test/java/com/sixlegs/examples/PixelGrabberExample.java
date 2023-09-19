@@ -1,8 +1,7 @@
 package com.sixlegs.examples;
 
 import com.sixlegs.image.png.PngImage;
-import java.awt.Image;
-import java.awt.Toolkit;
+
 import java.awt.image.PixelGrabber;
 import java.io.IOException;
 

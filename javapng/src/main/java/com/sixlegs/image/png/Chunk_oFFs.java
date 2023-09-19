@@ -31,8 +31,8 @@ extends Chunk
         if (unit != PngImage.UNIT_PIXEL && unit != PngImage.UNIT_MICROMETER)
             throw new PngExceptionSoft("Illegal oFFs chunk unit specifier: " + unit);
 
-        img.data.properties.put("image position x", new Integer(imagePositionX));
-        img.data.properties.put("image position y", new Integer(imagePositionY));
-        img.data.properties.put("image position unit", new Integer(unit));
+        img.data.properties.put("image position x", imagePositionX);
+        img.data.properties.put("image position y", imagePositionY);
+        img.data.properties.put("image position unit", unit);
     }    
 }

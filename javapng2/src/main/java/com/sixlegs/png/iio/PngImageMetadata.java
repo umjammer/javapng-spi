@@ -49,11 +49,11 @@ extends IIOMetadata
     static final String nativeMetadataFormatName = 
       "javax_imageio_png_1.0";
 
-    private Map props;
-    private Map unknownChunks;
+    private Map<String, Object> props;
+    private Map<Integer, byte[]> unknownChunks;
     private Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 
-    PngImageMetadata(Map props, Map unknownChunks)
+    PngImageMetadata(Map<String, Object> props, Map<Integer, byte[]> unknownChunks)
     {
         super(true, nativeMetadataFormatName,
               "com.sixlegs.png.iio.PngImageMetadata", 
@@ -199,7 +199,7 @@ extends IIOMetadata
 
         byte[] sbit = (byte[])get(PngConstants.SIGNIFICANT_BITS);
         if (sbit != null) {
-            StringBuffer sb = new StringBuffer();
+            StringBuilder sb = new StringBuilder();
             for (int i = 0; i < sbit.length; i++) {
                 if (i > 0)
                     sb.append(' ');
@@ -247,7 +247,7 @@ extends IIOMetadata
 //                          String.valueOf(getInt(PngConstants.WIDTH)));
 //         appendSimpleNode(parent, "VerticalScreenSize", "value",
 //                          String.valueOf(getInt(PngConstants.HEIGHT)));
-        if (unit != null && unit.intValue() == PngConstants.UNIT_METER) {
+        if (unit != null && unit == PngConstants.UNIT_METER) {
             appendSimpleNode(parent, "HorizontalPixelSize", "value",
                              String.valueOf(1000f / getInt(PngConstants.PIXELS_PER_UNIT_X)));
             appendSimpleNode(parent, "VerticalPixelSize", "value",
@@ -269,20 +269,20 @@ extends IIOMetadata
 
     protected IIOMetadataNode getStandardTextNode()
     {
-        List textChunks = (List)get(PngConstants.TEXT_CHUNKS);
+        @SuppressWarnings("unchecked")
+        List<TextChunk> textChunks = (List<TextChunk>)get(PngConstants.TEXT_CHUNKS);
         if (textChunks == null)
             return null;
         
         IIOMetadataNode node = new IIOMetadataNode("Text");
-        for (Iterator it = textChunks.iterator(); it.hasNext();) {
-            TextChunk chunk = (TextChunk)it.next();
+        for (TextChunk chunk : textChunks) {
             IIOMetadataNode child = new IIOMetadataNode("TextEntry");
             child.setAttribute("keyword", chunk.getKeyword());
             child.setAttribute("value", chunk.getText());
 
             if (chunk.getType() == PngConstants.tEXt)
                 child.setAttribute("encoding", "ISO-8859-1");
-                
+
             //FIXME what about compressed iTXt?
             if (chunk.getType() == PngConstants.zTXt) {
                 child.setAttribute("compression", "zip");
@@ -455,7 +455,7 @@ extends IIOMetadata
         if (gamma == null)
             return;
         IIOMetadataNode node = new IIOMetadataNode("gAMA");
-        node.setAttribute("value", formatFloat(gamma.floatValue()));
+        node.setAttribute("value", formatFloat(gamma));
         root.appendChild(node);
     }
 
@@ -614,7 +614,7 @@ extends IIOMetadata
         Integer ri = (Integer)get(PngConstants.RENDERING_INTENT);
         if (ri == null)
             return;
-        appendSimpleNode(root, "sRGB", "renderingIntent", getRenderingIntent(ri.intValue()));
+        appendSimpleNode(root, "sRGB", "renderingIntent", getRenderingIntent(ri));
     }
 
     private static String getRenderingIntent(int ri)
@@ -651,10 +651,9 @@ extends IIOMetadata
             return;
 
         IIOMetadataNode node = new IIOMetadataNode("UnknownChunks");
-        for (Iterator it = unknownChunks.keySet().iterator(); it.hasNext();) {
-            Integer type = (Integer)it.next();
+        for (Integer type : unknownChunks.keySet()) {
             IIOMetadataNode child = new IIOMetadataNode("UnknownChunk");
-            child.setAttribute("type", PngConstants.getChunkName(type.intValue()));
+            child.setAttribute("type", PngConstants.getChunkName(type));
             child.setUserObject(unknownChunks.get(type));
             node.appendChild(child);
         }
@@ -679,35 +678,35 @@ extends IIOMetadata
 
     private void add_text_chunks(IIOMetadataNode root)
     {
-        List textChunks = (List)get(PngConstants.TEXT_CHUNKS);
+        @SuppressWarnings("unchecked")
+        List<TextChunk> textChunks = (List<TextChunk>)get(PngConstants.TEXT_CHUNKS);
         if (textChunks == null)
             return;
 
-        Map nodes = new HashMap();
+        Map<String, IIOMetadataNode> nodes = new HashMap<>();
         nodes.put("tEXt", new IIOMetadataNode("tEXt"));
         nodes.put("zTXt", new IIOMetadataNode("zTXt"));
         nodes.put("iTXt", new IIOMetadataNode("iTXt"));
-        for (Iterator it = textChunks.iterator(); it.hasNext();) {
-            TextChunk chunk = (TextChunk)it.next();
-            String name = PngConstants.getChunkName(chunk.getType());
+        for (TextChunk textChunk : textChunks) {
+            String name = PngConstants.getChunkName(textChunk.getType());
             IIOMetadataNode child = new IIOMetadataNode(name + "Entry");
-            child.setAttribute("keyword", chunk.getKeyword());
-            switch (chunk.getType()) {
+            child.setAttribute("keyword", textChunk.getKeyword());
+            switch (textChunk.getType()) {
             case PngConstants.zTXt:
                 child.setAttribute("compressionMethod", "deflate");
-                child.setAttribute("text", chunk.getText());
+                child.setAttribute("text", textChunk.getText());
                 break;
             case PngConstants.iTXt:
                 child.setAttribute("compressionMethod", "deflate");
-                child.setAttribute("value", chunk.getText());
-                child.setAttribute("languageTag", chunk.getLanguage());
-                child.setAttribute("translatedKeyword", chunk.getTranslatedKeyword());
+                child.setAttribute("value", textChunk.getText());
+                child.setAttribute("languageTag", textChunk.getLanguage());
+                child.setAttribute("translatedKeyword", textChunk.getTranslatedKeyword());
                 child.setAttribute("compressionFlag", "FALSE"); // TODO
                 break;
             case PngConstants.tEXt:
-                child.setAttribute("value", chunk.getText());
+                child.setAttribute("value", textChunk.getText());
             }
-            IIOMetadataNode parent = (IIOMetadataNode)nodes.get(name);
+            IIOMetadataNode parent = nodes.get(name);
             if (parent.getLength() == 0)
                 root.appendChild(parent);
             parent.appendChild(child);

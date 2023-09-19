@@ -34,7 +34,7 @@ extends Chunk
             throw new PngExceptionSoft("Meaningless zero gAMA chunk value");
 
         if (img.getChunk(sRGB) == null)
-            img.data.properties.put("gamma", new Long(gamma));
+            img.data.properties.put("gamma", gamma);
     }
 
 }

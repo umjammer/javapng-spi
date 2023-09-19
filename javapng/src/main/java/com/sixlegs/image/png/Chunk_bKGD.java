@@ -33,7 +33,7 @@ extends Chunk
             index = in_data.readUnsignedByte();
             if (img.data.palette == null)
                 throw new PngException("hIST chunk must follow PLTE chunk");
-            img.data.properties.put("background index", new Integer(index));
+            img.data.properties.put("background index", index);
             r = img.data.palette.r_raw[index];
             g = img.data.palette.g_raw[index];
             b = img.data.palette.b_raw[index];

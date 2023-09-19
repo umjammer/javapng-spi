@@ -37,8 +37,9 @@ exception statement from your version.
 package com.sixlegs.png.examples;
 
 import com.sixlegs.png.*;
-import java.awt.image.*;
+
 import java.io.*;
+import java.nio.file.Files;
 import java.util.*;
 import static com.sixlegs.png.examples.ArgumentProcessor.*;
 
@@ -69,24 +70,24 @@ public class Png2AnimatedPng
     }
 
     public static void run(String... orig) throws Exception {
-        List<String> args = new ArrayList<String>();
+        List<String> args = new ArrayList<>();
         Map<String,Object> opts = PROC.parse(Arrays.asList(orig), args);
-        final int iter = ((Number)opts.get("iter")).intValue();
-        final int delay = ((Number)opts.get("delay")).intValue();
-        final int blend = ((Number)opts.get("blend")).intValue();
-        final int dispose = ((Number)opts.get("dispose")).intValue();
-        final boolean skip = ((Boolean)opts.get("skip")).booleanValue();
+        int iter = ((Number)opts.get("iter")).intValue();
+        int delay = ((Number)opts.get("delay")).intValue();
+        int blend = ((Number)opts.get("blend")).intValue();
+        int dispose = ((Number)opts.get("dispose")).intValue();
+        boolean skip = (Boolean) opts.get("skip");
         
         // TODO: handle numIterations, delay, skip
-        final List<File> files = new ArrayList<File>();
+        List<File> files = new ArrayList<>();
         if (args.size() < 2)
             throw new IllegalArgumentException("Not enough arguments");
         for (String arg : args)
             files.add(new File(arg));
         File target = files.remove(files.size() - 1);
 
-        final DataOutputStream out = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(target)));
-        final PngConfig config = new PngConfig.Builder().readLimit(PngConfig.READ_EXCEPT_DATA).build();
+        DataOutputStream out = new DataOutputStream(new BufferedOutputStream(Files.newOutputStream(target.toPath())));
+        PngConfig config = new PngConfig.Builder().readLimit(PngConfig.READ_EXCEPT_DATA).build();
         out.writeLong(PngConstants.SIGNATURE);
         (new PngImage(config) {
             private ChunkWriter chunk = new ChunkWriter();

@@ -51,10 +51,10 @@ extends Chunk
         }
 
         img.data.properties.put("pixel calibration purpose", purpose);
-        img.data.properties.put("pixel calibration x0", new Integer(X0));
-        img.data.properties.put("pixel calibration x1", new Integer(X1));
-        img.data.properties.put("pixel calibration type", new Integer(equation_type));
-        img.data.properties.put("pixel calibration n", new Integer(N));
+        img.data.properties.put("pixel calibration x0", X0);
+        img.data.properties.put("pixel calibration x1", X1);
+        img.data.properties.put("pixel calibration type", equation_type);
+        img.data.properties.put("pixel calibration n", N);
         img.data.properties.put("pixel calibration unit", unit_string);
         img.data.properties.put("pixel calibration parameters", P);
     }    

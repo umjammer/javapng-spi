@@ -13,18 +13,18 @@ implements ImageConsumer
     public void setDimensions(int width, int height)
     { }
 
-    public void setProperties(Hashtable props)
+    public void setProperties(Hashtable<?, ?> props)
     { }
 
     public void setHints(int hintflags)
     { }
 
     public void setPixels(int x, int y, int w, int h,
-                          ColorModel model, byte pixels[], int off, int scansize)
+                          ColorModel model, byte[] pixels, int off, int scansize)
     { }
 
     public void setPixels(int x, int y, int w, int h,
-                          ColorModel model, int pixels[], int off, int scansize)
+                          ColorModel model, int[] pixels, int off, int scansize)
     { }
 
     public void imageComplete(int status)

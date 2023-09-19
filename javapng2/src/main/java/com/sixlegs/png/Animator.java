@@ -40,8 +40,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
-import java.awt.image.Raster;
-import javax.swing.Timer;
 import java.util.*;
 import java.util.List;
 
@@ -91,7 +89,7 @@ implements ActionListener
         g = target.createGraphics();
 
         Rectangle prevBounds = new Rectangle(0, 0, 0, 0);
-        List renderList = new ArrayList();
+        List<RenderData> renderList = new ArrayList<>();
         int minDelay = Integer.MAX_VALUE;
         for (int i = 0; i < png.getNumFrames(); i++) {
             FrameControl frame = png.getFrame(i);
@@ -109,7 +107,7 @@ implements ActionListener
             renderList.add(rd);
         }
         timerDelay = minDelay;
-        render = (RenderData[])renderList.toArray(new RenderData[renderList.size()]);
+        render = renderList.toArray(new RenderData[0]);
         if (prevBounds.isEmpty()) {
             prev = null;
             gPrev = null;

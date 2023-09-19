@@ -5,7 +5,7 @@ package com.sixlegs.image.png;
 
 import java.io.IOException;
 
-class Chunk
+public class Chunk
 implements Cloneable
 {
     /* package */ int length;
@@ -82,7 +82,7 @@ implements Cloneable
     throws PngException
     {
         throw new PngException("Bad " + typeToString(type) +
-                               " chunk length: " + in_data.unsign(length) +
+                               " chunk length: " + ExDataInputStream.unsign(length) +
                                " (expected " + correct + ")");
     }
 
@@ -90,7 +90,7 @@ implements Cloneable
     throws PngException
     {
         throw new PngException("Bad " + typeToString(type) +
-                               " chunk length: " + in_data.unsign(length));
+                               " chunk length: " + ExDataInputStream.unsign(length));
     }
 
     protected void readData()

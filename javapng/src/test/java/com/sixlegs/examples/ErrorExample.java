@@ -21,7 +21,7 @@ public class ErrorExample
             // Print all errors
             if (png.hasErrors()) {
                 System.err.println("Errors in PNG processing:");
-                for (Enumeration e = png.getErrors(); e.hasMoreElements();) {
+                for (Enumeration<IOException> e = png.getErrors(); e.hasMoreElements();) {
                     // Objects returned by getErrors derive from IOException,
                     // but you usually only want to print them
                     System.err.println("  " + e.nextElement());

@@ -50,7 +50,7 @@ class RegisteredChunks
     public static boolean read(int type, DataInput in, int length, PngImage png)
     throws IOException
     {
-        Map props = png.getProperties();
+        Map<String, Object> props = png.getProperties();
         switch (type) {
         case PngConstants.IHDR: read_IHDR(in, length, props); break;
         case PngConstants.IEND: checkLength(PngConstants.IEND, length, 0); break;
@@ -82,7 +82,7 @@ class RegisteredChunks
         return true;
     }
 
-    private static void read_IHDR(DataInput in, int length, Map props)
+    private static void read_IHDR(DataInput in, int length, Map<String, Object> props)
     throws IOException
     {
         checkLength(PngConstants.IHDR, length, 13);
@@ -142,7 +142,7 @@ class RegisteredChunks
         props.put(PngConstants.COLOR_TYPE, Integers.valueOf(colorType));
     }
 
-    private static void read_PLTE(DataInput in, int length, Map props, PngImage png)
+    private static void read_PLTE(DataInput in, int length, Map<String, Object> props, PngImage png)
     throws IOException
     {
         if (length == 0)
@@ -166,7 +166,7 @@ class RegisteredChunks
         props.put(PngConstants.PALETTE, palette);
     }
 
-    private static void read_tRNS(DataInput in, int length, Map props, PngImage png)
+    private static void read_tRNS(DataInput in, int length, Map<String, Object> props, PngImage png)
     throws IOException
     {
         switch (png.getColorType()) {
@@ -195,7 +195,7 @@ class RegisteredChunks
         }
     }
 
-    private static void read_bKGD(DataInput in, int length, Map props, PngImage png)
+    private static void read_bKGD(DataInput in, int length, Map<String, Object> props, PngImage png)
     throws IOException
     {
         int[] background;
@@ -221,7 +221,7 @@ class RegisteredChunks
         props.put(PngConstants.BACKGROUND, background);
     }
 
-    private static void read_cHRM(DataInput in, int length, Map props)
+    private static void read_cHRM(DataInput in, int length, Map<String, Object> props)
     throws IOException
     {
         checkLength(PngConstants.cHRM, length, 32);
@@ -232,7 +232,7 @@ class RegisteredChunks
             props.put(PngConstants.CHROMATICITY, array);
     }
 
-    private static void read_gAMA(DataInput in, int length, Map props)
+    private static void read_gAMA(DataInput in, int length, Map<String, Object> props)
     throws IOException
     {
         checkLength(PngConstants.gAMA, length, 4);
@@ -240,10 +240,10 @@ class RegisteredChunks
         if (gamma == 0)
             throw new PngException("Meaningless zero gAMA chunk value", false);
         if (!props.containsKey(PngConstants.RENDERING_INTENT))
-            props.put(PngConstants.GAMMA, new Float(gamma / 100000f));
+            props.put(PngConstants.GAMMA, gamma / 100000f);
     }
 
-    private static void read_hIST(DataInput in, int length, Map props, PngImage png)
+    private static void read_hIST(DataInput in, int length, Map<String, Object> props, PngImage png)
     throws IOException
     {
         // TODO: ensure it is divisible by three
@@ -255,7 +255,7 @@ class RegisteredChunks
         props.put(PngConstants.HISTOGRAM, array);
     }
 
-    private static void read_iCCP(DataInput in, int length, Map props)
+    private static void read_iCCP(DataInput in, int length, Map<String, Object> props)
     throws IOException
     {
         String name = readKeyword(in, length);
@@ -264,7 +264,7 @@ class RegisteredChunks
         props.put(PngConstants.ICC_PROFILE, data);
     }
 
-    private static void read_pHYs(DataInput in, int length, Map props)
+    private static void read_pHYs(DataInput in, int length, Map<String, Object> props)
     throws IOException
     {
         checkLength(PngConstants.pHYs, length, 9);
@@ -278,7 +278,7 @@ class RegisteredChunks
         props.put(PngConstants.UNIT, Integers.valueOf(unit));
     }
 
-    private static void read_sBIT(DataInput in, int length, Map props, PngImage png)
+    private static void read_sBIT(DataInput in, int length, Map<String, Object> props, PngImage png)
     throws IOException
     {
         boolean paletted = png.getColorType() == PngConstants.COLOR_TYPE_PALETTE;
@@ -295,19 +295,19 @@ class RegisteredChunks
         props.put(PngConstants.SIGNIFICANT_BITS, array);
     }
 
-    private static void read_sRGB(DataInput in, int length, Map props)
+    private static void read_sRGB(DataInput in, int length, Map<String, Object> props)
     throws IOException
     {
         checkLength(PngConstants.sRGB, length, 1);
         int intent = in.readByte();
         props.put(PngConstants.RENDERING_INTENT, Integers.valueOf(intent));
-        props.put(PngConstants.GAMMA, new Float(0.45455));
+        props.put(PngConstants.GAMMA, 0.45455F);
         props.put(PngConstants.CHROMATICITY, new float[]{
             0.3127f, 0.329f, 0.64f, 0.33f, 0.3f, 0.6f, 0.15f, 0.06f,
         });
     }
 
-    private static void read_tIME(DataInput in, int length, Map props)
+    private static void read_tIME(DataInput in, int length, Map<String, Object> props)
     throws IOException
     {
         checkLength(PngConstants.tIME, length, 7);
@@ -330,7 +330,7 @@ class RegisteredChunks
         return value;
     }
 
-    private static void read_sPLT(DataInput in, int length, Map props, PngImage png)
+    private static void read_sPLT(DataInput in, int length, Map<String, Object> props, PngImage png)
     throws IOException
     {
         String name = readKeyword(in, length);
@@ -344,17 +344,18 @@ class RegisteredChunks
         byte[] bytes = new byte[length];
         in.readFully(bytes);
 
-        List palettes = (List)png.getProperty(PngConstants.SUGGESTED_PALETTES, List.class, false);
+        @SuppressWarnings("unchecked")
+        List<SuggestedPaletteImpl> palettes = (List<SuggestedPaletteImpl>)png.getProperty(PngConstants.SUGGESTED_PALETTES, List.class, false);
         if (palettes == null)
-            props.put(PngConstants.SUGGESTED_PALETTES, palettes = new ArrayList());
-        for (Iterator it = palettes.iterator(); it.hasNext();) {
-            if (name.equals(((SuggestedPalette)it.next()).getName()))
+            props.put(PngConstants.SUGGESTED_PALETTES, palettes = new ArrayList<>());
+        for (SuggestedPalette palette : palettes) {
+            if (name.equals(palette.getName()))
                 throw new PngException("Duplicate suggested palette name " + name, false);
         }
         palettes.add(new SuggestedPaletteImpl(name, sampleDepth, bytes));
     }
 
-    private static void readText(int type, DataInput in, int length, Map props, PngImage png)
+    private static void readText(int type, DataInput in, int length, Map<String, Object> props, PngImage png)
     throws IOException
     {
         byte[] bytes = new byte[length];
@@ -399,13 +400,14 @@ class RegisteredChunks
         }
         if (text.indexOf('\0') >= 0)
             throw new PngException("Text value contains null", false);
-        List chunks = (List)png.getProperty(PngConstants.TEXT_CHUNKS, List.class, false);
+        @SuppressWarnings("unchecked")
+        List<TextChunkImpl> chunks = (List<TextChunkImpl>)png.getProperty(PngConstants.TEXT_CHUNKS, List.class, false);
         if (chunks == null)
-            props.put(PngConstants.TEXT_CHUNKS, chunks = new ArrayList());
+            props.put(PngConstants.TEXT_CHUNKS, chunks = new ArrayList<>());
         chunks.add(new TextChunkImpl(keyword, text, language, translated, type));
     }
 
-    private static void read_gIFg(DataInput in, int length, Map props)
+    private static void read_gIFg(DataInput in, int length, Map<String, Object> props)
     throws IOException
     {
         checkLength(PngConstants.gIFg, length, 4);
@@ -417,7 +419,7 @@ class RegisteredChunks
         props.put(PngConstants.GIF_DELAY_TIME, Integers.valueOf(delayTime));
     }
 
-    private static void read_oFFs(DataInput in, int length, Map props)
+    private static void read_oFFs(DataInput in, int length, Map<String, Object> props)
     throws IOException
     {
         checkLength(PngConstants.oFFs, length, 9);
@@ -432,7 +434,7 @@ class RegisteredChunks
         props.put(PngConstants.POSITION_UNIT, Integers.valueOf(unit));
     }
 
-    private static void read_sCAL(DataInput in, int length, Map props)
+    private static void read_sCAL(DataInput in, int length, Map<String, Object> props)
     throws IOException
     {
         byte[] bytes = new byte[length];
@@ -447,11 +449,11 @@ class RegisteredChunks
         if (width <= 0 || height <= 0)
             throw new PngException("sCAL measurements must be >= 0", false);
         props.put(PngConstants.SCALE_UNIT, Integers.valueOf(unit));
-        props.put(PngConstants.PIXEL_WIDTH, new Double(width));
-        props.put(PngConstants.PIXEL_HEIGHT, new Double(height));
+        props.put(PngConstants.PIXEL_WIDTH, width);
+        props.put(PngConstants.PIXEL_HEIGHT, height);
     }
 
-    private static void read_sTER(DataInput in, int length, Map props)
+    private static void read_sTER(DataInput in, int length, Map<String, Object> props)
     throws IOException
     {
         checkLength(PngConstants.sTER, length, 1);
@@ -509,7 +511,7 @@ class RegisteredChunks
     throws IOException
     {
         String keyword = readString(in, limit, ISO_8859_1);
-        if (keyword.length() == 0 || keyword.length() > 79)
+        if (keyword.isEmpty() || keyword.length() > 79)
             throw new PngException("Invalid keyword length: " + keyword.length(), false);
         return keyword;
     }
@@ -533,9 +535,9 @@ class RegisteredChunks
     {
         String s = readString(in, limit, "US-ASCII");
         int e = Math.max(s.indexOf('e'), s.indexOf('E'));
-        double d = Double.valueOf(s.substring(0, (e < 0 ? s.length() : e))).doubleValue();
+        double d = Double.parseDouble(s.substring(0, (e < 0 ? s.length() : e)));
         if (e >= 0)
-            d *= Math.pow(10d, Double.valueOf(s.substring(e + 1)).doubleValue());
+            d *= Math.pow(10d, Double.parseDouble(s.substring(e + 1)));
         return d;
     }
 }

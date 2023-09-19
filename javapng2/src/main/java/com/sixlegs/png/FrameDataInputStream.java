@@ -43,10 +43,10 @@ class FrameDataInputStream
 extends InputStream
 {
     private final RandomAccessFile file;
-    private final Iterator it;
+    private final Iterator<Object> it;
     private InputStream in;
 
-    public FrameDataInputStream(File file, List frameData)
+    public FrameDataInputStream(File file, List<Object> frameData)
     throws IOException
     {
         this.file = new RandomAccessFile(file, "r");
@@ -74,7 +74,7 @@ extends InputStream
         in = null;
         if (it.hasNext()) {
             // TODO: enable streaming
-            FrameData data = (FrameData)it.next();
+            FrameData data = (FrameData) it.next();
             file.seek(data.getOffset());
             byte[] bytes = new byte[data.getLength()];
             file.readFully(bytes);

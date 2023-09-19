@@ -105,7 +105,7 @@ extends InputStream
         int type = in_data.readInt();
 
         if (chunk_left < 0) {
-            throw new PngException("Bad " + Chunk.typeToString(type) + " chunk length: " + in_data.unsign(chunk_left));
+            throw new PngException("Bad " + Chunk.typeToString(type) + " chunk length: " + ExDataInputStream.unsign(chunk_left));
         }
 
         cur = PngImage.getRegisteredChunk(type);
@@ -128,7 +128,7 @@ extends InputStream
         return cur;
     }
 
-    public int read(byte b[], int off, int len)
+    public int read(byte[] b, int off, int len)
     throws IOException
     {
         if (cur == null)

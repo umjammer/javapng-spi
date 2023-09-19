@@ -14,7 +14,7 @@ class DataTest {
 
     @Test
     void testImages() throws Exception {
-        int[] buffer = new int[800 * 600]; // big enough to handle biggest image
+        int[] buffer = new int[800 * 600]; // big enough to handle the biggest image
         MessageDigest md5 = MessageDigest.getInstance("MD5");
         BufferedReader r = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("/images.txt")));
         String line;
@@ -59,13 +59,12 @@ class DataTest {
     }
 
     private static String toHexString(byte[] b) {
-       StringBuffer hex = new StringBuffer(2 * b.length);
-       for (int i = 0; i < b.length; i++) {
-           byte n = b[i];
-           if (n >= 0 && n <= 15)
-               hex.append("0");
-           hex.append(Integer.toHexString(0xFF & n));
-       }
+       StringBuilder hex = new StringBuilder(2 * b.length);
+        for (byte n : b) {
+            if (n >= 0 && n <= 15)
+                hex.append("0");
+            hex.append(Integer.toHexString(0xFF & n));
+        }
        return hex.toString().toUpperCase();
     }
 }

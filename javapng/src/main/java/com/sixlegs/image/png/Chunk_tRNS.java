@@ -85,7 +85,7 @@ extends Chunk
                 p.a[i] = (byte)(p.a_raw[i] = 0xFF);
                 i++;
             }
-            img.data.properties.put("transparency size", new Integer(length));
+            img.data.properties.put("transparency size", length);
             p.updateProperties(true);
             break;
 

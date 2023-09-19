@@ -36,8 +36,6 @@ exception statement from your version.
 
 package com.sixlegs.png;
 
-import java.io.*;
-
 class FrameData
 {
     private final long offset;

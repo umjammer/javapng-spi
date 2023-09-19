@@ -24,7 +24,7 @@ extends Chunk
     protected String getEncoding()
     {
         return PngImage.LATIN1_ENCODING;
-    };
+    }
 
     protected void readData()
     throws IOException

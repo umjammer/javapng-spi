@@ -31,8 +31,8 @@ extends Chunk
         if (unit != PngImage.UNIT_UNKNOWN && unit != PngImage.UNIT_METER)
             throw new PngExceptionSoft("Illegal pHYs chunk unit specifier: " + unit);
 
-        img.data.properties.put("pixel dimensions x", new Long(pixelsPerUnitX));
-        img.data.properties.put("pixel dimensions y", new Long(pixelsPerUnitY));
-        img.data.properties.put("pixel dimensions unit", new Integer(unit));
+        img.data.properties.put("pixel dimensions x", pixelsPerUnitX);
+        img.data.properties.put("pixel dimensions y", pixelsPerUnitY);
+        img.data.properties.put("pixel dimensions unit", unit);
     }    
 }

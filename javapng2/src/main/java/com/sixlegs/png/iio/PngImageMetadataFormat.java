@@ -36,7 +36,6 @@ exception statement from your version.
 
 package com.sixlegs.png.iio;
 
-import java.awt.*;
 import javax.imageio.ImageTypeSpecifier;
 import javax.imageio.metadata.IIOMetadataFormatImpl;
 import java.util.*;
@@ -46,17 +45,15 @@ extends IIOMetadataFormatImpl
 {
 	private static final String rootName = "javax_imageio_png_1.0";
 
-    private static final Set validNodes = Collections.unmodifiableSet(new HashSet(Arrays.asList(new String[]{
-        "IHDR", "iCCP", "cHRM", "sRGB", "gAMA", "pHYS", "tIME",
-        "sPLT", "sPLTEntry",
-        "hIST", "hISTEntry",
-        "sBIT", "sBIT_Grayscale", "sBIT_GrayAlpha", "sBIT_RGB", "sBIT_RGBAlpha", "sBIT_Palette",
-        "PLTE", "PLTEEntry",
-        "tRNS", "tRNS_Grayscale", "tRNS_RGB", "tRNS_Palette",
-        "bKGD", "bKGD_Grayscale", "bKGD_Palette", "bKGD_Palette", "bKGD_RGB",
-        "iTXt", "iTXtEntry", "zTXt", "zTXtEntry", "tEXt", "tEXtEntry",
-        "UnknownChunks", "UnknownChunk",
-    })));
+    private static final Set<String> validNodes = Collections.unmodifiableSet(new HashSet<>(Arrays.asList("IHDR", "iCCP", "cHRM", "sRGB", "gAMA", "pHYS", "tIME",
+            "sPLT", "sPLTEntry",
+            "hIST", "hISTEntry",
+            "sBIT", "sBIT_Grayscale", "sBIT_GrayAlpha", "sBIT_RGB", "sBIT_RGBAlpha", "sBIT_Palette",
+            "PLTE", "PLTEEntry",
+            "tRNS", "tRNS_Grayscale", "tRNS_RGB", "tRNS_Palette",
+            "bKGD", "bKGD_Grayscale", "bKGD_Palette", "bKGD_Palette", "bKGD_RGB",
+            "iTXt", "iTXtEntry", "zTXt", "zTXtEntry", "tEXt", "tEXtEntry",
+            "UnknownChunks", "UnknownChunk")));
 
 	// singleton
 	private static final PngImageMetadataFormat defaultInstance =

@@ -40,8 +40,18 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Transparency;
 import java.awt.image.BufferedImage;
-import java.io.*;
-import java.util.*;
+import java.io.BufferedInputStream;
+import java.io.DataInput;
+import java.io.EOFException;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * A class to decode PNG images.
@@ -65,7 +75,7 @@ implements Transparency
         new PngConfig.Builder().build();
 
     private final PngConfig config;
-    private final Map props = new HashMap();
+    private final Map<String, Object> props = new HashMap<>();
     private boolean read = false;
 
     /**
@@ -115,7 +125,7 @@ implements Transparency
     public BufferedImage read(File file)
     throws IOException
     {
-        return read(new BufferedInputStream(new FileInputStream(file)), true);
+        return read(new BufferedInputStream(Files.newInputStream(file.toPath())), true);
     }
 
     /**
@@ -151,7 +161,7 @@ implements Transparency
         StateMachine machine = new StateMachine(this);
         try {
             PngInputStream pin = new PngInputStream(in);
-            Set seen = new HashSet();
+            Set<Integer> seen = new HashSet<>();
             while (machine.getState() != StateMachine.STATE_END) {
                 int type = pin.startChunk();
                 machine.nextState(type);
@@ -554,7 +564,7 @@ implements Transparency
         return props.get(name);
     }
 
-    Object getProperty(String name, Class type, boolean required)
+    Object getProperty(String name, Class<?> type, boolean required)
     {
         assertRead();
         Object value = props.get(name);
@@ -579,7 +589,7 @@ implements Transparency
      * {@code ClassCastException}.
      * @return the mutable map of image properties
      */
-    public Map getProperties()
+    public Map<String, Object> getProperties()
     {
         return props;
     }
@@ -596,11 +606,12 @@ implements Transparency
      */
     public TextChunk getTextChunk(String key)
     {
-        List list = (List)getProperty(PngConstants.TEXT_CHUNKS, List.class, false);
+        @SuppressWarnings("unchecked")
+        List<Object> list = (List<Object>)getProperty(PngConstants.TEXT_CHUNKS, List.class, false);
         if (key != null && list != null) {
-            for (Iterator it = list.iterator(); it.hasNext();) {
+            for (Object o : list) {
                 // TODO: check list value type before cast?
-                TextChunk chunk = (TextChunk)it.next();
+                TextChunk chunk = (TextChunk) o;
                 if (chunk.getKeyword().equals(key))
                     return chunk;
             }

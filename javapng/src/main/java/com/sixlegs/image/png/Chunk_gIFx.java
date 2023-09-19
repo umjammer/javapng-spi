@@ -29,7 +29,7 @@ implements GifExtension
         data = new byte[bytesRemaining()];
         in_data.readFully(data);
 
-        img.data.gifExtensions.addElement(this);
+        img.data.gifExtensions.add(this);
     }
 
     public String getIdentifier()

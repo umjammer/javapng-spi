@@ -1,4 +1,5 @@
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.zip.*;
 import org.apache.tools.bzip2.CBZip2OutputStream;
@@ -234,22 +235,20 @@ public class BrokenGenerator
         writeChunks(new File(dst), chunks);
     }
 
-    private static Processor append(final Query q, final byte[] append)
+    private static Processor append(Query q, byte[] append)
     {
-        return new Processor(){
-            public void process(List<Chunk> chunks) throws IOException {
-                Chunk chunk = q.query(chunks);
-                byte[] data = new byte[chunk.length + append.length];
-                System.arraycopy(chunk.data, 0, data, 0, chunk.length);
-                System.arraycopy(append, 0, data, chunk.length, append.length);
-                chunk.data = data;
-                chunk.length = data.length;
-                chunk.crc = crc(chunk.type, chunk.data);
-            }
+        return chunks -> {
+            Chunk chunk = q.query(chunks);
+            byte[] data = new byte[chunk.length + append.length];
+            System.arraycopy(chunk.data, 0, data, 0, chunk.length);
+            System.arraycopy(append, 0, data, chunk.length, append.length);
+            chunk.data = data;
+            chunk.length = data.length;
+            chunk.crc = crc(chunk.type, chunk.data);
         };
     }
 
-    private static Processor setDataLength(final int length)
+    private static Processor setDataLength(int length)
     {
         return new DataProcessor(){
             public byte[] process(byte[] data) {
@@ -274,7 +273,7 @@ public class BrokenGenerator
         }
     };
 
-    private static Processor changeDataByte(final int offset, final int value)
+    private static Processor changeDataByte(int offset, int value)
     {
         return new DataProcessor(){
             public byte[] process(byte[] data) {
@@ -284,14 +283,12 @@ public class BrokenGenerator
         };
     }
 
-    private static Processor changeByte(final Query q, final int offset, final int value)
+    private static Processor changeByte(Query q, int offset, int value)
     {
-        return new Processor(){
-            public void process(List<Chunk> chunks) throws IOException {
-                Chunk chunk = q.query(chunks);
-                chunk.data[offset] = (byte)value;
-                chunk.crc = crc(chunk.type, chunk.data);
-            }
+        return chunks -> {
+            Chunk chunk = q.query(chunks);
+            chunk.data[offset] = (byte)value;
+            chunk.crc = crc(chunk.type, chunk.data);
         };
     }
 
@@ -320,22 +317,14 @@ public class BrokenGenerator
         return addAfter(find(type), find(type));
     }
 
-    private static Processor replace(final Query oldChunk, final Query newChunk)
+    private static Processor replace(Query oldChunk, Query newChunk)
     {
-        return new Processor(){
-            public void process(List<Chunk> chunks) {
-                chunks.set(chunks.indexOf(oldChunk.query(chunks)), newChunk.query(chunks));
-            }
-        };
+        return chunks -> chunks.set(chunks.indexOf(oldChunk.query(chunks)), newChunk.query(chunks));
     }
 
-    private static Processor addAfter(final Query after, final Query chunk)
+    private static Processor addAfter(Query after, Query chunk)
     {
-        return new Processor(){
-            public void process(List<Chunk> chunks) {
-                chunks.add(chunks.indexOf(after.query(chunks)) + 1, chunk.query(chunks));
-            }
-        };
+        return chunks -> chunks.add(chunks.indexOf(after.query(chunks)) + 1, chunk.query(chunks));
     }
 
     private static Processor setLength(Query q, int length)
@@ -343,77 +332,59 @@ public class BrokenGenerator
         return setLength(q, length, true);
     }
     
-    private static Processor setLength(final Query q, final int length, final boolean consistent)
+    private static Processor setLength(Query q, int length, boolean consistent)
     {
-        return new Processor(){
-            public void process(List<Chunk> chunks) throws IOException {
-                Chunk chunk = q.query(chunks);
-                chunk.length = length;
-                if (consistent) {
-                    byte[] data = new byte[length];
-                    System.arraycopy(chunk.data, 0, data, 0, Math.min(data.length, chunk.data.length));
-                    chunk.data = data;
-                    chunk.crc = crc(chunk.type, data);
-                }
+        return chunks -> {
+            Chunk chunk = q.query(chunks);
+            chunk.length = length;
+            if (consistent) {
+                byte[] data = new byte[length];
+                System.arraycopy(chunk.data, 0, data, 0, Math.min(data.length, chunk.data.length));
+                chunk.data = data;
+                chunk.crc = crc(chunk.type, data);
             }
         };
     }
 
-    private static Processor setCRC(final Query q, final int crc)
+    private static Processor setCRC(Query q, int crc)
     {
-        return new Processor(){
-            public void process(List<Chunk> chunks) {
-                q.query(chunks).crc = crc;
-            }
+        return chunks -> q.query(chunks).crc = crc;
+    }
+
+    private static Processor setType(Query q, int type)
+    {
+        return chunks -> {
+            Chunk chunk = q.query(chunks);
+            chunk.type = type;
+            chunk.crc = crc(type, chunk.data);
         };
     }
 
-    private static Processor setType(final Query q, final int type)
+    private static Processor remove(Query q)
     {
-        return new Processor(){
-            public void process(List<Chunk> chunks) throws IOException {
-                Chunk chunk = q.query(chunks);
-                chunk.type = type;
-                chunk.crc = crc(type, chunk.data);
-            }
-        };
+        return chunks -> chunks.remove(q.query(chunks));
     }
 
-    private static Processor remove(final Query q)
+    private static Processor swap(Query q1, Query q2)
     {
-        return new Processor(){
-            public void process(List<Chunk> chunks) {
-                chunks.remove(q.query(chunks));
-            }
-        };
+        return chunks -> Collections.swap(chunks,
+                         chunks.indexOf(q1.query(chunks)),
+                         chunks.indexOf(q2.query(chunks)));
     }
 
-    private static Processor swap(final Query q1, final Query q2)
+    private static Processor truncate(Query q, int offset)
     {
-        return new Processor(){
-            public void process(List<Chunk> chunks) {
-                Collections.swap(chunks,
-                                 chunks.indexOf(q1.query(chunks)),
-                                 chunks.indexOf(q2.query(chunks)));
-            }
-        };
-    }
+        return chunks -> {
+            Chunk chunk = q.query(chunks);
+            int index = chunks.indexOf(chunk);
+            while (chunks.size() > index)
+                chunks.remove(index);
 
-    private static Processor truncate(final Query q, final int offset)
-    {
-        return new Processor(){
-            public void process(List<Chunk> chunks) {
-                Chunk chunk = q.query(chunks);
-                int index = chunks.indexOf(chunk);
-                while (chunks.size() > index)
-                    chunks.remove(index);
-
-                byte[] data = new byte[offset];
-                System.arraycopy(chunk.data, 0, data, 0, offset);
-                Chunk replace = new Chunk(chunk.type, data, chunk.crc);
-                replace.length = chunk.length;
-                chunks.add(replace);
-            }
+            byte[] data = new byte[offset];
+            System.arraycopy(chunk.data, 0, data, 0, offset);
+            Chunk replace = new Chunk(chunk.type, data, chunk.crc);
+            replace.length = chunk.length;
+            chunks.add(replace);
         };
     }
 
@@ -422,17 +393,15 @@ public class BrokenGenerator
         return find(type, 0);
     }
 
-    private static Query find(final int type, final int index)
+    private static Query find(int type, int index)
     {
-        return new Query(){
-            public Chunk query(List<Chunk> chunks) {
-                int count = 0;
-                for (Chunk chunk : chunks) {
-                    if (chunk.type == type && index == count++)
-                        return chunk;
-                }
-                return null;
+        return chunks -> {
+            int count = 0;
+            for (Chunk chunk : chunks) {
+                if (chunk.type == type && index == count++)
+                    return chunk;
             }
+            return null;
         };
     }
 
@@ -442,7 +411,7 @@ public class BrokenGenerator
         public void process(List<Chunk> chunks)
         throws IOException
         {
-            List<byte[]> dataList = new ArrayList<byte[]>();
+            List<byte[]> dataList = new ArrayList<>();
             int length = 0;
             int index = chunks.indexOf(find(IDAT).query(chunks));
             for (Iterator<Chunk> it = chunks.iterator(); it.hasNext();) {
@@ -562,9 +531,8 @@ public class BrokenGenerator
     private static List<Chunk> readChunks(File src)
     throws IOException
     {
-        List<Chunk> chunks = new ArrayList<Chunk>();
-        FileInputStream in = new FileInputStream(src);
-        try {
+        List<Chunk> chunks = new ArrayList<>();
+        try (FileInputStream in = new FileInputStream(src)) {
             DataInputStream data = new DataInputStream(new BufferedInputStream(in));
             data.readLong(); // signature
             int type;
@@ -576,16 +544,13 @@ public class BrokenGenerator
                 chunks.add(new Chunk(type, bytes, crc));
             } while (type != IEND);
             return chunks;
-        } finally {
-            in.close();
         }
     }
 
     private static void writeChunks(File dst, List<Chunk> chunks)
     throws IOException
     {
-        FileOutputStream out = new FileOutputStream(dst);
-        try {
+        try (FileOutputStream out = new FileOutputStream(dst)) {
             DataOutputStream data = new DataOutputStream(out);
             data.writeLong(0x89504E470D0A1A0AL);
             for (Chunk chunk : chunks) {
@@ -595,8 +560,6 @@ public class BrokenGenerator
                 data.writeInt(chunk.crc);
             }
             data.flush();
-        } finally {
-            out.close();
         }
     }
 
@@ -630,20 +593,20 @@ public class BrokenGenerator
     {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         DataOutputStream data = new DataOutputStream(baos);
-        data.write(keyword.getBytes("ISO-8859-1"));
+        data.write(keyword.getBytes(StandardCharsets.ISO_8859_1));
         data.writeByte(0);
         data.writeByte(compressionFlag);
         data.writeByte(compressionMethod);
-        data.write(languageTag.getBytes("US-ASCII"));
+        data.write(languageTag.getBytes(StandardCharsets.US_ASCII));
         data.writeByte(0);
-        data.write(translatedKeyword.getBytes("UTF-8"));
+        data.write(translatedKeyword.getBytes(StandardCharsets.UTF_8));
         data.writeByte(0);
         if (compressionFlag == 1) {
             DeflaterOutputStream deflater = new DeflaterOutputStream(data);
-            deflater.write(text.getBytes("UTF-8"));
+            deflater.write(text.getBytes(StandardCharsets.UTF_8));
             deflater.finish();
         } else {
-            data.write(text.getBytes("UTF-8"));
+            data.write(text.getBytes(StandardCharsets.UTF_8));
         }
         data.flush();
         return new Chunk(iTXt, baos.toByteArray());
@@ -654,7 +617,7 @@ public class BrokenGenerator
     {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         DataOutputStream data = new DataOutputStream(baos);
-        data.write(keyword.getBytes("ISO-8859-1"));
+        data.write(keyword.getBytes(StandardCharsets.ISO_8859_1));
         data.writeByte(0);
         data.writeByte((byte)sampleDepth);
         data.write(bytes);

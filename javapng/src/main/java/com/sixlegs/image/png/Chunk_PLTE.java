@@ -89,7 +89,7 @@ extends Chunk
             System.arraycopy(a_raw, 0, prop[3], 0, size);
         }
         img.data.properties.put("palette", prop);
-        img.data.properties.put("palette size", new Integer(size));
+        img.data.properties.put("palette size", size);
     }
 
     /* package */ void calculate()

@@ -16,7 +16,7 @@ public class PropertiesExample
         png.getEverything();
 
         // Print all available properties
-        for (Enumeration e = png.getProperties(); e.hasMoreElements();) {
+        for (Enumeration<String> e = png.getProperties(); e.hasMoreElements();) {
             String key = (String)e.nextElement();
             System.out.println(key);
             System.out.println("\t" + png.getProperty(key));

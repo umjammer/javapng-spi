@@ -31,7 +31,7 @@ extends Applet
                 png = new PngImage(url);
                 String bgparam = getParameter("bgcolor");
                 if (bgparam != null)
-                    imgbg = new Color(Integer.valueOf(bgparam, 16).intValue());
+                    imgbg = new Color(Integer.valueOf(bgparam, 16));
                 if (imgbg == null)
                     imgbg = png.getBackgroundColor();
                 if (imgbg == null)

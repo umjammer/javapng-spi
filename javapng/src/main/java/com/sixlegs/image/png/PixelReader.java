@@ -23,7 +23,7 @@ final class PixelReader
         mover = BitMover.getBitMover(img);
     }
 
-    int read(int b[], int off, int len)
+    int read(int[] b, int off, int len)
     throws IOException
     {
         int needed = len;

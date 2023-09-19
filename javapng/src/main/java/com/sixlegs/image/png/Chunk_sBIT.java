@@ -56,8 +56,8 @@ extends Chunk
             sbit[3] = in_data.readByte();
             break;
         }
-        for (int i = 0; i < sbit.length; i++) {
-            if (sbit[i] <= 0 || sbit[i] > compare_depth)
+        for (byte b : sbit) {
+            if (b <= 0 || b > compare_depth)
                 throw new PngExceptionSoft("Illegal sBIT component depth");
         }
 

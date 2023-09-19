@@ -40,6 +40,7 @@ import com.sixlegs.png.*;
 import java.awt.*;
 import java.awt.image.*;
 import java.io.*;
+import java.nio.file.Files;
 import java.util.*;
 import java.util.List;
 import java.util.zip.*;
@@ -80,8 +81,8 @@ public class AnimatedGif2Png
         }
 
         int index = 0;
-        Set<Integer> entries = new HashSet<Integer>();
-        List<Frame> frames = new ArrayList<Frame>();
+        Set<Integer> entries = new HashSet<>();
+        List<Frame> frames = new ArrayList<>();
         int[] prev = null;
         boolean different = false;
         try {
@@ -92,8 +93,7 @@ public class AnimatedGif2Png
                 IndexColorModel icm = (IndexColorModel)colorModel;
                 int[] palette = new int[icm.getMapSize()];
                 icm.getRGBs(palette);
-                for (int i = 0; i < palette.length; i++)
-                    entries.add(palette[i]);
+                for (int j : palette) entries.add(j);
                 if (!different && prev != null && !Arrays.equals(palette, prev))
                     different = true;
                 prev = palette;
@@ -154,26 +154,23 @@ public class AnimatedGif2Png
         return null;
     }
 
-    /*
-    private static Color getGifBackground(ImageReader imageReader)
-    throws IOException
-    {
-        IIOMetadata metadata = imageReader.getStreamMetadata();
-        Node globalColorTable =
-            getChild(metadata.getAsTree(metadata.getNativeMetadataFormatName()), "GlobalColorTable");
-        if (globalColorTable == null)
-            return null;
-        String index = getAttr(globalColorTable, "backgroundColorIndex");
-        for (Node node = globalColorTable.getFirstChild(); node != null; node = node.getNextSibling()) {
-            if (getAttr(node, "index").equals(index)) {
-                return new Color(Integer.parseInt(getAttr(node, "red")),
-                                 Integer.parseInt(getAttr(node, "green")),
-                                 Integer.parseInt(getAttr(node, "blue")));
-            }                
-        }
-        return null;
-    }
-    */
+//    private static Color getGifBackground(ImageReader imageReader)
+//            throws IOException {
+//        IIOMetadata metadata = imageReader.getStreamMetadata();
+//        Node globalColorTable =
+//                getChild(metadata.getAsTree(metadata.getNativeMetadataFormatName()), "GlobalColorTable");
+//        if (globalColorTable == null)
+//            return null;
+//        String index = getAttr(globalColorTable, "backgroundColorIndex");
+//        for (Node node = globalColorTable.getFirstChild(); node != null; node = node.getNextSibling()) {
+//            if (getAttr(node, "index").equals(index)) {
+//                return new Color(Integer.parseInt(getAttr(node, "red")),
+//                        Integer.parseInt(getAttr(node, "green")),
+//                        Integer.parseInt(getAttr(node, "blue")));
+//            }
+//        }
+//        return null;
+//    }
 
     private static void writePaletted(PngWriter w, ImageReader imageReader, List<Frame> frames)
     throws IOException
@@ -321,7 +318,7 @@ public class AnimatedGif2Png
         public PngWriter(File out)
         throws IOException
         {
-            this.data = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(out)));
+            this.data = new DataOutputStream(new BufferedOutputStream(Files.newOutputStream(out.toPath())));
         }
 
         public void start(Dimension size, int colorType, int[] palette, int numFrames, int numIterations)

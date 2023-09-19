@@ -1,7 +1,5 @@
 package com.sixlegs.png;
 
-import java.io.*;
-
 public class SuiteLoop
 {
     public static void main(String[] args)

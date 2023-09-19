@@ -18,7 +18,7 @@ public interface GifExtension
     String getIdentifier();
 
     /** 
-     * Returns a the Authentication Code of this GifExtension,
+     * Returns an Authentication Code of this GifExtension,
      * which may be used to further validate the extension.
      */
     byte[] getAuthenticationCode();

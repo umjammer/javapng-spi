@@ -50,7 +50,7 @@ extends IOException
 
     private static Method getInitCause() {
         try {
-            return PngException.class.getMethod("initCause", new Class[] {Throwable.class});
+            return PngException.class.getMethod("initCause", Throwable.class);
         } catch (Exception e) {
             return null;
         }
@@ -69,7 +69,7 @@ extends IOException
         this.fatal = fatal;
         if (cause != null && initCause != null) {
             try {
-                initCause.invoke(this, new Object[] {cause});
+                initCause.invoke(this, cause);
             } catch (RuntimeException e) {
                 throw e;
             } catch (Exception e) {

@@ -5,7 +5,7 @@ package com.sixlegs.image.png;
 
 import java.io.IOException;
 
-class PngException
+public class PngException
 extends IOException
 {
     PngException()

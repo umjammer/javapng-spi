@@ -2,7 +2,7 @@ package com.sixlegs.image.png;
 
 import java.awt.image.ColorModel;
 import java.awt.image.ImageConsumer;
-import java.util.Hashtable;
+import java.util.Map;
 
 
 abstract class ImageConsumerAdapter implements ImageConsumer {
@@ -28,6 +28,6 @@ abstract class ImageConsumerAdapter implements ImageConsumer {
     public void setPixels(int x, int y, int w, int h, ColorModel model, int[] pixels, int off, int scansize) {
     }
 
-    public void setProperties(Hashtable props) {
+    public void setProperties(Map<String, Object> props) {
     }
 }

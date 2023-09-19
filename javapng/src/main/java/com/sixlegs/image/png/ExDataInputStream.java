@@ -8,7 +8,7 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-final class ExDataInputStream
+public final class ExDataInputStream
 extends DataInputStream
 {
 
@@ -63,8 +63,8 @@ extends DataInputStream
     {
         int st = 0;
         int e1 = Math.max(token.indexOf('e'),token.indexOf('E'));
-        double d = Double.valueOf(token.substring(st, (e1 < 0 ? token.length() : e1))).doubleValue();
-        if (e1 > 0) d *= Math.pow(10d, Double.valueOf(token.substring(e1+1)).doubleValue());
+        double d = Double.parseDouble(token.substring(st, (e1 < 0 ? token.length() : e1)));
+        if (e1 > 0) d *= Math.pow(10d, Double.parseDouble(token.substring(e1 + 1)));
         return d;
     }
 
@@ -74,23 +74,21 @@ extends DataInputStream
         return parseFloatingPoint(readString());
     }
 
-//     public int readBytes(byte[] b)
-//     throws IOException
-//     {
-//         return readBytes(b, 0, b.length);
-//     }
-
-//     public int readBytes(byte[] b, int off, int len)
-//     throws IOException
-//     {
-//         int total = 0;
-//         while (total < len) {
-//             int result = in.read(b, off + total, len - total);
-//             if (result == -1) {
-//                 throw new EOFException();
-//             }
-//             total += result;
-//         }
-//         return total;
-//     }
+//    public int readBytes(byte[] b)
+//            throws IOException {
+//        return readBytes(b, 0, b.length);
+//    }
+//
+//    public int readBytes(byte[] b, int off, int len)
+//            throws IOException {
+//        int total = 0;
+//        while (total < len) {
+//            int result = in.read(b, off + total, len - total);
+//            if (result == -1) {
+//                throw new EOFException();
+//            }
+//            total += result;
+//        }
+//        return total;
+//    }
 }

@@ -21,7 +21,7 @@ extends FilterInputStream
 
     public long getValue()
     {
-        return (long)crc.getValue();
+        return crc.getValue();
     }
 
     public void reset()

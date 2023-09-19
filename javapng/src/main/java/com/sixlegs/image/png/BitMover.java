@@ -19,7 +19,7 @@ abstract class BitMover
     static BitMover getBitMover(PngImage img)
     throws PngException
     {
-        StringBuffer clsname = new StringBuffer("com.sixlegs.image.png.BitMover");
+        StringBuilder clsname = new StringBuilder("com.sixlegs.image.png.BitMover");
         clsname.append(img.data.header.depth);
         if (img.data.header.paletteUsed) {
             clsname.append('P');

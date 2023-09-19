@@ -40,7 +40,7 @@ import java.util.*;
 
 class ArgumentProcessor
 {
-    private static final Map<String,Parser> PARSERS = new HashMap<String,Parser>();
+    private static final Map<String,Parser> PARSERS = new HashMap<>();
 
     static
     {
@@ -76,7 +76,7 @@ class ArgumentProcessor
         abstract public Object parse(String arg);
     }
     
-    private final Map<String,Option> options = new HashMap<String,Option>();
+    private final Map<String,Option> options = new HashMap<>();
     
     public ArgumentProcessor(Option... options)
     {
@@ -88,7 +88,7 @@ class ArgumentProcessor
     // throws exception if arguments are invalid
     public Map<String,Object> parse(List<String> src, List<String> dst)
     {
-        Map<String,Object> result = new HashMap<String,Object>();
+        Map<String,Object> result = new HashMap<>();
         int index = 0;
         while (index < src.size()) {
             String arg = src.get(index);
@@ -121,8 +121,7 @@ class ArgumentProcessor
             }
         }
 
-        List<String> tmp = new ArrayList<String>();
-        tmp.addAll(src.subList(index, src.size()));
+        List<String> tmp = new ArrayList<>(src.subList(index, src.size()));
         dst.clear();
         dst.addAll(tmp);
         return result;
@@ -133,15 +132,16 @@ class ArgumentProcessor
         return new Option(name);
     }
 
-    public static Option option(String name, Class type)
+    public static Option option(String name, Class<?> type)
     {
         return new Option(name, type);
     }
 
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public static class Option
     {
         final String name;
-        final Class type;
+        final Class<?> type;
         boolean required = true;
         Object defaultValue;
         Comparable start;
@@ -163,7 +163,7 @@ class ArgumentProcessor
             defaultValue(Boolean.FALSE);
         }
 
-        Option(String name, Class type)
+        Option(String name, Class<?> type)
         {
             if (!PARSERS.containsKey(type.getName()))
                 throw new IllegalArgumentException("Unsupported type " + type);

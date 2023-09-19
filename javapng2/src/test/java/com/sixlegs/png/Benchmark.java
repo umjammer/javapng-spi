@@ -14,7 +14,8 @@ public class Benchmark
     }
 
     private static PngReader SIXLEGS2 = new PngReader(){
-        private PngConfig config = new PngConfig.Builder().build();;
+        private PngConfig config = new PngConfig.Builder().build();
+
         public void read(File file) throws IOException {
             new PngImage(config).read(file);
         }
@@ -22,7 +23,7 @@ public class Benchmark
 
     private static PngReader SIXLEGS1 = new PngReader(){
         public void read(File file) throws IOException {
-            new com.sixlegs.image.png.PngImage(file.toURL()).getEverything();
+            new com.sixlegs.image.png.PngImage(file.toURI().toURL()).getEverything();
         }
     };
     
@@ -37,7 +38,7 @@ public class Benchmark
         private Toolkit toolkit = Toolkit.getDefaultToolkit();
         public void read(File file) throws IOException {
             try {
-                tracker.addImage(toolkit.createImage(file.toURL()), 0);
+                tracker.addImage(toolkit.createImage(file.toURI().toURL()), 0);
                 tracker.waitForID(0);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
@@ -50,11 +51,11 @@ public class Benchmark
     {
         int loop = (args.length > 0) ? Integer.parseInt(args[0]) : 1;
         BufferedReader r = new BufferedReader(new InputStreamReader(System.in));
-        List list = new ArrayList();
+        List<File> list = new ArrayList<>();
         String line;
         while ((line = r.readLine()) != null)
             list.add(new File(line));
-        File[] files = (File[])list.toArray(new File[list.size()]);
+        File[] files = list.toArray(new File[0]);
         benchmark(files, loop, TOOLKIT, " Toolkit");
         benchmark(files, loop, IMAGEIO, " ImageIO");
         benchmark(files, loop, SIXLEGS1, "Sixlegs1");
@@ -68,8 +69,8 @@ public class Benchmark
         try {
             long t = System.currentTimeMillis();
             for (int i = 0; i < loop; i++) {
-                for (int j = 0; j < files.length; j++) {
-                    reader.read(cur = files[j]);
+                for (File file : files) {
+                    reader.read(cur = file);
                 }
             }
             t = System.currentTimeMillis() - t;

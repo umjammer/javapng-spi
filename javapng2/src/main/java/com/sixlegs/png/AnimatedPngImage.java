@@ -58,10 +58,10 @@ extends PngImage
     private static final PngConfig DEFAULT_CONFIG =
       new PngConfig.Builder().readLimit(PngConfig.READ_EXCEPT_DATA).build();
       
-    private final List chunks = new ArrayList();
-    private final List frames = new ArrayList();
-    private final Map frameData = new HashMap();
-    private final List defaultImageData = new ArrayList();
+    private final List<Object> chunks = new ArrayList<>();
+    private final List<Object> frames = new ArrayList<>();
+    private final Map<Object, List<Object>> frameData = new HashMap<>();
+    private final List<Object> defaultImageData = new ArrayList<>();
 
     private Rectangle headerBounds;
     private boolean animated;
@@ -168,17 +168,14 @@ extends PngImage
         assertRead();
         if (frame == null)
             return readImage(file, defaultImageData, new Dimension(getWidth(), getHeight()));
-        return readImage(file, (List)frameData.get(frame), frame.getBounds().getSize());
+        return readImage(file, frameData.get(frame), frame.getBounds().getSize());
     }
 
-    private BufferedImage readImage(File file, List data, Dimension size)
+    private BufferedImage readImage(File file, List<Object> data, Dimension size)
     throws IOException
     {
-        FrameDataInputStream in = new FrameDataInputStream(file, data);
-        try {
+        try (FrameDataInputStream in = new FrameDataInputStream(file, data)) {
             return createImage(in, size);
-        } finally {
-            in.close();
         }
     }
 
@@ -316,12 +313,11 @@ extends PngImage
             if (chunks.isEmpty())
                 error("Found zero frames");
             
-            List list = null;
-            for (int i = 0; i < chunks.size(); i++) {
-                Object chunk = chunks.get(i);
+            List<Object> list = null;
+            for (Object chunk : chunks) {
                 if (chunk instanceof FrameControl) {
                     frames.add(chunk);
-                    frameData.put(chunk, list = new ArrayList());
+                    frameData.put(chunk, list = new ArrayList<>());
                 } else {
                     list.add(chunk);
                 }
@@ -331,10 +327,10 @@ extends PngImage
                 error("Found " + frames.size() + " frames, expected " + numFrames);
 
             if (useDefaultImage)
-                ((List)frameData.get(frames.get(0))).addAll(defaultImageData);
+                (frameData.get(frames.get(0))).addAll(defaultImageData);
 
-            for (int i = 0; i < frames.size(); i++) {
-                if (((List)frameData.get(frames.get(i))).isEmpty())
+            for (Object frame : frames) {
+                if ((frameData.get(frame)).isEmpty())
                     error("Missing data for frame");
             }
             chunks.clear();

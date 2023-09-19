@@ -5,13 +5,15 @@ package com.sixlegs.image.png;
 
 import java.io.CharArrayWriter;
 import java.io.IOException;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
+
 
 abstract class AbstractTextChunk
 extends KeyValueChunk
 implements TextChunk
 {
-    static private Hashtable special_keys = new Hashtable();
+    static private Map<String, Boolean> special_keys = new HashMap<>();
     static {
         special_keys.put("Title", Boolean.TRUE);
         special_keys.put("Author", Boolean.TRUE);

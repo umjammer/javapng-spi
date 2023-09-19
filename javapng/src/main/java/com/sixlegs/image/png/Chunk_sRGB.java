@@ -31,7 +31,7 @@ extends Chunk
         int intent = in_data.readUnsignedByte();
 
         new Chunk_VcHRM(img);
-        img.data.properties.put("gamma", new Long(PngImage.DEFAULT_GAMMA));
-        img.data.properties.put("srgb rendering intent", new Integer(intent));
+        img.data.properties.put("gamma", PngImage.DEFAULT_GAMMA);
+        img.data.properties.put("srgb rendering intent", intent);
     }
 }

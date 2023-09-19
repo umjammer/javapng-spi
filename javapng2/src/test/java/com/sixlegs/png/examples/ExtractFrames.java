@@ -37,8 +37,9 @@ exception statement from your version.
 package com.sixlegs.png.examples;
 
 import com.sixlegs.png.*;
-import java.awt.image.BufferedImage;
+
 import java.io.*;
+import java.nio.file.Files;
 import java.text.DecimalFormat;
 import java.util.*;
 
@@ -48,8 +49,8 @@ public class ExtractFrames
     throws Exception
     {
         DecimalFormat fmt = new DecimalFormat("000");
-        for (int i = 0; i < args.length; i++) {
-            File in = new File(args[i]);
+        for (String arg : args) {
+            File in = new File(arg);
             PngSplitter splitter = new PngSplitter(in);
             int numFrames = splitter.getNumFrames();
             for (int frame = 0; frame < numFrames; frame++) {
@@ -73,11 +74,11 @@ public class ExtractFrames
             .build();
 
         private File in;
-        private List<Chunk> commonBefore = new ArrayList<Chunk>();
-        private List<Chunk> commonAfter = new ArrayList<Chunk>();
-        private List<Chunk> data = new ArrayList<Chunk>();
-        private List<Chunk> bySequence = new ArrayList<Chunk>();
-        private List<List<Chunk>> byFrame = new ArrayList<List<Chunk>>();
+        private List<Chunk> commonBefore = new ArrayList<>();
+        private List<Chunk> commonAfter = new ArrayList<>();
+        private List<Chunk> data = new ArrayList<>();
+        private List<Chunk> bySequence = new ArrayList<>();
+        private List<List<Chunk>> byFrame = new ArrayList<>();
         private byte[] buf = new byte[0x2000];
 
         public PngSplitter(File in)
@@ -90,7 +91,7 @@ public class ExtractFrames
             List<Chunk> cur = null;
             for (Chunk chunk : bySequence) {
                 if (chunk.type == AnimatedPngImage.fcTL) {
-                    byFrame.add(cur = new ArrayList<Chunk>());
+                    byFrame.add(cur = new ArrayList<>());
                 } else {
                     cur.add(chunk);
                 }
@@ -105,15 +106,12 @@ public class ExtractFrames
         public void write(File file, int index)
         throws IOException
         {
-            DataOutputStream out = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(file)));
-            ChunkWriter cw = new ChunkWriter();
-            try {
+            try (DataOutputStream out = new DataOutputStream(new BufferedOutputStream(Files.newOutputStream(file.toPath())))) {
+                ChunkWriter cw = new ChunkWriter();
                 out.writeLong(PngConstants.SIGNATURE);
                 echo(out, commonBefore);
                 echo(out, byFrame.get(index));
                 echo(out, commonAfter);
-            } finally {
-                out.close();
             }
         }
 
@@ -121,8 +119,7 @@ public class ExtractFrames
         throws IOException
         {
             ChunkWriter cw = new ChunkWriter();
-            RandomAccessFile rf = new RandomAccessFile(in, "r");
-            try {
+            try (RandomAccessFile rf = new RandomAccessFile(in, "r")) {
                 for (Chunk chunk : chunks) {
                     cw.start(chunk.type);
                     rf.seek(chunk.offset);
@@ -131,8 +128,6 @@ public class ExtractFrames
                     cw.close();
                     cw.finish(out);
                 }
-            } finally {
-                rf.close();
             }
         }
 

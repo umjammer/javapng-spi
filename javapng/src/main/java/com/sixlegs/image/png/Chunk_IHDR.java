@@ -50,8 +50,8 @@ extends Chunk
         width = in_data.readInt();
         height = in_data.readInt();
         if (width <= 0 || height <= 0) {
-            throw new PngException("Bad image size: " + in_data.unsign(width) +
-                                   "x" + in_data.unsign(height));
+            throw new PngException("Bad image size: " + ExDataInputStream.unsign(width) +
+                                   "x" + ExDataInputStream.unsign(height));
         }
 
         depth = in_data.readUnsignedByte();
@@ -151,12 +151,12 @@ extends Chunk
             throw new PngException("Unrecognized interlace method: " + interlace);
         }
 
-        img.data.properties.put("width", new Integer(width));
-        img.data.properties.put("height", new Integer(height));
-        img.data.properties.put("bit depth", new Integer(depth));
-        img.data.properties.put("interlace type", new Integer(interlace));
-        img.data.properties.put("compression type", new Integer(compress));
-        img.data.properties.put("filter type", new Integer(filter));
-        img.data.properties.put("color type", new Integer(colorType));
+        img.data.properties.put("width", width);
+        img.data.properties.put("height", height);
+        img.data.properties.put("bit depth", depth);
+        img.data.properties.put("interlace type", interlace);
+        img.data.properties.put("compression type", compress);
+        img.data.properties.put("filter type", filter);
+        img.data.properties.put("color type", colorType);
     }
 }

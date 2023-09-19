@@ -30,7 +30,7 @@ class TestData extends PngTestCase {
         String line;
         while ((line = r.readLine()) != null) {
             line = line.trim();
-            if (line.equals("") || line.startsWith("#"))
+            if (line.isEmpty() || line.startsWith("#"))
                 continue;
             int space = line.indexOf(' ');
             String name = line.substring(0, space).trim();

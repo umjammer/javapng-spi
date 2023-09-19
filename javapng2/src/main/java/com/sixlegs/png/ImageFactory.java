@@ -196,7 +196,7 @@ class ImageFactory
     private static ColorModel createColorModel(PngImage png, short[] gammaTable, boolean convertIndexed)
     throws PngException
     {
-        Map props = png.getProperties();
+        Map<String, Object> props = png.getProperties();
         int colorType = png.getColorType();
         int bitDepth = png.getBitDepth();
         int outputDepth = (bitDepth == 16 && png.getConfig().getReduce16()) ? 8 : bitDepth;

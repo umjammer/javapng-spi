@@ -51,17 +51,17 @@ class Integers
         case 7: return INT_7;
         case 8: return INT_8;
         default:
-            return new Integer(i);
+            return i;
         }
     }
 
-    private static final Integer INT_0 = new Integer(0);
-    private static final Integer INT_1 = new Integer(1);
-    private static final Integer INT_2 = new Integer(2);
-    private static final Integer INT_3 = new Integer(3);
-    private static final Integer INT_4 = new Integer(4);
-    private static final Integer INT_5 = new Integer(5);
-    private static final Integer INT_6 = new Integer(6);
-    private static final Integer INT_7 = new Integer(7);
-    private static final Integer INT_8 = new Integer(8);
+    private static final Integer INT_0 = 0;
+    private static final Integer INT_1 = 1;
+    private static final Integer INT_2 = 2;
+    private static final Integer INT_3 = 3;
+    private static final Integer INT_4 = 4;
+    private static final Integer INT_5 = 5;
+    private static final Integer INT_6 = 6;
+    private static final Integer INT_7 = 7;
+    private static final Integer INT_8 = 8;
 }
