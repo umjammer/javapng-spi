@@ -4,10 +4,9 @@
 package com.sixlegs.image.png;
 
 final class Chunk_VcHRM
-extends Chunk_cHRM
-{
-    Chunk_VcHRM(PngImage img)
-    {
+        extends Chunk_cHRM {
+
+    Chunk_VcHRM(PngImage img) {
         this.img = img;
         xw = 31270;
         yw = 32900;
@@ -16,7 +15,7 @@ extends Chunk_cHRM
         xg = 30000;
         yg = 60000;
         xb = 15000;
-        yb =  6000;
+        yb = 6000;
         calc();
     }
 }

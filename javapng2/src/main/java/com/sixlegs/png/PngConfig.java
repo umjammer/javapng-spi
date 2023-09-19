@@ -38,13 +38,14 @@ package com.sixlegs.png;
 
 import java.awt.Rectangle;
 
+
 /**
  * Customizable parameters used by {@link PngImage} when decoding an image.
  * Instances of this class are immutable and can only be constructed
  * using the {@link Builder} inner-class.
  */
-final public class PngConfig
-{
+final public class PngConfig {
+
     /** Read the entire image */
     public static final int READ_ALL = 0;
     /** Read only the header chunk */
@@ -67,8 +68,7 @@ final public class PngConfig
     final int[] subsampling;
     final boolean convertIndexed;
 
-    PngConfig(Builder builder)
-    {
+    PngConfig(Builder builder) {
         this.readLimit = builder.readLimit;
         this.defaultGamma = builder.defaultGamma;
         this.displayExponent = builder.displayExponent;
@@ -79,7 +79,7 @@ final public class PngConfig
         this.sourceRegion = builder.sourceRegion;
         this.subsampling = builder.subsampling;
         this.convertIndexed = builder.convertIndexed;
-        
+
         boolean subsampleOn = getSourceXSubsampling() != 1 || getSourceYSubsampling() != 1;
         if (progressive && (subsampleOn || getSourceRegion() != null))
             throw new IllegalStateException("Progressive rendering cannot be used with source regions or subsampling");
@@ -96,9 +96,9 @@ final public class PngConfig
      *        .warningsFatal(true)
      *        .build();</pre>
      */
-    final public static class Builder
-    {
-        private static final int[] DEFAULT_SUBSAMPLING = { 1, 1, 0, 0 };
+    final public static class Builder {
+
+        private static final int[] DEFAULT_SUBSAMPLING = {1, 1, 0, 0};
 
         int readLimit = READ_ALL;
         float defaultGamma = 0.45455f;
@@ -114,16 +114,15 @@ final public class PngConfig
         /**
          * Create a new builder using default values.
          */
-        public Builder()
-        {
+        public Builder() {
         }
 
         /**
          * Create a builder using values from the given configuration.
+         *
          * @param cfg the configuration to copy
          */
-        public Builder(PngConfig cfg)
-        {
+        public Builder(PngConfig cfg) {
             this.readLimit = cfg.readLimit;
             this.defaultGamma = cfg.defaultGamma;
             this.displayExponent = cfg.displayExponent;
@@ -137,18 +136,17 @@ final public class PngConfig
         /**
          * Create a configuration using the current values of this builder.
          */
-        public PngConfig build()
-        {
+        public PngConfig build() {
             return new PngConfig(this);
         }
-        
+
         /**
          * Enables or disables 16-bit reduction. If enabled, 16-bit samples are reduced to 8-bit samples by
          * shifting to the right by 8 bits. Default is <i>true</i>.
+         *
          * @param reduce16 enable 16-bit reduction
          */
-        public Builder reduce16(boolean reduce16)
-        {
+        public Builder reduce16(boolean reduce16) {
             this.reduce16 = reduce16;
             return this;
         }
@@ -156,10 +154,10 @@ final public class PngConfig
         /**
          * Sets the default gamma value. This value is used unless the image
          * contains an explicit gamma value. Initial value is <i>1/45455</i>.
+         *
          * @param defaultGamma the default gamma value
          */
-        public Builder defaultGamma(float defaultGamma)
-        {
+        public Builder defaultGamma(float defaultGamma) {
             this.defaultGamma = defaultGamma;
             return this;
         }
@@ -169,10 +167,10 @@ final public class PngConfig
          * table settings, if any. The default value of <i>2.2</i> should
          * work well with most PC displays. If the operating system has
          * a gamma lookup table (e.g. Macintosh) the display exponent should be lower.
+         *
          * @param displayExponent the display exponent
          */
-        public Builder displayExponent(float displayExponent)
-        {
+        public Builder displayExponent(float displayExponent) {
             this.displayExponent = displayExponent;
             return this;
         }
@@ -181,12 +179,12 @@ final public class PngConfig
          * Enables or disables gamma correction. If enabled, decoded images will be gamma corrected.
          * Sets to false if your application will perform gamma correctly manually.
          * Default is <i>true</i>.
+         *
          * @param gammaCorrect use gamma correction
          * @see PngImage#getGamma
          * @see PngImage#getGammaTable
          */
-        public Builder gammaCorrect(boolean gammaCorrect)
-        {
+        public Builder gammaCorrect(boolean gammaCorrect) {
             this.gammaCorrect = gammaCorrect;
             return this;
         }
@@ -198,28 +196,27 @@ final public class PngConfig
          * of the received pixel. This produces a "fade-in" effect as the new image
          * gradually replaces the old, at the cost of some additional processing time.
          * Default is <i>false</i>.
+         *
          * @param progressive use progressive display
          * @see PngImage#handlePass
          */
-        public Builder progressive(boolean progressive)
-        {
+        public Builder progressive(boolean progressive) {
             this.progressive = progressive;
             return this;
         }
-        
+
         /**
          * Configures how much of the image to read. Useful when one is interested
          * in only a portion of the image metadata, and would like to avoid
          * reading and/or decoding the actual image data.
-         * @param readLimit
-         *    {@link #READ_ALL READ_ALL},<br>
-         *    {@link #READ_HEADER READ_HEADER},<br>
-         *    {@link #READ_UNTIL_DATA READ_UNTIL_DATA},<br>
-         *    {@link #READ_EXCEPT_DATA READ_EXCEPT_DATA},<br>
-         *    or {@link #READ_EXCEPT_METADATA READ_EXCEPT_METADATA}
+         *
+         * @param readLimit {@link #READ_ALL READ_ALL},<br>
+         *                  {@link #READ_HEADER READ_HEADER},<br>
+         *                  {@link #READ_UNTIL_DATA READ_UNTIL_DATA},<br>
+         *                  {@link #READ_EXCEPT_DATA READ_EXCEPT_DATA},<br>
+         *                  or {@link #READ_EXCEPT_METADATA READ_EXCEPT_METADATA}
          */
-        public Builder readLimit(int readLimit)
-        {
+        public Builder readLimit(int readLimit) {
             this.readLimit = readLimit;
             return this;
         }
@@ -229,11 +226,11 @@ final public class PngConfig
          * All non-fatal {@link PngException} exceptions are caught and passed to the {@link PngImage#handleWarning}
          * method. If warnings are configured as fatal, that method will re-throw the
          * exception, which will abort image processing. Default is <i>false</i>.
+         *
          * @param warningsFatal true if warnings should be treated as fatal errors
          * @see PngImage#handleWarning
          */
-        public Builder warningsFatal(boolean warningsFatal)
-        {
+        public Builder warningsFatal(boolean warningsFatal) {
             this.warningsFatal = warningsFatal;
             return this;
         }
@@ -243,13 +240,12 @@ final public class PngConfig
          * {@linkplain javax.imageio.IIOParam#setSourceRegion ImageIO method}
          * for full documentation.
          */
-        public Builder sourceRegion(Rectangle sourceRegion)
-        {
+        public Builder sourceRegion(Rectangle sourceRegion) {
             if (sourceRegion != null) {
                 if (sourceRegion.x < 0 ||
-                    sourceRegion.y < 0 ||
-                    sourceRegion.width <= 0 ||
-                    sourceRegion.height <= 0)
+                        sourceRegion.y < 0 ||
+                        sourceRegion.width <= 0 ||
+                        sourceRegion.height <= 0)
                     throw new IllegalArgumentException("invalid source region: " + sourceRegion);
                 this.sourceRegion = new Rectangle(sourceRegion);
             } else {
@@ -264,13 +260,12 @@ final public class PngConfig
          * {@linkplain javax.imageio.IIOParam#setSourceSubsampling ImageIO method}
          * for full documentation.
          */
-        public Builder sourceSubsampling(int xsub, int ysub, int xoff, int yoff)
-        {
+        public Builder sourceSubsampling(int xsub, int ysub, int xoff, int yoff) {
             if (xsub <= 0 || ysub <= 0 ||
-                xoff < 0 || xoff >= xsub ||
-                yoff < 0 || yoff >= ysub)
+                    xoff < 0 || xoff >= xsub ||
+                    yoff < 0 || yoff >= ysub)
                 throw new IllegalArgumentException("invalid subsampling values");
-            subsampling = new int[]{ xsub, ysub, xoff, yoff };
+            subsampling = new int[] {xsub, ysub, xoff, yoff};
             return this;
         }
 
@@ -278,8 +273,7 @@ final public class PngConfig
          * Whether to convert images with an indexed color model
          * (paletted and 1/2/4/8-bit grayscale) to use a component color model.
          */
-        public Builder convertIndexed(boolean convertIndexed)
-        {
+        public Builder convertIndexed(boolean convertIndexed) {
             this.convertIndexed = convertIndexed;
             return this;
         }
@@ -287,124 +281,124 @@ final public class PngConfig
 
     /**
      * Return sthe current indexed image conversion setting.
+     *
      * @see Builder#convertIndexed
      */
-    public boolean getConvertIndexed()
-    {
+    public boolean getConvertIndexed() {
         return convertIndexed;
     }
 
     /**
      * Returns the current 16-bit reduction setting.
+     *
      * @see Builder#reduce16
      */
-    public boolean getReduce16()
-    {
+    public boolean getReduce16() {
         return reduce16;
     }
 
     /**
      * Returns the current default gamma value.
+     *
      * @see Builder#defaultGamma
      */
-    public float getDefaultGamma()
-    {
+    public float getDefaultGamma() {
         return defaultGamma;
     }
 
     /**
      * Returns the current gamma correction setting.
+     *
      * @see Builder#gammaCorrect
      */
-    public boolean getGammaCorrect()
-    {
+    public boolean getGammaCorrect() {
         return gammaCorrect;
     }
 
     /**
      * Returns the current progressive display setting.
+     *
      * @see Builder#progressive
      */
-    public boolean getProgressive()
-    {
+    public boolean getProgressive() {
         return progressive;
     }
 
     /**
      * Returns the current display exponent.
+     *
      * @see Builder#displayExponent
      */
-    public float getDisplayExponent()
-    {
+    public float getDisplayExponent() {
         return displayExponent;
     }
-    
+
     /**
      * Returns the current read limit setting.
+     *
      * @return one of
-     *    {@link #READ_ALL READ_ALL},<br>
-     *    {@link #READ_HEADER READ_HEADER},<br>
-     *    {@link #READ_UNTIL_DATA READ_UNTIL_DATA},<br>
-     *    {@link #READ_EXCEPT_DATA READ_EXCEPT_DATA},<br>
-     *    or {@link #READ_EXCEPT_METADATA READ_EXCEPT_METADATA}
+     * {@link #READ_ALL READ_ALL},<br>
+     * {@link #READ_HEADER READ_HEADER},<br>
+     * {@link #READ_UNTIL_DATA READ_UNTIL_DATA},<br>
+     * {@link #READ_EXCEPT_DATA READ_EXCEPT_DATA},<br>
+     * or {@link #READ_EXCEPT_METADATA READ_EXCEPT_METADATA}
      * @see Builder#readLimit
      */
-    public int getReadLimit()
-    {
+    public int getReadLimit() {
         return readLimit;
     }
 
     /**
      * Returns whether warnings are treated as fatal errors.
+     *
      * @see Builder#warningsFatal
      */
-    public boolean getWarningsFatal()
-    {
+    public boolean getWarningsFatal() {
         return warningsFatal;
     }
 
     /**
      * Returns the source region to be used.
+     *
      * @see Builder#sourceRegion
      */
-    public Rectangle getSourceRegion()
-    {
+    public Rectangle getSourceRegion() {
         return (sourceRegion != null) ? new Rectangle(sourceRegion) : null;
     }
 
     /**
      * Returns the number of source columns to advance for each pixel.
+     *
      * @see Builder#sourceSubsampling
      */
-    public int getSourceXSubsampling()
-    {
+    public int getSourceXSubsampling() {
         return subsampling[0];
     }
 
     /**
      * Returns the number of rows to advance for each pixel.
+     *
      * @see Builder#sourceSubsampling
      */
-    public int getSourceYSubsampling()
-    {
+    public int getSourceYSubsampling() {
         return subsampling[1];
     }
 
     /**
      * Returns the horizontal offset of the subsampling grid.
+     *
      * @see Builder#sourceSubsampling
      */
-    public int getSubsamplingXOffset()
-    {
+    public int getSubsamplingXOffset() {
         return subsampling[2];
     }
 
     /**
      * Returns the vertical offset of the subsampling grid.
+     *
      * @see Builder#sourceSubsampling
      */
-    public int getSubsamplingYOffset()
-    {
+    public int getSubsamplingYOffset() {
         return subsampling[3];
     }
 }

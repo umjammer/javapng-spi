@@ -37,17 +37,16 @@ exception statement from your version.
 package com.sixlegs.png;
 
 final class ProgressivePixelProcessor
-extends PixelProcessor
-{
+        extends PixelProcessor {
+
     private final PixelProcessor pp;
     private final int imgWidth;
     private final int imgHeight;
     private final Destination dst;
     private final int samples;
     private final int[] pixels;
-    
-    public ProgressivePixelProcessor(Destination dst, PixelProcessor pp, int imgWidth, int imgHeight)
-    {
+
+    public ProgressivePixelProcessor(Destination dst, PixelProcessor pp, int imgWidth, int imgHeight) {
         this.pp = pp;
         this.imgWidth = imgWidth;
         this.imgHeight = imgHeight;
@@ -55,9 +54,8 @@ extends PixelProcessor
         this.samples = dst.getRaster().getNumBands();
         this.pixels = new int[samples * 8];
     }
-    
-    public boolean process(int[] row, int xOffset, int xStep, int yStep, int y, int width)
-    {
+
+    public boolean process(int[] row, int xOffset, int xStep, int yStep, int y, int width) {
         // run non-progressive processor first
         pp.process(row, xOffset, xStep, yStep, y, width);
 

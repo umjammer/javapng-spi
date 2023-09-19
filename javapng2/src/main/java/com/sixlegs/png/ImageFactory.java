@@ -46,29 +46,28 @@ import java.util.*;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
 
-class ImageFactory
-{
+
+class ImageFactory {
+
     private static short[] GAMMA_TABLE_45455 =
-        PngImage.createGammaTable(0.45455f, 2.2f, false);
+            PngImage.createGammaTable(0.45455f, 2.2f, false);
     private static short[] GAMMA_TABLE_100000 =
-        PngImage.createGammaTable(1f, 2.2f, false);
+            PngImage.createGammaTable(1f, 2.2f, false);
 
     public static BufferedImage createImage(PngImage png, InputStream in)
-    throws IOException
-    {
+            throws IOException {
         return createImage(png, in, new Dimension(png.getWidth(), png.getHeight()));
     }
 
     // width and height are overridable for APNG
     public static BufferedImage createImage(PngImage png, InputStream in, Dimension size)
-    throws IOException
-    {
+            throws IOException {
         PngConfig config = png.getConfig();
 
-        int width     = size.width;
-        int height    = size.height;
-        int bitDepth  = png.getBitDepth();
-        int samples   = png.getSamples();
+        int width = size.width;
+        int height = size.height;
+        int bitDepth = png.getBitDepth();
+        int samples = png.getSamples();
         boolean interlaced = png.isInterlaced();
 
         boolean indexed = isIndexed(png);
@@ -82,7 +81,7 @@ class ImageFactory
         if (sourceRegion != null) {
             if (!new Rectangle(dstWidth, dstHeight).contains(sourceRegion))
                 throw new IllegalStateException("Source region " + sourceRegion + " falls outside of " +
-                                                width + "x" + height + " image");
+                        width + "x" + height + " image");
             dstWidth = sourceRegion.width;
             dstHeight = sourceRegion.height;
         }
@@ -109,7 +108,7 @@ class ImageFactory
 
         PixelProcessor pp = null;
         if (!indexed) {
-            int[] trans = (int[])png.getProperty(PngConstants.TRANSPARENCY, int[].class, false);
+            int[] trans = (int[]) png.getProperty(PngConstants.TRANSPARENCY, int[].class, false);
             int shift = (bitDepth == 16 && config.getReduce16()) ? 8 : 0;
             if (shift != 0 || trans != null || gammaTable != null) {
                 if (gammaTable == null)
@@ -122,8 +121,8 @@ class ImageFactory
             }
         }
         if (convertIndexed) {
-            IndexColorModel srcColorModel = (IndexColorModel)createColorModel(png, gammaTable, false);
-            dst = new ConvertIndexedDestination(dst, width, srcColorModel, (ComponentColorModel)dstColorModel);
+            IndexColorModel srcColorModel = (IndexColorModel) createColorModel(png, gammaTable, false);
+            dst = new ConvertIndexedDestination(dst, width, srcColorModel, (ComponentColorModel) dstColorModel);
         }
 
         if (pp == null)
@@ -134,40 +133,39 @@ class ImageFactory
 
         InflaterInputStream inflate = new InflaterInputStream(in, new Inflater(), 0x1000);
         Defilterer d = new Defilterer(inflate, bitDepth, samples, width, pp);
-        
+
         // TODO: if not progressive, initialize to fully transparent?
         boolean complete;
         if (interlaced) {
             complete =
-                d.defilter(0, 0, 8, 8, (width + 7) / 8, (height + 7) / 8) &&
-                png.handlePass(image, 0) &&
-                d.defilter(4, 0, 8, 8, (width + 3) / 8, (height + 7) / 8) &&
-                png.handlePass(image, 1) &&
-                d.defilter(0, 4, 4, 8, (width + 3) / 4, (height + 3) / 8) &&
-                png.handlePass(image, 2) &&
-                d.defilter(2, 0, 4, 4, (width + 1) / 4, (height + 3) / 4) &&
-                png.handlePass(image, 3) && 
-                d.defilter(0, 2, 2, 4, (width + 1) / 2, (height + 1) / 4) &&
-                png.handlePass(image, 4) &&
-                d.defilter(1, 0, 2, 2, width / 2, (height + 1) / 2) &&
-                png.handlePass(image, 5) &&
-                d.defilter(0, 1, 1, 2, width, height / 2) &&
-                png.handlePass(image, 6);
+                    d.defilter(0, 0, 8, 8, (width + 7) / 8, (height + 7) / 8) &&
+                            png.handlePass(image, 0) &&
+                            d.defilter(4, 0, 8, 8, (width + 3) / 8, (height + 7) / 8) &&
+                            png.handlePass(image, 1) &&
+                            d.defilter(0, 4, 4, 8, (width + 3) / 4, (height + 3) / 8) &&
+                            png.handlePass(image, 2) &&
+                            d.defilter(2, 0, 4, 4, (width + 1) / 4, (height + 3) / 4) &&
+                            png.handlePass(image, 3) &&
+                            d.defilter(0, 2, 2, 4, (width + 1) / 2, (height + 1) / 4) &&
+                            png.handlePass(image, 4) &&
+                            d.defilter(1, 0, 2, 2, width / 2, (height + 1) / 2) &&
+                            png.handlePass(image, 5) &&
+                            d.defilter(0, 1, 1, 2, width, height / 2) &&
+                            png.handlePass(image, 6);
         } else {
             complete =
-                d.defilter(0, 0, 1, 1, width, height) &&
-                png.handlePass(image, 0);
+                    d.defilter(0, 0, 1, 1, width, height) &&
+                            png.handlePass(image, 0);
         }
         // TODO: handle complete?
         dst.done();
         return image;
     }
 
-    private static short[] getGammaTable(PngImage png)
-    {
+    private static short[] getGammaTable(PngImage png) {
         PngConfig config = png.getConfig();
         if ((png.getBitDepth() != 16 || config.getReduce16()) &&
-            config.getDisplayExponent() == 2.2f) {
+                config.getDisplayExponent() == 2.2f) {
             float gamma = png.getGamma();
             if (gamma == 0.45455f)
                 return GAMMA_TABLE_45455;
@@ -177,25 +175,22 @@ class ImageFactory
         return png.getGammaTable();
     }
 
-    private static int calcSubsamplingSize(int len, int sub, int off, char desc)
-    {
+    private static int calcSubsamplingSize(int len, int sub, int off, char desc) {
         int size = (len - off + sub - 1) / sub;
         if (size == 0)
             throw new IllegalStateException("Source " + desc + " subsampling " + sub + ", offset " + off +
-                                            " is invalid for image dimension " + len);
+                    " is invalid for image dimension " + len);
         return size;
     }
 
-    private static boolean isIndexed(PngImage png)
-    {
+    private static boolean isIndexed(PngImage png) {
         int colorType = png.getColorType();
         return colorType == PngConstants.COLOR_TYPE_PALETTE ||
-            (colorType == PngConstants.COLOR_TYPE_GRAY && png.getBitDepth() < 16);
+                (colorType == PngConstants.COLOR_TYPE_GRAY && png.getBitDepth() < 16);
     }
 
     private static ColorModel createColorModel(PngImage png, short[] gammaTable, boolean convertIndexed)
-    throws PngException
-    {
+            throws PngException {
         Map<String, Object> props = png.getProperties();
         int colorType = png.getColorType();
         int bitDepth = png.getBitDepth();
@@ -204,7 +199,7 @@ class ImageFactory
         if (isIndexed(png) && !convertIndexed) {
             byte[] r, g, b;
             if (colorType == PngConstants.COLOR_TYPE_PALETTE) {
-                byte[] palette = (byte[])png.getProperty(PngConstants.PALETTE, byte[].class, true);
+                byte[] palette = (byte[]) png.getProperty(PngConstants.PALETTE, byte[].class, true);
                 int paletteSize = palette.length / 3;
                 r = new byte[paletteSize];
                 g = new byte[paletteSize];
@@ -221,56 +216,54 @@ class ImageFactory
                 int paletteSize = 1 << bitDepth;
                 r = g = b = new byte[paletteSize];
                 for (int i = 0; i < paletteSize; i++) {
-                    r[i] = (byte)(i * 255 / (paletteSize - 1));
+                    r[i] = (byte) (i * 255 / (paletteSize - 1));
                 }
                 applyGamma(r, gammaTable);
             }
             if (props.containsKey(PngConstants.PALETTE_ALPHA)) {
-                byte[] trans = (byte[])png.getProperty(PngConstants.PALETTE_ALPHA, byte[].class, true);
+                byte[] trans = (byte[]) png.getProperty(PngConstants.PALETTE_ALPHA, byte[].class, true);
                 byte[] a = new byte[r.length];
-                Arrays.fill(a, trans.length, r.length, (byte)0xFF);
+                Arrays.fill(a, trans.length, r.length, (byte) 0xFF);
                 System.arraycopy(trans, 0, a, 0, trans.length);
                 return new IndexColorModel(outputDepth, r.length, r, g, b, a);
             } else {
                 int trans = -1;
                 if (props.containsKey(PngConstants.TRANSPARENCY))
-                    trans = ((int[])png.getProperty(PngConstants.TRANSPARENCY, int[].class, true))[0];
+                    trans = ((int[]) png.getProperty(PngConstants.TRANSPARENCY, int[].class, true))[0];
                 return new IndexColorModel(outputDepth, r.length, r, g, b, trans);
             }
         } else {
             int dataType = (outputDepth == 16) ?
-                DataBuffer.TYPE_USHORT : DataBuffer.TYPE_BYTE;
+                    DataBuffer.TYPE_USHORT : DataBuffer.TYPE_BYTE;
             int colorSpace =
-                (colorType == PngConstants.COLOR_TYPE_GRAY ||
-                 colorType == PngConstants.COLOR_TYPE_GRAY_ALPHA) ?
-                ColorSpace.CS_GRAY :
-                ColorSpace.CS_sRGB;
+                    (colorType == PngConstants.COLOR_TYPE_GRAY ||
+                            colorType == PngConstants.COLOR_TYPE_GRAY_ALPHA) ?
+                            ColorSpace.CS_GRAY :
+                            ColorSpace.CS_sRGB;
             int transparency = png.getTransparency();
             // TODO: cache/enumerate color models?
             return new ComponentColorModel(ColorSpace.getInstance(colorSpace),
-                                           null,
-                                           transparency != Transparency.OPAQUE,
-                                           false,
-                                           transparency,
-                                           dataType);
+                    null,
+                    transparency != Transparency.OPAQUE,
+                    false,
+                    transparency,
+                    dataType);
         }
     }
 
-     private static void applyGamma(byte[] palette, short[] gammaTable)
-     {
-         if (gammaTable != null) {
-             for (int i = 0; i < palette.length; i++)
-                 palette[i] = (byte)gammaTable[0xFF & palette[i]];
-         }
-     }
-    
-    private static short[] getIdentityTable(int bitDepth)
-    {
+    private static void applyGamma(byte[] palette, short[] gammaTable) {
+        if (gammaTable != null) {
+            for (int i = 0; i < palette.length; i++)
+                palette[i] = (byte) gammaTable[0xFF & palette[i]];
+        }
+    }
+
+    private static short[] getIdentityTable(int bitDepth) {
         // TODO: cache identity tables?
         int size = 1 << bitDepth;
         short[] table = new short[size];
         for (int i = 0; i < size; i++)
-            table[i] = (short)i;
+            table[i] = (short) i;
         return table;
     }
 }

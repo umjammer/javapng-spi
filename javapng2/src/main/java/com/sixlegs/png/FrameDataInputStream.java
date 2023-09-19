@@ -39,24 +39,23 @@ package com.sixlegs.png;
 import java.io.*;
 import java.util.*;
 
+
 class FrameDataInputStream
-extends InputStream
-{
+        extends InputStream {
+
     private final RandomAccessFile file;
     private final Iterator<Object> it;
     private InputStream in;
 
     public FrameDataInputStream(File file, List<Object> frameData)
-    throws IOException
-    {
+            throws IOException {
         this.file = new RandomAccessFile(file, "r");
         this.it = frameData.iterator();
         advance();
     }
 
     public void close()
-    throws IOException
-    {
+            throws IOException {
         if (in != null) {
             in.close();
             in = null;
@@ -67,8 +66,7 @@ extends InputStream
     }
 
     private void advance()
-    throws IOException
-    {
+            throws IOException {
         if (in != null)
             in.close();
         in = null;
@@ -81,23 +79,20 @@ extends InputStream
             in = new ByteArrayInputStream(bytes);
         }
     }
-        
+
     public int available()
-    throws IOException
-    {
+            throws IOException {
         if (in == null)
             return 0;
         return in.available();
     }
 
-    public boolean markSupported()
-    {
+    public boolean markSupported() {
         return false;
     }
 
     public int read()
-    throws IOException
-    {
+            throws IOException {
         if (in == null)
             return -1;
         int result = in.read();
@@ -107,10 +102,9 @@ extends InputStream
         }
         return result;
     }
-    
+
     public int read(byte[] b, int off, int len)
-    throws IOException
-    {
+            throws IOException {
         if (in == null)
             return -1;
         int result = in.read(b, off, len);
@@ -122,8 +116,7 @@ extends InputStream
     }
 
     public long skip(long n)
-    throws IOException
-    {
+            throws IOException {
         if (in == null)
             return 0;
         long result = in.skip(n);

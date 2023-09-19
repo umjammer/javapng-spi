@@ -8,9 +8,10 @@ import java.io.InputStream;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
 
+
 final class UnfilterInputStream
-extends InputStream
-{
+        extends InputStream {
+
     final private Chunk_IHDR header;
     final private int rowSize;
     final private int bpp;
@@ -25,8 +26,7 @@ extends InputStream
     private int pullSize;
     private int xc, xp, xPtr;
 
-    UnfilterInputStream(PngImage img, InputStream s)
-    {
+    UnfilterInputStream(PngImage img, InputStream s) {
         header = img.data.header;
         infstr = new InflaterInputStream(s, new Inflater(), PngImage.BUFFER_SIZE);
         bpp = Math.max(1, header.depth * header.samples / 8);
@@ -38,8 +38,7 @@ extends InputStream
         for (int i = 0; i < rowSize; i++) cur[i] = 0;
     }
 
-    private int getByteWidth(int pixels)
-    {
+    private int getByteWidth(int pixels) {
         if (header.samples == 1) {
             int dppb = 16 / header.depth; // == 2 * pixels-per-byte
             int w2 = pixels * 2;
@@ -49,9 +48,8 @@ extends InputStream
         }
     }
 
-    private int readRow ()
-    throws IOException
-    {
+    private int readRow()
+            throws IOException {
         if (rowsLeftInPass == 0) {
             while (rowsLeftInPass == 0 || bytesPerRow == 0) {
                 if (nextPass >= header.interlacer.numPasses()) return -1;
@@ -67,7 +65,7 @@ extends InputStream
         int filterType = infstr.read();
         if (filterType == -1)
             return -1;
-        if (filterType > 4 || filterType < 0) 
+        if (filterType > 4 || filterType < 0)
             throw new PngException("Bad filter type: " + filterType);
         int needed = bytesPerRow;
         while (needed > 0) {
@@ -83,22 +81,22 @@ extends InputStream
             break;
         case 1: // Sub
             for (xc = bpp, xp = 0; xc < rowSize; xc++, xp++) {
-                cur[xc] = (byte)(cur[xc] + cur[xp]);
+                cur[xc] = (byte) (cur[xc] + cur[xp]);
             }
             break;
         case 2: // Up
             for (xc = bpp, xp = 0; xc < rowSize; xc++, xp++) {
-                cur[xc] = (byte)(cur[xc] + prev[xc]);
+                cur[xc] = (byte) (cur[xc] + prev[xc]);
             }
             break;
         case 3: // Average
             for (xc = bpp, xp = 0; xc < rowSize; xc++, xp++) {
-                cur[xc] = (byte)(cur[xc] + ((0xFF & cur[xp]) + (0xFF & prev[xc])) / 2);
+                cur[xc] = (byte) (cur[xc] + ((0xFF & cur[xp]) + (0xFF & prev[xc])) / 2);
             }
             break;
         case 4: // Paeth
             for (xc = bpp, xp = 0; xc < rowSize; xc++, xp++) {
-                cur[xc] = (byte)(cur[xc] + Paeth(cur[xp], prev[xc], prev[xp]));
+                cur[xc] = (byte) (cur[xc] + Paeth(cur[xp], prev[xc], prev[xp]));
             }
             break;
         default:
@@ -109,15 +107,17 @@ extends InputStream
         return 0;
     }
 
-    private int Paeth(byte L, byte u, byte nw)
-    {
+    private int Paeth(byte L, byte u, byte nw) {
         int a = 0xFF & L; //  inline byte->int
-        int b = 0xFF & u; 
-        int c = 0xFF & nw; 
+        int b = 0xFF & u;
+        int c = 0xFF & nw;
         int p = a + b - c;
-        int pa = p - a; if (pa < 0) pa = -pa; // inline Math.abs
-        int pb = p - b; if (pb < 0) pb = -pb; 
-        int pc = p - c; if (pc < 0) pc = -pc; 
+        int pa = p - a;
+        if (pa < 0) pa = -pa; // inline Math.abs
+        int pb = p - b;
+        if (pb < 0) pb = -pb;
+        int pc = p - c;
+        if (pc < 0) pc = -pc;
         if (pa <= pb && pa <= pc) return a;
         if (pb <= pc) return b;
         return c;
@@ -126,18 +126,16 @@ extends InputStream
     private byte[] _b = new byte[1];
 
     public int read()
-    throws IOException
-    {
+            throws IOException {
         return read(_b, 0, 1) > 0 ? _b[0] & 0xff : -1;
     }
 
     public int read(byte[] b, int off, int len)
-    throws IOException
-    {
+            throws IOException {
         int count = 0;
-		while (len > 0) {
+        while (len > 0) {
             if (xPtr == 0) {
-                if (readRow() == -1) return ( count == 0 ? -1 : count );
+                if (readRow() == -1) return (count == 0 ? -1 : count);
                 xPtr = bpp;
             }
             int L = Math.min(len, pullSize - xPtr);
@@ -151,8 +149,7 @@ extends InputStream
     }
 
     public void close()
-    throws IOException
-    {
+            throws IOException {
         infstr.close();
     }
 }

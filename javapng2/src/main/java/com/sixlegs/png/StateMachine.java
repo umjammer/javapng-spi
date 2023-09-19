@@ -36,8 +36,8 @@ exception statement from your version.
 
 package com.sixlegs.png;
 
-class StateMachine
-{
+class StateMachine {
+
     public static final int STATE_START = 0;
     public static final int STATE_SAW_IHDR = 1;
     public static final int STATE_SAW_IHDR_NO_PLTE = 2;
@@ -50,30 +50,25 @@ class StateMachine
     private int state = STATE_START;
     private int type;
 
-    public StateMachine(PngImage png)
-    {
+    public StateMachine(PngImage png) {
         this.png = png;
     }
 
-    public int getState()
-    {
+    public int getState() {
         return state;
     }
 
-    public int getType()
-    {
+    public int getType() {
         return type;
     }
 
     public void nextState(int type)
-    throws PngException
-    {
+            throws PngException {
         state = nextState(png, state, this.type = type);
     }
-        
+
     private static int nextState(PngImage png, int state, int type)
-    throws PngException
-    {
+            throws PngException {
         for (int i = 0; i < 4; i++) {
             int c = 0xFF & (type >>> (8 * i));
             if (c < 65 || (c > 90 && c < 97) || c > 122)
@@ -147,8 +142,7 @@ class StateMachine
     }
 
     private static void errorIfPaletted(PngImage png)
-    throws PngException
-    {
+            throws PngException {
         if (png.getColorType() == PngConstants.COLOR_TYPE_PALETTE)
             throw new PngException("Required PLTE chunk not found", true);
     }

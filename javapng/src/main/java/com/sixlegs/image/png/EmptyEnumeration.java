@@ -23,23 +23,21 @@ package com.sixlegs.image.png;
 import java.util.Enumeration;
 import java.util.NoSuchElementException;
 
+
 public class EmptyEnumeration
-implements Enumeration<Object>
-{
+        implements Enumeration<Object> {
+
     private static final EmptyEnumeration INSTANCE = new EmptyEnumeration();
-    
-    public static EmptyEnumeration getInstance()
-    {
+
+    public static EmptyEnumeration getInstance() {
         return INSTANCE;
     }
-    
-    public boolean hasMoreElements()
-    {
+
+    public boolean hasMoreElements() {
         return false;
     }
 
-    public Object nextElement()
-    {
+    public Object nextElement() {
         throw new NoSuchElementException();
     }
 }

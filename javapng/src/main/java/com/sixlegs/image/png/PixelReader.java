@@ -6,8 +6,9 @@ package com.sixlegs.image.png;
 import java.io.IOException;
 import java.io.InputStream;
 
-final class PixelReader
-{
+
+final class PixelReader {
+
     final private BitMover mover;
     final private InputStream str;
     private int[] leftover = new int[8];
@@ -16,16 +17,14 @@ final class PixelReader
     /* package */ final int fillSize;
 
     PixelReader(PngImage img, InputStream str)
-    throws PngException
-    {
+            throws PngException {
         this.str = str;
         fillSize = Math.max(1, 8 / img.data.header.depth);
         mover = BitMover.getBitMover(img);
     }
 
     int read(int[] b, int off, int len)
-    throws IOException
-    {
+            throws IOException {
         int needed = len;
         int total = len;
         if (leftamt > 0) {

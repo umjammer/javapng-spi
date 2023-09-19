@@ -4,14 +4,13 @@
 package com.sixlegs.image.png;
 
 final class Chunk_IDAT
-extends Chunk
-{
-    Chunk_IDAT()
-    {
+        extends Chunk {
+
+    Chunk_IDAT() {
         super(IDAT);
     }
 
-    protected void readData()
-    { }
+    protected void readData() {
+    }
 }
 

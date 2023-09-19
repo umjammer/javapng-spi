@@ -36,20 +36,28 @@ exception statement from your version.
 
 package com.sixlegs.png;
 
-class Integers
-{
-    public static Integer valueOf(int i)
-    {
+class Integers {
+
+    public static Integer valueOf(int i) {
         switch (i) {
-        case 0: return INT_0;
-        case 1: return INT_1;
-        case 2: return INT_2;
-        case 3: return INT_3;
-        case 4: return INT_4;
-        case 5: return INT_5;
-        case 6: return INT_6;
-        case 7: return INT_7;
-        case 8: return INT_8;
+        case 0:
+            return INT_0;
+        case 1:
+            return INT_1;
+        case 2:
+            return INT_2;
+        case 3:
+            return INT_3;
+        case 4:
+            return INT_4;
+        case 5:
+            return INT_5;
+        case 6:
+            return INT_6;
+        case 7:
+            return INT_7;
+        case 8:
+            return INT_8;
         default:
             return i;
         }

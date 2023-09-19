@@ -53,6 +53,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+
 /**
  * A class to decode PNG images.
  * The simplest use is if only a decoded {@link BufferedImage} is required:
@@ -65,14 +66,15 @@ import java.util.Set;
  * among multiple threads without proper synchronization.
  * <p>
  * For more information visit <a href="http://www.sixlegs.com/">http://www.sixlegs.com/</a>
+ *
  * @author Chris Nokleberg <a href="mailto:chris@sixlegs.com">&lt;chris@sixlegs.com&gt;</a>
  * @see PngConfig
  */
 public class PngImage
-implements Transparency
-{
+        implements Transparency {
+
     private static final PngConfig DEFAULT_CONFIG =
-        new PngConfig.Builder().build();
+            new PngConfig.Builder().build();
 
     private final PngConfig config;
     private final Map<String, Object> props = new HashMap<>();
@@ -81,28 +83,26 @@ implements Transparency
     /**
      * Constructor which uses a default instance of {@link PngConfig}.
      */
-    public PngImage()
-    {
+    public PngImage() {
         this(DEFAULT_CONFIG);
     }
 
     /**
      * Constructor which uses the specified configuration.
      */
-    public PngImage(PngConfig config)
-    {
+    public PngImage(PngConfig config) {
         this.config = config;
     }
 
     /**
      * Returns the configuration used by this object.
+     *
      * @return the {@code PngConfig} instance used by this object
      */
-    public PngConfig getConfig()
-    {
+    public PngConfig getConfig() {
         return config;
     }
- 
+
     /**
      * Reads a PNG image from the specified file. Image metadata will
      * be stored in the property map of this {@code PngImage} instance,
@@ -115,6 +115,7 @@ implements Transparency
      * <p>
      * Multiple images can be read using the same {@code PngImage} instance.
      * The property map is cleared each time this method is called.
+     *
      * @param file the file to read
      * @return the decoded image, or null if no image was decoded
      * @throws IOException if any error occurred while reading the image
@@ -123,8 +124,7 @@ implements Transparency
      * @see #handlePass
      */
     public BufferedImage read(File file)
-    throws IOException
-    {
+            throws IOException {
         return read(new BufferedInputStream(Files.newInputStream(file.toPath())), true);
     }
 
@@ -140,7 +140,8 @@ implements Transparency
      * <p>
      * Multiple images can be read using the same {@code PngImage} instance.
      * A new property map is created each time this method is called.
-     * @param in the input stream to read
+     *
+     * @param in    the input stream to read
      * @param close whether to close the input stream after reading
      * @return the decoded image, or null if no image was decoded
      * @throws IOException if any error occurred while reading the image
@@ -149,8 +150,7 @@ implements Transparency
      * @see #handlePass
      */
     public BufferedImage read(InputStream in, boolean close)
-    throws IOException
-    {
+            throws IOException {
         if (in == null)
             throw new NullPointerException("InputStream is null");
         this.read = true;
@@ -182,14 +182,14 @@ implements Transparency
                     }
                     if (!isMultipleOK(type) && !seen.add(Integers.valueOf(type)))
                         throw new PngException("Multiple " + PngConstants.getChunkName(type) + " chunks are not allowed",
-                                               !PngConstants.isAncillary(type));
+                                !PngConstants.isAncillary(type));
                     try {
                         readChunk(type, pin, pin.getOffset(), pin.getRemaining());
                     } catch (PngException e) {
                         throw e;
                     } catch (IOException e) {
                         throw new PngException("Malformed " + PngConstants.getChunkName(type) + " chunk", e,
-                                               !PngConstants.isAncillary(type));
+                                !PngConstants.isAncillary(type));
                     }
                     skipFully(pin, pin.getRemaining());
                     if (type == PngConstants.IHDR && readLimit == PngConfig.READ_HEADER)
@@ -219,14 +219,14 @@ implements Transparency
      * <p>
      * Unlike {@link #readChunk} implementations, subclasses may read less than the correct
      * amount from this stream; the remainder will be skipped.
-     * @param in the input stream of raw, compressed image data
+     *
+     * @param in   the input stream of raw, compressed image data
      * @param size the size of the image data
      * @return the decoded image, or null
      * @throws IOException if any error occurred while processing the image data
      */
     protected BufferedImage createImage(InputStream in, Dimension size)
-    throws IOException
-    {
+            throws IOException {
         return ImageFactory.createImage(this, in, size);
     }
 
@@ -242,12 +242,12 @@ implements Transparency
      * <p>
      * Image decoding can be aborted by returning false. The default
      * implementation always returns true.
+     *
      * @param image the partially or fully decoded image
-     * @param pass the index of the completed pass
+     * @param pass  the index of the completed pass
      * @return false to abort image decoding
      */
-    protected boolean handlePass(BufferedImage image, int pass)
-    {
+    protected boolean handlePass(BufferedImage image, int pass) {
         return true;
     }
 
@@ -256,16 +256,16 @@ implements Transparency
      * call. This method is called periodically during
      * image decoding. The degree of completion is expressed as a percentage
      * varying from 0.0F to 100.0F, and is calculated using the number
-     * of pixels decoded. 
+     * of pixels decoded.
      * <p>
      * Image decoding can be aborted by returning false. The default
      * implementation returns true.
+     *
      * @param image the partially or fully decoded image
-     * @param pct the approximate percentage of decoding that has been completed
+     * @param pct   the approximate percentage of decoding that has been completed
      * @return false to abort image decoding
      */
-    protected boolean handleProgress(BufferedImage image, float pct)
-    {
+    protected boolean handleProgress(BufferedImage image, float pct) {
         return true;
     }
 
@@ -278,97 +278,99 @@ implements Transparency
      * <p>
      * By default, this method will re-throw the warning if the
      * {@link PngConfig#getWarningsFatal warningsFatal} property is true.
+     *
      * @throws PngException if the warning should be treated as fatal
      */
     protected void handleWarning(PngException e)
-    throws PngException
-    {
+            throws PngException {
         if (config.getWarningsFatal())
             throw e;
     }
-    
-    /** 
+
+    /**
      * Returns the image widt hin pixels.
+     *
      * @throws IllegalStateException if an image has not been read
      */
-    public int getWidth()
-    {
+    public int getWidth() {
         return getInt(PngConstants.WIDTH);
     }
 
-    /** 
+    /**
      * Returns the image height in pixels.
+     *
      * @throws IllegalStateException if an image has not been read
      */
-    public int getHeight()
-    {
+    public int getHeight() {
         return getInt(PngConstants.HEIGHT);
     }
 
-    /** 
+    /**
      * Returns the image bit depth.
+     *
      * @return 1, 2, 4, 8, or 16
      * @throws IllegalStateException if an image has not been read
      */
-    public int getBitDepth()
-    {
+    public int getBitDepth() {
         return getInt(PngConstants.BIT_DEPTH);
     }
 
     /**
      * Returns true if the image interlace type ({@link PngConstants#INTERLACE})
      * is something other than {@link PngConstants#INTERLACE_NONE INTERLACE_NONE}.
+     *
      * @return true if the image is interlaced
      * @throws IllegalStateException if an image has not been read
      */
-    public boolean isInterlaced()
-    {
+    public boolean isInterlaced() {
         return getInt(PngConstants.INTERLACE) != PngConstants.INTERLACE_NONE;
     }
 
     /**
      * Returns the image color type.
-     * @return 
-     *    {@link PngConstants#COLOR_TYPE_GRAY COLOR_TYPE_GRAY},<br>
-     *    {@link PngConstants#COLOR_TYPE_GRAY_ALPHA COLOR_TYPE_GRAY_ALPHA},<br>
-     *    {@link PngConstants#COLOR_TYPE_PALETTE COLOR_TYPE_PALETTE},<br>
-     *    {@link PngConstants#COLOR_TYPE_RGB COLOR_TYPE_RGB},<br>
-     *    or {@link PngConstants#COLOR_TYPE_RGB_ALPHA COLOR_TYPE_RGB_ALPHA}
+     *
+     * @return {@link PngConstants#COLOR_TYPE_GRAY COLOR_TYPE_GRAY},<br>
+     * {@link PngConstants#COLOR_TYPE_GRAY_ALPHA COLOR_TYPE_GRAY_ALPHA},<br>
+     * {@link PngConstants#COLOR_TYPE_PALETTE COLOR_TYPE_PALETTE},<br>
+     * {@link PngConstants#COLOR_TYPE_RGB COLOR_TYPE_RGB},<br>
+     * or {@link PngConstants#COLOR_TYPE_RGB_ALPHA COLOR_TYPE_RGB_ALPHA}
      * @throws IllegalStateException if an image has not been read
      */
-    public int getColorType()
-    {
+    public int getColorType() {
         return getInt(PngConstants.COLOR_TYPE);
     }
 
     /**
      * Returns the type of this Transparency.
+     *
      * @return the field type of this Transparency, which is either OPAQUE, BITMASK or TRANSLUCENT.
      * @throws IllegalStateException if an image has not been read
      */
-    public int getTransparency()
-    {
+    public int getTransparency() {
         int colorType = getColorType();
         return (colorType == PngConstants.COLOR_TYPE_RGB_ALPHA ||
                 colorType == PngConstants.COLOR_TYPE_GRAY_ALPHA ||
                 props.containsKey(PngConstants.TRANSPARENCY) ||
                 props.containsKey(PngConstants.PALETTE_ALPHA)) ?
-            TRANSLUCENT : OPAQUE;
+                TRANSLUCENT : OPAQUE;
     }
 
     /**
      * Returns the number of samples per pixel. Gray and paletted
      * images use one sample, gray+alpha uses two, RGB uses three,
      * and RGB+alpha uses four.
+     *
      * @return 1, 2, 3 or 4
      * @throws IllegalStateException if an image has not been read
      */
-    public int getSamples()
-    {
+    public int getSamples() {
         switch (getColorType()) {
-        case PngConstants.COLOR_TYPE_GRAY_ALPHA: return 2;
-        case PngConstants.COLOR_TYPE_RGB:        return 3;
-        case PngConstants.COLOR_TYPE_RGB_ALPHA:  return 4;
+        case PngConstants.COLOR_TYPE_GRAY_ALPHA:
+            return 2;
+        case PngConstants.COLOR_TYPE_RGB:
+            return 3;
+        case PngConstants.COLOR_TYPE_RGB_ALPHA:
+            return 4;
         }
         return 1;
     }
@@ -376,14 +378,14 @@ implements Transparency
     /**
      * Returns the gamma exponent that was explicitly encoded in the image,
      * if there was one, or the value of {@link PngConfig#getDefaultGamma} otherwise.
+     *
      * @return the gamma exponent
      * @throws IllegalStateException if an image has not been read
      */
-    public float getGamma()
-    {
+    public float getGamma() {
         assertRead();
         if (props.containsKey(PngConstants.GAMMA))
-            return ((Number)getProperty(PngConstants.GAMMA, Number.class, true)).floatValue();
+            return ((Number) getProperty(PngConstants.GAMMA, Number.class, true)).floatValue();
         return config.getDefaultGamma();
     }
 
@@ -395,46 +397,46 @@ implements Transparency
      * <p>
      * The values in the table take into account {@link #getGamma} and
      * {@link PngConfig#getDisplayExponent}.
+     *
      * @return a table of component values to be used in gamma correction
      * @throws IllegalStateException if an image has not been read
      */
-    public short[] getGammaTable()
-    {
+    public short[] getGammaTable() {
         assertRead();
         return createGammaTable(getGamma(),
-                                config.getDisplayExponent(),
-                                getBitDepth() == 16 && !config.getReduce16());
+                config.getDisplayExponent(),
+                getBitDepth() == 16 && !config.getReduce16());
     }
 
-    static short[] createGammaTable(float gamma, float displayExponent, boolean large)
-    {
+    static short[] createGammaTable(float gamma, float displayExponent, boolean large) {
         int size = 1 << (large ? 16 : 8);
         short[] gammaTable = new short[size];
-        double decodingExponent = 1d / ((double)gamma * (double)displayExponent);
+        double decodingExponent = 1d / ((double) gamma * (double) displayExponent);
         for (int i = 0; i < size; i++)
-            gammaTable[i] = (short)(Math.pow((double)i / (size - 1), decodingExponent) * (size - 1));
+            gammaTable[i] = (short) (Math.pow((double) i / (size - 1), decodingExponent) * (size - 1));
         return gammaTable;
     }
 
     // TODO: gamma-correct background?
+
     /**
      * Returns the background color explicitly encoded in the image.
      * For 16-bit images the components are reduced to 8-bit by shifting.
+     *
      * @return the background color, or null
      * @throws IllegalStateException if an image has not been read
      */
-    public Color getBackground()
-    {
-        int[] background = (int[])getProperty(PngConstants.BACKGROUND, int[].class, false);
+    public Color getBackground() {
+        int[] background = (int[]) getProperty(PngConstants.BACKGROUND, int[].class, false);
         if (background == null)
             return null;
         switch (getColorType()) {
         case PngConstants.COLOR_TYPE_PALETTE:
-            byte[] palette = (byte[])getProperty(PngConstants.PALETTE, byte[].class, true);
+            byte[] palette = (byte[]) getProperty(PngConstants.PALETTE, byte[].class, true);
             int index = background[0] * 3;
-            return new Color(0xFF & palette[index + 0], 
-                             0xFF & palette[index + 1], 
-                             0xFF & palette[index + 2]);
+            return new Color(0xFF & palette[index + 0],
+                    0xFF & palette[index + 1],
+                    0xFF & palette[index + 2]);
         case PngConstants.COLOR_TYPE_GRAY:
         case PngConstants.COLOR_TYPE_GRAY_ALPHA:
             int gray = background[0] * 255 / ((1 << getBitDepth()) - 1);
@@ -554,18 +556,17 @@ implements Transparency
      * <td>{@link Integer Integer}</td>
      * <td>Indicator of stereo image</td></tr>
      * </table></center>
+     *
      * @param name a property name
      * @return the property value, or null if no such property exists
      * @throws IllegalStateException if an image has not been read
      */
-    public Object getProperty(String name)
-    {
+    public Object getProperty(String name) {
         assertRead();
         return props.get(name);
     }
 
-    Object getProperty(String name, Class<?> type, boolean required)
-    {
+    Object getProperty(String name, Class<?> type, boolean required) {
         assertRead();
         Object value = props.get(name);
         if (value == null) {
@@ -577,9 +578,8 @@ implements Transparency
         return value;
     }
 
-    private int getInt(String name)
-    {
-        return ((Number)getProperty(name, Number.class, true)).intValue();
+    private int getInt(String name) {
+        return ((Number) getProperty(name, Number.class, true)).intValue();
     }
 
     /**
@@ -587,10 +587,10 @@ implements Transparency
      * The map is mutable, and storing a value with the wrong type may
      * result in other methods in this class throwing {@code IllegalStateException} or
      * {@code ClassCastException}.
+     *
      * @return the mutable map of image properties
      */
-    public Map<String, Object> getProperties()
-    {
+    public Map<String, Object> getProperties() {
         return props;
     }
 
@@ -600,14 +600,14 @@ implements Transparency
      * will return the first one that was read. The full list of text
      * chunks may be accessed by calling
      * <pre>{@linkplain #getProperty getProperty}({@linkplain PngConstants#TEXT_CHUNKS})</pre>
+     *
      * @param key the text chunk keyword
      * @return a {@link TextChunk} implementation, or null
      * @throws IllegalStateException if an image has not been read
      */
-    public TextChunk getTextChunk(String key)
-    {
+    public TextChunk getTextChunk(String key) {
         @SuppressWarnings("unchecked")
-        List<Object> list = (List<Object>)getProperty(PngConstants.TEXT_CHUNKS, List.class, false);
+        List<Object> list = (List<Object>) getProperty(PngConstants.TEXT_CHUNKS, List.class, false);
         if (key != null && list != null) {
             for (Object o : list) {
                 // TODO: check list value type before cast?
@@ -631,14 +631,14 @@ implements Transparency
      * <p>
      * Attempting to read past the end of the chunk data will result in
      * an {@link EOFException}. Unread data will be skipped.
-     * @param type the chunk type
-     * @param in the chunk data
+     *
+     * @param type   the chunk type
+     * @param in     the chunk data
      * @param offset the location of the chunk data within the entire PNG datastream
      * @param length the length of the chunk data
      */
     protected void readChunk(int type, DataInput in, long offset, int length)
-    throws IOException
-    {
+            throws IOException {
         if (type == PngConstants.IDAT)
             return;
         if (config.getReadLimit() == PngConfig.READ_EXCEPT_METADATA && PngConstants.isAncillary(type)) {
@@ -659,11 +659,11 @@ implements Transparency
      * By default this method returns {@code true} only for {@link PngConstants#sPLT sPLT},
      * {@link PngConstants#iTXt iTXt}, {@link PngConstants#tEXt tEXt},
      * {@link PngConstants#zTXt zTXt}, and {@link PngConstants#IDAT IDAT}.
+     *
      * @param type the chunk type
      * @return whether multiple chunks of the given type are allowed
      */
-    protected boolean isMultipleOK(int type)
-    {
+    protected boolean isMultipleOK(int type) {
         switch (type) {
         case PngConstants.IDAT:
         case PngConstants.sPLT:
@@ -675,8 +675,7 @@ implements Transparency
         return false;
     }
 
-    private void assertRead()
-    {
+    private void assertRead() {
         if (!read)
             throw new IllegalStateException("Image has not been read");
     }

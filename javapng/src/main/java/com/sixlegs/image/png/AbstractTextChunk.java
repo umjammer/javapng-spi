@@ -10,10 +10,11 @@ import java.util.Map;
 
 
 abstract class AbstractTextChunk
-extends KeyValueChunk
-implements TextChunk
-{
+        extends KeyValueChunk
+        implements TextChunk {
+
     static private Map<String, Boolean> special_keys = new HashMap<>();
+
     static {
         special_keys.put("Title", Boolean.TRUE);
         special_keys.put("Author", Boolean.TRUE);
@@ -27,23 +28,33 @@ implements TextChunk
         special_keys.put("Comment", Boolean.TRUE);
     }
 
-    public String toString() { return getText(); }
+    public String toString() {
+        return getText();
+    }
 
-    public String getKeyword() { return key; }
-    public String getText() { return value; }
+    public String getKeyword() {
+        return key;
+    }
+
+    public String getText() {
+        return value;
+    }
+
     abstract public String getTranslatedKeyword();
+
     abstract public String getLanguage();
 
-    AbstractTextChunk(int type) { super(type); }
+    AbstractTextChunk(int type) {
+        super(type);
+    }
 
     protected String readKey()
-    throws IOException
-    {
+            throws IOException {
         String key = super.readKey();
         if (special_keys.containsKey(key)) {
             String lowerkey = key.toLowerCase();
             Object replace = img.data.properties.get(lowerkey);
-            if (replace == null || ((Chunk)replace).type != iTXt)
+            if (replace == null || ((Chunk) replace).type != iTXt)
                 img.data.properties.put(lowerkey, this);
         }
         img.data.textChunks.put(key, this);
@@ -51,13 +62,11 @@ implements TextChunk
     }
 
     protected String readValue()
-    throws IOException
-    {
+            throws IOException {
         return repairValue(super.readValue());
     }
 
-    private static String repairValue(String val)
-    {
+    private static String repairValue(String val) {
         CharArrayWriter out_chars = new CharArrayWriter(val.length());
         try {
             char[] chs = val.toCharArray();
@@ -84,12 +93,12 @@ implements TextChunk
                     }
                 }
             }
-        } catch (IOException e) { }
+        } catch (IOException e) {
+        }
         return out_chars.toString();
     }
 
-    public String getChunkType()
-    {
+    public String getChunkType() {
         return typeToString(type);
     }
 }

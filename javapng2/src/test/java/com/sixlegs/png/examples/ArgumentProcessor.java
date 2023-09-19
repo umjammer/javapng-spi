@@ -38,29 +38,41 @@ package com.sixlegs.png.examples;
 
 import java.util.*;
 
-class ArgumentProcessor
-{
-    private static final Map<String,Parser> PARSERS = new HashMap<>();
 
-    static
-    {
+class ArgumentProcessor {
+
+    private static final Map<String, Parser> PARSERS = new HashMap<>();
+
+    static {
         PARSERS.put(Boolean.class.getName(), new Parser() {
-            public Object parse(String arg) { return Boolean.valueOf(arg); }
+            public Object parse(String arg) {
+                return Boolean.valueOf(arg);
+            }
         });
         PARSERS.put(String.class.getName(), new Parser() {
-            public Object parse(String arg) { return arg; }
+            public Object parse(String arg) {
+                return arg;
+            }
         });
         PARSERS.put(Integer.class.getName(), new Parser() {
-            public Object parse(String arg) { return Integer.valueOf(arg, 10); }
+            public Object parse(String arg) {
+                return Integer.valueOf(arg, 10);
+            }
         });
         PARSERS.put(Short.class.getName(), new Parser() {
-            public Object parse(String arg) { return Short.valueOf(arg, 10); }
+            public Object parse(String arg) {
+                return Short.valueOf(arg, 10);
+            }
         });
         PARSERS.put(Byte.class.getName(), new Parser() {
-            public Object parse(String arg) { return Byte.valueOf(arg, 10); }
+            public Object parse(String arg) {
+                return Byte.valueOf(arg, 10);
+            }
         });
         PARSERS.put(Long.class.getName(), new Parser() {
-            public Object parse(String arg) { return Long.valueOf(arg, 10); }
+            public Object parse(String arg) {
+                return Long.valueOf(arg, 10);
+            }
         });
         PARSERS.put(Character.class.getName(), new Parser() {
             public Object parse(String arg) {
@@ -71,24 +83,22 @@ class ArgumentProcessor
         });
     }
 
-    abstract private static class Parser
-    {
+    abstract private static class Parser {
+
         abstract public Object parse(String arg);
     }
-    
-    private final Map<String,Option> options = new HashMap<>();
-    
-    public ArgumentProcessor(Option... options)
-    {
+
+    private final Map<String, Option> options = new HashMap<>();
+
+    public ArgumentProcessor(Option... options) {
         for (Option opt : options)
             this.options.put(opt.name, new Option(opt));
     }
 
     // mutates args
     // throws exception if arguments are invalid
-    public Map<String,Object> parse(List<String> src, List<String> dst)
-    {
-        Map<String,Object> result = new HashMap<>();
+    public Map<String, Object> parse(List<String> src, List<String> dst) {
+        Map<String, Object> result = new HashMap<>();
         int index = 0;
         while (index < src.size()) {
             String arg = src.get(index);
@@ -127,19 +137,17 @@ class ArgumentProcessor
         return result;
     }
 
-    public static Option option(String name)
-    {
+    public static Option option(String name) {
         return new Option(name);
     }
 
-    public static Option option(String name, Class<?> type)
-    {
+    public static Option option(String name, Class<?> type) {
         return new Option(name, type);
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public static class Option
-    {
+    public static class Option {
+
         final String name;
         final Class<?> type;
         boolean required = true;
@@ -147,8 +155,7 @@ class ArgumentProcessor
         Comparable start;
         Comparable end;
 
-        Option(Option option)
-        {
+        Option(Option option) {
             name = option.name;
             type = option.type;
             required = option.required;
@@ -157,14 +164,12 @@ class ArgumentProcessor
             end = option.end;
         }
 
-        Option(String name)
-        {
+        Option(String name) {
             this(name, Boolean.class);
             defaultValue(Boolean.FALSE);
         }
 
-        Option(String name, Class<?> type)
-        {
+        Option(String name, Class<?> type) {
             if (!PARSERS.containsKey(type.getName()))
                 throw new IllegalArgumentException("Unsupported type " + type);
             if (name.startsWith("-"))
@@ -173,16 +178,14 @@ class ArgumentProcessor
             this.type = type;
         }
 
-        public Option defaultValue(Object value)
-        {
+        public Option defaultValue(Object value) {
             checkType(value);
             required = false;
             defaultValue = value;
             return this;
         }
 
-        public Option range(Comparable start, Comparable end)
-        {
+        public Option range(Comparable start, Comparable end) {
             checkType(start);
             checkType(end);
             if (!Comparable.class.isAssignableFrom(type))
@@ -194,12 +197,11 @@ class ArgumentProcessor
             return this;
         }
 
-        private Object parse(String arg)
-        {
+        private Object parse(String arg) {
             try {
                 Object value = PARSERS.get(type.getName()).parse(arg);
                 if (start != null) {
-                    Comparable comp = (Comparable)value;
+                    Comparable comp = (Comparable) value;
                     if (comp.compareTo(start) < 0 || comp.compareTo(end) > 0)
                         throw new IllegalArgumentException(value + " is not between " + start + " and " + end);
                 }
@@ -209,8 +211,7 @@ class ArgumentProcessor
             }
         }
 
-        private void checkType(Object value)
-        {
+        private void checkType(Object value) {
             if (!type.isAssignableFrom(value.getClass()))
                 throw new IllegalArgumentException(name + " value " + value + " is not assignable to " + type.getName());
         }

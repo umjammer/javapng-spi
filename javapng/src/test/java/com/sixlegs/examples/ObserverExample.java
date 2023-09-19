@@ -1,23 +1,24 @@
 package com.sixlegs.examples;
 
 import com.sixlegs.image.png.PngImage;
+
 import java.io.IOException;
 import java.awt.Toolkit;
 import java.awt.Image;
 import java.awt.image.ImageObserver;
 
+
 public class ObserverExample
-implements ImageObserver
-{
+        implements ImageObserver {
+
     private static int counter = 0;
-    
+
     public static void main(String[] args)
-    throws IOException
-    {
+            throws IOException {
         // Update ImageObservers after each interlace pass
         PngImage.setProgressiveDisplay(true);
 
-            // Read PNG image from file
+        // Read PNG image from file
         PngImage png = new PngImage(args[0]);
         Toolkit tk = Toolkit.getDefaultToolkit();
         Image img = tk.createImage(png);
@@ -30,10 +31,9 @@ implements ImageObserver
     }
 
     public boolean imageUpdate(Image img, int infoflags,
-                               int x, int y, int w, int h)
-    {
-        if ((infoflags & ALLBITS) != 0 || 
-            (infoflags & FRAMEBITS) != 0) {
+                               int x, int y, int w, int h) {
+        if ((infoflags & ALLBITS) != 0 ||
+                (infoflags & FRAMEBITS) != 0) {
             // We have a frame, do something with image here
             System.out.println("Received frame " + ++counter);
         }

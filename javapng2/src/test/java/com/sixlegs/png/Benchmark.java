@@ -6,14 +6,15 @@ import java.util.*;
 import java.util.List;
 import javax.imageio.ImageIO;
 
-public class Benchmark
-{
-    abstract static class PngReader
-    {
+
+public class Benchmark {
+
+    abstract static class PngReader {
+
         abstract public void read(File file) throws IOException;
     }
 
-    private static PngReader SIXLEGS2 = new PngReader(){
+    private static PngReader SIXLEGS2 = new PngReader() {
         private PngConfig config = new PngConfig.Builder().build();
 
         public void read(File file) throws IOException {
@@ -21,21 +22,23 @@ public class Benchmark
         }
     };
 
-    private static PngReader SIXLEGS1 = new PngReader(){
+    private static PngReader SIXLEGS1 = new PngReader() {
         public void read(File file) throws IOException {
             new com.sixlegs.image.png.PngImage(file.toURI().toURL()).getEverything();
         }
     };
-    
-    private static PngReader IMAGEIO = new PngReader(){
+
+    private static PngReader IMAGEIO = new PngReader() {
         public void read(File file) throws IOException {
             ImageIO.read(file);
         }
     };
 
-    private static PngReader TOOLKIT = new PngReader(){
-        private MediaTracker tracker = new MediaTracker(new Component(){});
+    private static PngReader TOOLKIT = new PngReader() {
+        private MediaTracker tracker = new MediaTracker(new Component() {
+        });
         private Toolkit toolkit = Toolkit.getDefaultToolkit();
+
         public void read(File file) throws IOException {
             try {
                 tracker.addImage(toolkit.createImage(file.toURI().toURL()), 0);
@@ -45,10 +48,9 @@ public class Benchmark
             }
         }
     };
-    
+
     public static void main(String[] args)
-    throws Exception
-    {
+            throws Exception {
         int loop = (args.length > 0) ? Integer.parseInt(args[0]) : 1;
         BufferedReader r = new BufferedReader(new InputStreamReader(System.in));
         List<File> list = new ArrayList<>();
@@ -63,8 +65,7 @@ public class Benchmark
     }
 
     private static void benchmark(File[] files, int loop, PngReader reader, String desc)
-    throws IOException
-    {
+            throws IOException {
         File cur = null;
         try {
             long t = System.currentTimeMillis();

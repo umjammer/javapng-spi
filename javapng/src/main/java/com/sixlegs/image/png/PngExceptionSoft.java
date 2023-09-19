@@ -4,14 +4,12 @@
 package com.sixlegs.image.png;
 
 class PngExceptionSoft
-extends PngException
-{
-    PngExceptionSoft()
-    {
+        extends PngException {
+
+    PngExceptionSoft() {
     }
 
-    PngExceptionSoft(String s)
-    {
+    PngExceptionSoft(String s) {
         super(s);
     }
 }

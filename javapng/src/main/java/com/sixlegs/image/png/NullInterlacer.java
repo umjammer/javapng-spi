@@ -4,35 +4,29 @@
 package com.sixlegs.image.png;
 
 final class NullInterlacer
-extends Interlacer
-{
-    NullInterlacer(int w, int h)
-    {
+        extends Interlacer {
+
+    NullInterlacer(int w, int h) {
         super(w, h);
     }
 
-    int numPasses()
-    {
+    int numPasses() {
         return 1;
     }
-    
-    int getSpacingX(int pass)
-    {
+
+    int getSpacingX(int pass) {
         return 1;
     }
-    
-    int getSpacingY(int pass)
-    {
+
+    int getSpacingY(int pass) {
         return 1;
     }
-    
-    int getOffsetX(int pass)
-    {
+
+    int getOffsetX(int pass) {
         return 0;
     }
 
-    int getOffsetY(int pass)
-    {
+    int getOffsetY(int pass) {
         return 0;
     }
 }

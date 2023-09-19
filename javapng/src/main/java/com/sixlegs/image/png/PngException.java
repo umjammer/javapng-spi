@@ -5,20 +5,18 @@ package com.sixlegs.image.png;
 
 import java.io.IOException;
 
+
 public class PngException
-extends IOException
-{
-    PngException()
-    {
+        extends IOException {
+
+    PngException() {
     }
 
-    PngException(String s)
-    {
+    PngException(String s) {
         super(s);
     }
 
-    public String toString()
-    {
+    public String toString() {
         return getMessage();
     }
 }

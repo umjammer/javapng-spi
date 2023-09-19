@@ -37,7 +37,7 @@ exception statement from your version.
 package com.sixlegs.png;
 
 // not an interface for performance
-abstract class PixelProcessor
-{
+abstract class PixelProcessor {
+
     abstract public boolean process(int[] row, int xOffset, int xStep, int yStep, int y, int width);
 }

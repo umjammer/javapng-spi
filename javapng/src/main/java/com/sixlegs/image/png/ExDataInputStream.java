@@ -8,47 +8,40 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-public final class ExDataInputStream
-extends DataInputStream
-{
 
-    public ExDataInputStream(InputStream in)
-    {
+public final class ExDataInputStream
+        extends DataInputStream {
+
+    public ExDataInputStream(InputStream in) {
         super(in);
     }
 
-    public static long unsign(int x)
-    {
+    public static long unsign(int x) {
         return 0xFFFFFFFFL & x;
     }
 
     public long readUnsignedInt()
-    throws IOException
-    {
+            throws IOException {
         return unsign(readInt());
     }
 
     public String readString()
-    throws IOException
-    {
+            throws IOException {
         return readString(-1, PngImage.LATIN1_ENCODING);
     }
 
     public String readString(String encoding)
-    throws IOException
-    {
+            throws IOException {
         return readString(-1, encoding);
     }
 
     public String readString(int limit)
-    throws IOException
-    {
+            throws IOException {
         return readString(limit, PngImage.LATIN1_ENCODING);
     }
 
     public String readString(int limit, String encoding)
-    throws IOException
-    {
+            throws IOException {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream(limit < 0 ? 80 : limit);
         int i;
         for (i = 0; i != limit; i++) {
@@ -59,18 +52,16 @@ extends DataInputStream
         return bytes.toString(encoding);
     }
 
-    static public double parseFloatingPoint(String token)
-    {
+    static public double parseFloatingPoint(String token) {
         int st = 0;
-        int e1 = Math.max(token.indexOf('e'),token.indexOf('E'));
+        int e1 = Math.max(token.indexOf('e'), token.indexOf('E'));
         double d = Double.parseDouble(token.substring(st, (e1 < 0 ? token.length() : e1)));
         if (e1 > 0) d *= Math.pow(10d, Double.parseDouble(token.substring(e1 + 1)));
         return d;
     }
 
     public double readFloatingPoint()
-    throws IOException
-    {
+            throws IOException {
         return parseFloatingPoint(readString());
     }
 

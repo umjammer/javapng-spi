@@ -149,6 +149,7 @@ public class TestSimple extends PngTestCase {
     }
 
     abstract private static class PrivateChunkReader extends PngImage {
+
         private final int type;
 
         public PrivateChunkReader(int type) {

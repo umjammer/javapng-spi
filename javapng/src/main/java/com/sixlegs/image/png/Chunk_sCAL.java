@@ -2,29 +2,27 @@
 // Please see included LICENSE.TXT
 
 package com.sixlegs.image.png;
+
 import java.io.IOException;
 
+
 final class Chunk_sCAL
-extends Chunk
-{
-    Chunk_sCAL()
-    {
+        extends Chunk {
+
+    Chunk_sCAL() {
         super(sCAL);
     }
 
-    protected boolean multipleOK()
-    {
+    protected boolean multipleOK() {
         return false;
     }
 
-    protected boolean beforeIDAT()
-    {
+    protected boolean beforeIDAT() {
         return true;
     }
 
     protected void readData()
-    throws IOException
-    {
+            throws IOException {
         int unit = in_data.readUnsignedByte();
         if (unit != PngImage.UNIT_METER && unit != PngImage.UNIT_RADIAN)
             throw new PngExceptionSoft("Illegal sCAL chunk unit specifier: " + unit);
@@ -42,5 +40,5 @@ extends Chunk
         } catch (NumberFormatException e) {
             throw new PngExceptionSoft("Bad floating point value in sCAL chunk");
         }
-    }    
+    }
 }

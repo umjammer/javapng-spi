@@ -41,26 +41,27 @@ import com.sixlegs.png.*;
 import java.io.*;
 import java.nio.file.Files;
 import java.util.*;
+
 import static com.sixlegs.png.examples.ArgumentProcessor.*;
+
 
 // TODO: this is a work in progress
 // TODO: support crop
-public class Png2AnimatedPng
-{
+public class Png2AnimatedPng {
+
     private static final ArgumentProcessor PROC;
 
-    static
-    {
+    static {
         PROC = new ArgumentProcessor(
-            option("iter", Integer.class).defaultValue(0).range(0, Integer.MAX_VALUE),
-            option("delay", Integer.class).range(0, (int)Short.MAX_VALUE),
-            option("blend", Integer.class).defaultValue(0).range(0, 1),
-            option("dispose", Integer.class).defaultValue(0).range(0, 2),
-            option("skip"),
-            option("crop")
+                option("iter", Integer.class).defaultValue(0).range(0, Integer.MAX_VALUE),
+                option("delay", Integer.class).range(0, (int) Short.MAX_VALUE),
+                option("blend", Integer.class).defaultValue(0).range(0, 1),
+                option("dispose", Integer.class).defaultValue(0).range(0, 2),
+                option("skip"),
+                option("crop")
         );
     }
-    
+
     public static void main(String[] args) throws Exception {
         try {
             run(args);
@@ -71,13 +72,13 @@ public class Png2AnimatedPng
 
     public static void run(String... orig) throws Exception {
         List<String> args = new ArrayList<>();
-        Map<String,Object> opts = PROC.parse(Arrays.asList(orig), args);
-        int iter = ((Number)opts.get("iter")).intValue();
-        int delay = ((Number)opts.get("delay")).intValue();
-        int blend = ((Number)opts.get("blend")).intValue();
-        int dispose = ((Number)opts.get("dispose")).intValue();
+        Map<String, Object> opts = PROC.parse(Arrays.asList(orig), args);
+        int iter = ((Number) opts.get("iter")).intValue();
+        int delay = ((Number) opts.get("delay")).intValue();
+        int blend = ((Number) opts.get("blend")).intValue();
+        int dispose = ((Number) opts.get("dispose")).intValue();
         boolean skip = (Boolean) opts.get("skip");
-        
+
         // TODO: handle numIterations, delay, skip
         List<File> files = new ArrayList<>();
         if (args.size() < 2)
@@ -92,6 +93,7 @@ public class Png2AnimatedPng
         (new PngImage(config) {
             private ChunkWriter chunk = new ChunkWriter();
             private int seq = 0;
+
             protected void readChunk(int type, DataInput in, long offset, int length) throws IOException {
                 byte[] data = new byte[length];
                 in.readFully(data);
@@ -140,8 +142,8 @@ public class Png2AnimatedPng
                 chunk.writeInt(0);
                 chunk.writeShort(delay);
                 chunk.writeShort(1000);
-                chunk.writeByte((byte)dispose);
-                chunk.writeByte((!skip && seq == 1) ? 0 : (byte)blend);
+                chunk.writeByte((byte) dispose);
+                chunk.writeByte((!skip && seq == 1) ? 0 : (byte) blend);
                 chunk.finish(out);
             }
         }).read(files.get(0));

@@ -36,24 +36,21 @@ exception statement from your version.
 
 package com.sixlegs.png;
 
-class FrameData
-{
+class FrameData {
+
     private final long offset;
     private final int length;
 
-    public FrameData(long offset, int length)
-    {
+    public FrameData(long offset, int length) {
         this.offset = offset;
         this.length = length;
     }
 
-    public long getOffset()
-    {
+    public long getOffset() {
         return offset;
     }
 
-    public int getLength()
-    {
+    public int getLength() {
         return length;
     }
 }

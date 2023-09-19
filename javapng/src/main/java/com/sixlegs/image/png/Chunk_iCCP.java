@@ -5,34 +5,32 @@ package com.sixlegs.image.png;
 
 import java.io.IOException;
 
-final class Chunk_iCCP
-extends KeyValueChunk
-{
-  Chunk_iCCP() { super(iCCP); }
 
-    protected boolean isCompressed()
-    {
+final class Chunk_iCCP
+        extends KeyValueChunk {
+
+    Chunk_iCCP() {
+        super(iCCP);
+    }
+
+    protected boolean isCompressed() {
         return true;
     }
 
-    protected boolean multipleOK()
-    {
+    protected boolean multipleOK() {
         return false;
     }
 
-    protected boolean beforeIDAT()
-    {
+    protected boolean beforeIDAT() {
         return true;
     }
 
-    protected String getEncoding()
-    {
+    protected String getEncoding() {
         return PngImage.LATIN1_ENCODING;
     }
 
     protected void readData()
-    throws IOException
-    {
+            throws IOException {
         if (img.data.palette != null)
             throw new PngException("iCCP chunk must precede PLTE chunk");
         super.readData();

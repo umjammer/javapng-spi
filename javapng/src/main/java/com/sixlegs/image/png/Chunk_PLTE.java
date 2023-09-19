@@ -6,9 +6,10 @@ package com.sixlegs.image.png;
 import java.awt.image.IndexColorModel;
 import java.io.IOException;
 
+
 final class Chunk_PLTE
-extends Chunk
-{
+        extends Chunk {
+
     private int size;
 
     /* package */ int[] r_raw;
@@ -21,24 +22,20 @@ extends Chunk
     /* package */ byte[] b;
     /* package */ byte[] a;
 
-    Chunk_PLTE()
-    {
+    Chunk_PLTE() {
         super(PLTE);
     }
 
-    protected boolean multipleOK()
-    {
+    protected boolean multipleOK() {
         return false;
     }
 
-    protected boolean beforeIDAT()
-    {
+    protected boolean beforeIDAT() {
         return true;
     }
 
     protected void readData()
-    throws IOException
-    {
+            throws IOException {
         img.data.palette = this;
         if (img.getChunk(bKGD) != null) {
             throw new PngException("bKGD chunk must follow PLTE chunk");
@@ -64,7 +61,7 @@ extends Chunk
         g = new byte[size];
         b = new byte[size];
 
-        int[][] raw  = new int[3][size];
+        int[][] raw = new int[3][size];
         r_raw = raw[0];
         g_raw = raw[1];
         b_raw = raw[2];
@@ -79,8 +76,7 @@ extends Chunk
     }
 
     // TODO: stop duplication of palette data?
-    /* package */ void updateProperties(boolean alpha)
-    {
+    /* package */ void updateProperties(boolean alpha) {
         int[][] prop = new int[alpha ? 4 : 3][size];
         System.arraycopy(r_raw, 0, prop[0], 0, size);
         System.arraycopy(g_raw, 0, prop[1], 0, size);
@@ -92,20 +88,19 @@ extends Chunk
         img.data.properties.put("palette size", size);
     }
 
-    /* package */ void calculate()
-    {
+    /* package */ void calculate() {
         for (int i = 0; i < size; i++) {
-            r[i] = (byte)img.data.gammaTable[r_raw[i]];
-            g[i] = (byte)img.data.gammaTable[g_raw[i]];
-            b[i] = (byte)img.data.gammaTable[b_raw[i]];
+            r[i] = (byte) img.data.gammaTable[r_raw[i]];
+            g[i] = (byte) img.data.gammaTable[g_raw[i]];
+            b[i] = (byte) img.data.gammaTable[b_raw[i]];
         }
         if (img.data.header.paletteUsed) {
             if (a != null) {
-                img.data.header.model = 
-                    new IndexColorModel(img.data.header.cmBits, size, r, g, b, a);
+                img.data.header.model =
+                        new IndexColorModel(img.data.header.cmBits, size, r, g, b, a);
             } else {
-                img.data.header.model = 
-                    new IndexColorModel(img.data.header.cmBits, size, r, g, b);
+                img.data.header.model =
+                        new IndexColorModel(img.data.header.cmBits, size, r, g, b);
             }
         }
     }

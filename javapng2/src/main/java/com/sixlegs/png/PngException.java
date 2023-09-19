@@ -39,12 +39,13 @@ package com.sixlegs.png;
 import java.io.IOException;
 import java.lang.reflect.Method;
 
+
 /**
  * The superclass for all decoding exceptions.
  */
 public class PngException
-extends IOException
-{
+        extends IOException {
+
     // We use reflection for pre-1.4 JVMs
     private static final Method initCause = getInitCause();
 
@@ -57,14 +58,12 @@ extends IOException
     }
 
     private final boolean fatal;
-    
-    PngException(String message, boolean fatal)
-    {
+
+    PngException(String message, boolean fatal) {
         this(message, null, fatal);
     }
 
-    PngException(String message, Throwable cause, boolean fatal)
-    {
+    PngException(String message, Throwable cause, boolean fatal) {
         super(message);
         this.fatal = fatal;
         if (cause != null && initCause != null) {
@@ -82,8 +81,7 @@ extends IOException
      * Returns true if this exception represents a fatal decoding error.
      * Most errors in non-ancillary chunks are fatal.
      */
-    public boolean isFatal()
-    {
+    public boolean isFatal() {
         return fatal;
     }
 }

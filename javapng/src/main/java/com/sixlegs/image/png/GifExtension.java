@@ -7,17 +7,18 @@ package com.sixlegs.image.png;
  * Interface to GIF Application Extension chunks (gIFx),
  * which constains application-specific information converted
  * from GIF89a files.
+ *
  * @see PngImage#getGifExtensions
  */
-public interface GifExtension
-{
-    /** 
+public interface GifExtension {
+
+    /**
      * Returns the Application Identifier of this GifExtension,
      * which identifies the application that created the extension.
      */
     String getIdentifier();
 
-    /** 
+    /**
      * Returns an Authentication Code of this GifExtension,
      * which may be used to further validate the extension.
      */

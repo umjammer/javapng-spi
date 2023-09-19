@@ -2,30 +2,28 @@
 // Please see included LICENSE.TXT
 
 package com.sixlegs.image.png;
+
 import java.io.IOException;
 
+
 final class Chunk_gAMA
-extends Chunk
-{
-    Chunk_gAMA()
-    {
+        extends Chunk {
+
+    Chunk_gAMA() {
         super(gAMA);
     }
 
-    protected boolean multipleOK()
-    {
+    protected boolean multipleOK() {
         return false;
     }
 
-    protected boolean beforeIDAT()
-    {
+    protected boolean beforeIDAT() {
         return true;
     }
 
     protected void readData()
-    throws IOException
-    {
-        if (img.data.palette != null) 
+            throws IOException {
+        if (img.data.palette != null)
             throw new PngException("gAMA chunk must precede PLTE chunk");
         if (length != 4) badLength(4);
         long gamma = in_data.readUnsignedInt();

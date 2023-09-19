@@ -6,31 +6,28 @@ package com.sixlegs.image.png;
 import java.awt.Color;
 import java.io.IOException;
 
+
 final class Chunk_tRNS
-extends Chunk
-{
+        extends Chunk {
+
     /* package */ int rgb;
     /* package */ int rgb_low;
     /* package */ int r, g, b;
 
-    Chunk_tRNS()
-    {
+    Chunk_tRNS() {
         super(tRNS);
     }
 
-    protected boolean multipleOK()
-    {
+    protected boolean multipleOK() {
         return false;
     }
 
-    protected boolean beforeIDAT()
-    {
+    protected boolean beforeIDAT() {
         return true;
     }
 
     protected void readData()
-    throws IOException
-    {
+            throws IOException {
         int d = img.data.header.outputDepth;
         switch (img.data.header.colorType) {
         case PngImage.COLOR_TYPE_GRAY:
@@ -78,11 +75,11 @@ extends Chunk
             p.a = new byte[size];
             int i = 0;
             while (i < length) {
-                p.a[i] = (byte)(p.a_raw[i] = in_data.readUnsignedByte());
+                p.a[i] = (byte) (p.a_raw[i] = in_data.readUnsignedByte());
                 i++;
             }
             while (i < size) {
-                p.a[i] = (byte)(p.a_raw[i] = 0xFF);
+                p.a[i] = (byte) (p.a_raw[i] = 0xFF);
                 i++;
             }
             img.data.properties.put("transparency size", length);

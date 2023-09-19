@@ -4,25 +4,21 @@
 package com.sixlegs.image.png;
 
 final class Chunk_zTXt
-extends AbstractTextChunk
-{
-    Chunk_zTXt()
-    {
+        extends AbstractTextChunk {
+
+    Chunk_zTXt() {
         super(zTXt);
     }
 
-    protected boolean isCompressed()
-    {
+    protected boolean isCompressed() {
         return true;
     }
 
-    public String getTranslatedKeyword()
-    {
+    public String getTranslatedKeyword() {
         return null;
     }
 
-    public String getLanguage()
-    {
+    public String getLanguage() {
         return null;
     }
 }

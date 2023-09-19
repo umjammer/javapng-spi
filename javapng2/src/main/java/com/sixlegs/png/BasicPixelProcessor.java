@@ -37,19 +37,17 @@ exception statement from your version.
 package com.sixlegs.png;
 
 class BasicPixelProcessor
-extends PixelProcessor
-{
+        extends PixelProcessor {
+
     protected final Destination dst;
     protected final int samples;
-    
-    public BasicPixelProcessor(Destination dst, int samples)
-    {
+
+    public BasicPixelProcessor(Destination dst, int samples) {
         this.dst = dst;
         this.samples = samples;
     }
-    
-    public boolean process(int[] row, int xOffset, int xStep, int yStep, int y, int width)
-    {
+
+    public boolean process(int[] row, int xOffset, int xStep, int yStep, int y, int width) {
         if (xStep == 1) {
             dst.setPixels(xOffset, y, width, row);
         } else {

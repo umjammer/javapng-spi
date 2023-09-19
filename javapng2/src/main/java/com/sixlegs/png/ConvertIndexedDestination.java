@@ -38,18 +38,18 @@ package com.sixlegs.png;
 
 import java.awt.image.*;
 
+
 class ConvertIndexedDestination
-extends Destination
-{
+        extends Destination {
+
     private final Destination dst;
     private final IndexColorModel srcColorModel;
     private final int srcSamples;
     private final int dstSamples;
     private final int sampleDiff;
     private final int[] row;
-    
-    public ConvertIndexedDestination(Destination dst, int width, IndexColorModel srcColorModel, ComponentColorModel dstColorModel)
-    {
+
+    public ConvertIndexedDestination(Destination dst, int width, IndexColorModel srcColorModel, ComponentColorModel dstColorModel) {
         this.dst = dst;
         this.srcColorModel = srcColorModel;
         srcSamples = srcColorModel.getNumComponents();
@@ -58,8 +58,7 @@ extends Destination
         row = new int[width * dstSamples + sampleDiff];
     }
 
-    public void setPixels(int x, int y, int w, int[] pixels)
-    {
+    public void setPixels(int x, int y, int w, int[] pixels) {
         for (int i = w - 1, off = dstSamples * i; i >= 0; i--, off -= dstSamples)
             srcColorModel.getComponents(pixels[i], row, off);
         if (sampleDiff != 0)
@@ -67,29 +66,24 @@ extends Destination
         dst.setPixels(x, y, w, row);
     }
 
-    public void setPixel(int x, int y, int[] pixel)
-    {
+    public void setPixel(int x, int y, int[] pixel) {
         setPixels(x, y, 1, pixel);
     }
 
-    public void getPixel(int x, int y, int[] pixel)
-    {
+    public void getPixel(int x, int y, int[] pixel) {
         // TODO: convert backwards (requires looking up palette index)
         throw new UnsupportedOperationException("implement me");
     }
 
-    public WritableRaster getRaster()
-    {
+    public WritableRaster getRaster() {
         return dst.getRaster();
     }
 
-    public int getSourceWidth()
-    {
+    public int getSourceWidth() {
         return dst.getSourceWidth();
     }
 
-    public void done()
-    {
+    public void done() {
         dst.done();
-    }    
+    }
 }

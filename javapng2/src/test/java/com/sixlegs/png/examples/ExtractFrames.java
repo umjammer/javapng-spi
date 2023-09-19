@@ -43,11 +43,11 @@ import java.nio.file.Files;
 import java.text.DecimalFormat;
 import java.util.*;
 
-public class ExtractFrames
-{
+
+public class ExtractFrames {
+
     public static void main(String[] args)
-    throws Exception
-    {
+            throws Exception {
         DecimalFormat fmt = new DecimalFormat("000");
         for (String arg : args) {
             File in = new File(arg);
@@ -66,12 +66,12 @@ public class ExtractFrames
     }
 
     private static class PngSplitter
-    extends PngImage
-    {
+            extends PngImage {
+
         private static final PngConfig CONFIG = new PngConfig.Builder()
-            .warningsFatal(true)
-            .readLimit(PngConfig.READ_EXCEPT_DATA)
-            .build();
+                .warningsFatal(true)
+                .readLimit(PngConfig.READ_EXCEPT_DATA)
+                .build();
 
         private File in;
         private List<Chunk> commonBefore = new ArrayList<>();
@@ -82,8 +82,7 @@ public class ExtractFrames
         private byte[] buf = new byte[0x2000];
 
         public PngSplitter(File in)
-        throws IOException
-        {
+                throws IOException {
             super(CONFIG);
             this.in = in;
             read(in);
@@ -98,14 +97,12 @@ public class ExtractFrames
             }
         }
 
-        public int getNumFrames()
-        {
+        public int getNumFrames() {
             return byFrame.size();
         }
 
         public void write(File file, int index)
-        throws IOException
-        {
+                throws IOException {
             try (DataOutputStream out = new DataOutputStream(new BufferedOutputStream(Files.newOutputStream(file.toPath())))) {
                 ChunkWriter cw = new ChunkWriter();
                 out.writeLong(PngConstants.SIGNATURE);
@@ -116,8 +113,7 @@ public class ExtractFrames
         }
 
         private void echo(DataOutput out, List<Chunk> chunks)
-        throws IOException
-        {
+                throws IOException {
             ChunkWriter cw = new ChunkWriter();
             try (RandomAccessFile rf = new RandomAccessFile(in, "r")) {
                 for (Chunk chunk : chunks) {
@@ -132,8 +128,7 @@ public class ExtractFrames
         }
 
         protected void readChunk(int type, DataInput in, long offset, int length)
-        throws IOException
-        {
+                throws IOException {
             Chunk chunk = new Chunk();
             chunk.type = type;
             chunk.offset = offset;
@@ -162,14 +157,13 @@ public class ExtractFrames
         }
     }
 
-    private static class Chunk
-    {
+    private static class Chunk {
+
         int type;
         long offset;
         int length;
 
-        public String toString()
-        {
+        public String toString() {
             return PngConstants.getChunkName(type);
         }
     }

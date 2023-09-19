@@ -42,40 +42,37 @@ import java.awt.image.*;
 import java.io.*;
 
 
-public class WriteAnimatedDemos
-{
+public class WriteAnimatedDemos {
+
     public static void main(String[] args)
-    throws Exception
-    {
+            throws Exception {
         Dimension size = new Dimension(200, 200);
         Png2AnimatedPng.run(
-            "--delay", "1000",
-            "--blend", "1",
-            "--crop",
-            writeBlank(size),
-            writeFrame(size, 0x55FF0000, -90),
-            writeFrame(size, 0x5500FF00, 30),
-            writeFrame(size, 0x550000FF, 150),
-            args[0]
+                "--delay", "1000",
+                "--blend", "1",
+                "--crop",
+                writeBlank(size),
+                writeFrame(size, 0x55FF0000, -90),
+                writeFrame(size, 0x5500FF00, 30),
+                writeFrame(size, 0x550000FF, 150),
+                args[0]
         );
     }
 
     private static String writeBlank(Dimension size)
-    throws IOException
-    {
+            throws IOException {
         File file = File.createTempFile("demo", ".png");
         file.deleteOnExit();
         javax.imageio.ImageIO.write(new BufferedImage(size.width, size.height, BufferedImage.TYPE_INT_ARGB),
-                                    "PNG", file);
+                "PNG", file);
         return file.getPath();
     }
 
     private static String writeFrame(Dimension size, int rgba, int angle)
-    throws IOException
-    {
+            throws IOException {
         Point center = new Point(size.width / 2, size.height / 2 + 10);
         Shape ellipse = createEllipse(getPoint(center, size.width / 5, angle), size.width / 4);
-        
+
         BufferedImage image = new BufferedImage(size.width, size.height, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = image.createGraphics();
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -84,22 +81,20 @@ public class WriteAnimatedDemos
         g.setColor(new Color(rgba, true));
         g.fill(ellipse);
         g.dispose();
-        
+
         File file = File.createTempFile("demo", ".png");
         file.deleteOnExit();
         javax.imageio.ImageIO.write(image, "PNG", file);
         return file.getPath();
     }
 
-    private static Point getPoint(Point center, int offset, int angle)
-    {
+    private static Point getPoint(Point center, int offset, int angle) {
         double theta = Math.toRadians(angle);
-        return new Point(center.x + (int)Math.round(offset * Math.cos(theta)),
-                         center.y + (int)Math.round(offset * Math.sin(theta)));
+        return new Point(center.x + (int) Math.round(offset * Math.cos(theta)),
+                center.y + (int) Math.round(offset * Math.sin(theta)));
     }
 
-    private static Ellipse2D createEllipse(Point center, int r)
-    {
+    private static Ellipse2D createEllipse(Point center, int r) {
         return new Ellipse2D.Float(center.x - r, center.y - r, r * 2, r * 2);
     }
 }

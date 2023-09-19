@@ -37,6 +37,7 @@ exception statement from your version.
 package com.sixlegs.png.examples;
 
 import com.sixlegs.png.*;
+
 import java.awt.*;
 import java.awt.image.*;
 import java.io.*;
@@ -47,15 +48,16 @@ import java.util.zip.*;
 import javax.imageio.*;
 import javax.imageio.metadata.*;
 import javax.imageio.stream.FileImageInputStream;
+
 import org.w3c.dom.Node;
 
-public class AnimatedGif2Png
-{
+
+public class AnimatedGif2Png {
+
     private static final int MIN_DELAY = 75; // ms
-    
+
     public static void main(String[] args)
-    throws IOException
-    {
+            throws IOException {
         if (args.length != 2) {
             System.err.println("Usage: java -jar gif2apng.jar <in.gif> <out.png>");
             return;
@@ -64,8 +66,7 @@ public class AnimatedGif2Png
     }
 
     public static void convert(File in, File out)
-    throws IOException
-    {
+            throws IOException {
         ImageReader imageReader = ImageIO.getImageReadersByFormatName("GIF").next();
         imageReader.setInput(new FileImageInputStream(in));
 
@@ -86,31 +87,31 @@ public class AnimatedGif2Png
         int[] prev = null;
         boolean different = false;
         try {
-            for (;;) {
+            for (; ; ) {
                 // TODO: get palette from metadata instead of decoding image?
                 BufferedImage image = imageReader.read(index);
                 ColorModel colorModel = image.getColorModel();
-                IndexColorModel icm = (IndexColorModel)colorModel;
+                IndexColorModel icm = (IndexColorModel) colorModel;
                 int[] palette = new int[icm.getMapSize()];
                 icm.getRGBs(palette);
                 for (int j : palette) entries.add(j);
                 if (!different && prev != null && !Arrays.equals(palette, prev))
                     different = true;
                 prev = palette;
-                
+
                 IIOMetadata metadata = imageReader.getImageMetadata(index);
                 Node root = metadata.getAsTree(metadata.getNativeMetadataFormatName());
                 Node desc = getChild(root, "ImageDescriptor");
                 Node gce = getChild(root, "GraphicControlExtension");
                 int blendOp = (index == 0) ? FrameControl.BLEND_SOURCE : FrameControl.BLEND_OVER;
                 frames.add(new Frame(palette,
-                                     new Rectangle(Integer.parseInt(getAttr(desc, "imageLeftPosition")),
-                                                   Integer.parseInt(getAttr(desc, "imageTopPosition")),
-                                                   Integer.parseInt(getAttr(desc, "imageWidth")),
-                                                   Integer.parseInt(getAttr(desc, "imageHeight"))),
-                                     Math.max(10 * Integer.parseInt(getAttr(gce, "delayTime")), MIN_DELAY),
-                                     mapDisposal(getAttr(gce, "disposalMethod")),
-                                     blendOp));
+                        new Rectangle(Integer.parseInt(getAttr(desc, "imageLeftPosition")),
+                                Integer.parseInt(getAttr(desc, "imageTopPosition")),
+                                Integer.parseInt(getAttr(desc, "imageWidth")),
+                                Integer.parseInt(getAttr(desc, "imageHeight"))),
+                        Math.max(10 * Integer.parseInt(getAttr(gce, "delayTime")), MIN_DELAY),
+                        mapDisposal(getAttr(gce, "disposalMethod")),
+                        blendOp));
                 index++;
             }
         } catch (IndexOutOfBoundsException e) {
@@ -127,7 +128,7 @@ public class AnimatedGif2Png
         PngWriter w = new PngWriter(out);
         boolean paletted = entries.size() <= 256;
         int colorType = paletted ? PngConstants.COLOR_TYPE_PALETTE :
-            PngConstants.COLOR_TYPE_RGB_ALPHA;
+                PngConstants.COLOR_TYPE_RGB_ALPHA;
         w.start(first.bounds.getSize(), colorType, first.palette, frames.size(), numIterations);
         if (paletted) {
             if (different)
@@ -140,16 +141,15 @@ public class AnimatedGif2Png
         imageReader.dispose();
     }
 
-    private static byte[] getAppExtension(IIOMetadata metadata, String id, String code)
-    {
+    private static byte[] getAppExtension(IIOMetadata metadata, String id, String code) {
         Node root = metadata.getAsTree(metadata.getNativeMetadataFormatName());
         Node extensions = getChild(root, "ApplicationExtensions");
         if (extensions == null)
             return null;
         for (Node node = extensions.getFirstChild(); node != null; node = node.getNextSibling()) {
             if (id.equals(getAttr(node, "applicationID")) &&
-                code.equals(getAttr(node, "authenticationCode")))
-                return (byte[])((IIOMetadataNode)node).getUserObject();
+                    code.equals(getAttr(node, "authenticationCode")))
+                return (byte[]) ((IIOMetadataNode) node).getUserObject();
         }
         return null;
     }
@@ -173,8 +173,7 @@ public class AnimatedGif2Png
 //    }
 
     private static void writePaletted(PngWriter w, ImageReader imageReader, List<Frame> frames)
-    throws IOException
-    {
+            throws IOException {
         // TODO: if palette is <= 64 entries, use smaller bit depth
         boolean animated = frames.size() > 1;
         Frame first = frames.get(0);
@@ -197,8 +196,7 @@ public class AnimatedGif2Png
     }
 
     private static void writeTruecolor(PngWriter w, ImageReader imageReader, List<Frame> frames)
-    throws IOException
-    {
+            throws IOException {
         // TODO: could use tRNS instead of alpha channel in some cases for better compression
         boolean animated = frames.size() > 1;
         Frame first = frames.get(0);
@@ -215,55 +213,54 @@ public class AnimatedGif2Png
             raw.reset();
             DataOutputStream defl = new DataOutputStream(new DeflaterOutputStream(raw));
             for (int y = 0, height = frame.bounds.height; y < height; y++) {
-                 image.getRaster().getDataElements(0, y, width, 1, row);
-                 int toX = 0;
-                 for (int x = 0; x < width; x++) {
-                     int argb = palette[0xFF & row[x]];
-                     rgbs[toX++] = (byte)(0xFF & (argb >>> 16));
-                     rgbs[toX++] = (byte)(0xFF & (argb >>> 8));
-                     rgbs[toX++] = (byte)(0xFF & argb);
-                     rgbs[toX++] = (byte)(0xFF & (argb >>> 24));
-                 }
-                 int filterType = filterer.filter(rgbs, prev, 4 * width);
-                 defl.write(filterType);
-                 defl.write(rgbs, 0, 4 * width);
-                 byte[] t = rgbs; rgbs = prev; prev = t; // swap
+                image.getRaster().getDataElements(0, y, width, 1, row);
+                int toX = 0;
+                for (int x = 0; x < width; x++) {
+                    int argb = palette[0xFF & row[x]];
+                    rgbs[toX++] = (byte) (0xFF & (argb >>> 16));
+                    rgbs[toX++] = (byte) (0xFF & (argb >>> 8));
+                    rgbs[toX++] = (byte) (0xFF & argb);
+                    rgbs[toX++] = (byte) (0xFF & (argb >>> 24));
+                }
+                int filterType = filterer.filter(rgbs, prev, 4 * width);
+                defl.write(filterType);
+                defl.write(rgbs, 0, 4 * width);
+                byte[] t = rgbs;
+                rgbs = prev;
+                prev = t; // swap
             }
             defl.close();
             w.frame(animated, frame, raw.toByteArray());
         }
     }
 
-    private static BufferedImage pad(BufferedImage image, Rectangle bounds)
-    {
+    private static BufferedImage pad(BufferedImage image, Rectangle bounds) {
         if (image.getWidth() == bounds.width && image.getHeight() == bounds.height)
             return image;
         BufferedImage padded =
-            new BufferedImage(image.getColorModel(),
-                              image.getRaster().createCompatibleWritableRaster(bounds.width, bounds.height),
-                              image.isAlphaPremultiplied(),
-                              null);
+                new BufferedImage(image.getColorModel(),
+                        image.getRaster().createCompatibleWritableRaster(bounds.width, bounds.height),
+                        image.isAlphaPremultiplied(),
+                        null);
         Graphics2D g = padded.createGraphics();
         g.drawImage(image, 0, 0, image.getWidth(), image.getHeight(), null, null);
         g.dispose();
         return padded;
     }
 
-    private static class Filterer
-    {
+    private static class Filterer {
+
         private final byte[] work;
         private final byte[] best;
         private final int pixelStride;
-        
-        public Filterer(int maxLength, int pixelStride)
-        {
+
+        public Filterer(int maxLength, int pixelStride) {
             work = new byte[maxLength];
             best = new byte[maxLength];
             this.pixelStride = pixelStride;
         }
 
-        public int filter(byte[] row, byte[] prev, int length)
-        {
+        public int filter(byte[] row, byte[] prev, int length) {
             int bestType = 0;
             int bestSum = Integer.MAX_VALUE;
             for (int type = 0; type <= 2; type++) {
@@ -279,16 +276,14 @@ public class AnimatedGif2Png
             return bestType;
         }
 
-        private static int sumBytes(byte[] bytes, int length)
-        {
+        private static int sumBytes(byte[] bytes, int length) {
             int sum = 0;
             for (int i = 0; i < length; i++)
                 sum += 0xFF & bytes[i];
             return sum;
         }
 
-        private void filter(byte[] row, byte[] prev, int length, int type)
-        {
+        private void filter(byte[] row, byte[] prev, int length, int type) {
             switch (type) {
             case 0: // None
                 System.arraycopy(row, 0, work, 0, length);
@@ -297,33 +292,31 @@ public class AnimatedGif2Png
                 for (int i = 0; i < pixelStride; i++)
                     work[i] = row[i];
                 for (int i = pixelStride, from = 0; i < length; i++, from++)
-                    work[i] = (byte)((row[i] - row[from]) % 256);
+                    work[i] = (byte) ((row[i] - row[from]) % 256);
                 break;
             case 2: // Up
                 for (int i = 0; i < length; i++)
-                    work[i] = (byte)((row[i] - prev[i]) % 256);
+                    work[i] = (byte) ((row[i] - prev[i]) % 256);
                 break;
             default:
                 throw new UnsupportedOperationException("implement me");
             }
         }
-    }    
+    }
 
-    private static class PngWriter
-    {
+    private static class PngWriter {
+
         private final DataOutputStream data;
         private final ChunkWriter chunk = new ChunkWriter();
         private int seq;
-        
+
         public PngWriter(File out)
-        throws IOException
-        {
+                throws IOException {
             this.data = new DataOutputStream(new BufferedOutputStream(Files.newOutputStream(out.toPath())));
         }
 
         public void start(Dimension size, int colorType, int[] palette, int numFrames, int numIterations)
-        throws IOException
-        {
+                throws IOException {
             data.writeLong(PngConstants.SIGNATURE);
             chunk.start(PngConstants.IHDR);
             chunk.writeInt(size.width);
@@ -368,8 +361,7 @@ public class AnimatedGif2Png
         }
 
         public void frame(boolean animated, Frame frame, byte[] bytes)
-        throws IOException
-        {
+                throws IOException {
             if (animated) {
                 chunk.start(AnimatedPngImage.fcTL);
                 chunk.writeInt(seq++);
@@ -398,29 +390,25 @@ public class AnimatedGif2Png
         }
 
         public void finish()
-        throws IOException
-        {
+                throws IOException {
             chunk.start(PngConstants.IEND);
             chunk.finish(data);
             data.close();
         }
     }
 
-    private static Node getChild(Node node, String name)
-    {
+    private static Node getChild(Node node, String name) {
         for (node = node.getFirstChild(); node != null; node = node.getNextSibling())
             if (name.equals(node.getNodeName()))
                 break;
         return node;
     }
-    
-    private static String getAttr(Node element, String name)
-    {
+
+    private static String getAttr(Node element, String name) {
         return element.getAttributes().getNamedItem(name).getNodeValue();
     }
 
-    private static int mapDisposal(String gifDisposalMethod)
-    {
+    private static int mapDisposal(String gifDisposalMethod) {
         if (gifDisposalMethod.equals("restoreToBackgroundColor"))
             return FrameControl.DISPOSE_BACKGROUND;
         if (gifDisposalMethod.equals("restoreToPrevious"))
@@ -428,16 +416,15 @@ public class AnimatedGif2Png
         return FrameControl.DISPOSE_NONE;
     }
 
-    private static class Frame
-    {
+    private static class Frame {
+
         final int[] palette;
         final Rectangle bounds;
         final int delayTime;
         final int dispose;
         final int blend;
 
-        public Frame(int[] palette, Rectangle bounds, int delayTime, int dispose, int blend)
-        {
+        public Frame(int[] palette, Rectangle bounds, int delayTime, int dispose, int blend) {
             this.palette = palette;
             this.bounds = bounds;
             this.delayTime = delayTime;

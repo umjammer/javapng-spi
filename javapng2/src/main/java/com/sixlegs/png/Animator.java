@@ -43,15 +43,16 @@ import java.awt.image.BufferedImage;
 import java.util.*;
 import java.util.List;
 
+
 /**
  * TODO
  */
 public class Animator
-implements ActionListener
-{
+        implements ActionListener {
+
     private static final Color TRANSPARENT_BLACK = new Color(0, true);
     private static final int MIN_DELAY = 10;
-    
+
     private final AnimatedPngImage png;
     private final BufferedImage target;
     private final Graphics2D g;
@@ -65,20 +66,18 @@ implements ActionListener
     private int index = -1;
     private int iter;
     private boolean done;
-    
-    private static BufferedImage createCompatibleImage(BufferedImage image, int width, int height)
-    {
+
+    private static BufferedImage createCompatibleImage(BufferedImage image, int width, int height) {
         return new BufferedImage(image.getColorModel(),
-                                 image.getRaster().createCompatibleWritableRaster(width, height),
-                                 image.isAlphaPremultiplied(),
-                                 null); // TODO: properties
+                image.getRaster().createCompatibleWritableRaster(width, height),
+                image.isAlphaPremultiplied(),
+                null); // TODO: properties
     }
 
     /**
      * TODO
      */
-    public Animator(AnimatedPngImage png, BufferedImage[] frames, BufferedImage target)
-    {
+    public Animator(AnimatedPngImage png, BufferedImage[] frames, BufferedImage target) {
         if (!png.isAnimated())
             throw new IllegalArgumentException("PNG is not animated");
         if (target == null)
@@ -98,11 +97,11 @@ implements ActionListener
             rd.bounds = frame.getBounds();
             rd.dispose = frame.getDispose();
             rd.blend = (frame.getBlend() == FrameControl.BLEND_SOURCE) ?
-                AlphaComposite.Src :
-                AlphaComposite.SrcOver;
+                    AlphaComposite.Src :
+                    AlphaComposite.SrcOver;
             if (frame.getDispose() == FrameControl.DISPOSE_PREVIOUS)
                 prevBounds.add(new Rectangle(rd.bounds.getSize()));
-            rd.delay = Math.max((int)(frame.getDelay() * 1000), MIN_DELAY);
+            rd.delay = Math.max((int) (frame.getDelay() * 1000), MIN_DELAY);
             minDelay = Math.min(minDelay, rd.delay);
             renderList.add(rd);
         }
@@ -121,8 +120,7 @@ implements ActionListener
             clearFrame(target);
     }
 
-    public void reset()
-    {
+    public void reset() {
         waitUntil = 0;
         iter = 0;
         index = -1;
@@ -130,8 +128,7 @@ implements ActionListener
         clearFrame(target);
     }
 
-    private void clearFrame(BufferedImage target)
-    {
+    private void clearFrame(BufferedImage target) {
         g.setComposite(AlphaComposite.Src);
         g.setColor(TRANSPARENT_BLACK);
         g.fillRect(0, 0, target.getWidth(), target.getHeight());
@@ -140,22 +137,19 @@ implements ActionListener
     /**
      * TODO
      */
-    public BufferedImage getTarget()
-    {
+    public BufferedImage getTarget() {
         return target;
     }
 
     /**
      * TODO
      */
-    public int getTimerDelay()
-    {
+    public int getTimerDelay() {
         return timerDelay;
     }
 
     // TODO: add fudge factor in case we get triggered a little too early
-    public void actionPerformed(ActionEvent e)
-    {
+    public void actionPerformed(ActionEvent e) {
         long now = System.currentTimeMillis();
         if (done || waitUntil > now)
             return;
@@ -179,8 +173,7 @@ implements ActionListener
         }
     }
 
-    private void dispose(RenderData rd)
-    {
+    private void dispose(RenderData rd) {
         Rectangle bounds = rd.bounds;
         switch (rd.dispose) {
         case FrameControl.DISPOSE_BACKGROUND:
@@ -195,8 +188,7 @@ implements ActionListener
         }
     }
 
-    private void draw(RenderData rd)
-    {
+    private void draw(RenderData rd) {
         Rectangle bounds = rd.bounds;
         if (rd.dispose == FrameControl.DISPOSE_PREVIOUS)
             gPrev.drawImage(target, bounds.x, bounds.y, bounds.width, bounds.height, null, null);
@@ -204,8 +196,8 @@ implements ActionListener
         g.drawImage(rd.image, bounds.x, bounds.y, bounds.width, bounds.height, null, null);
     }
 
-    private static class RenderData
-    {
+    private static class RenderData {
+
         int delay;
         int dispose;
         Rectangle bounds;

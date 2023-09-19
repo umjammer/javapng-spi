@@ -2,15 +2,15 @@ package com.sixlegs.examples;
 
 import com.sixlegs.image.png.PngImage;
 import com.sixlegs.image.png.ChunkHandler;
+
 import java.io.IOException;
 
+
 public class ChunkHandlerExample
-implements ChunkHandler
-{
+        implements ChunkHandler {
 
     public static void main(String[] args)
-    throws IOException
-    {
+            throws IOException {
         // Register instance of this class as "heLo" handler
         PngImage.registerChunk(new ChunkHandlerExample(), "heLo");
 
@@ -22,8 +22,7 @@ implements ChunkHandler
         png.getEverything();
     }
 
-    public void handleChunk(String type, byte[] data)
-    {
+    public void handleChunk(String type, byte[] data) {
         if (type.equals("heLo")) {
             System.err.println("Found heLo chunk, " + data.length + " bytes.");
         }
