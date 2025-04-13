@@ -5,97 +5,90 @@ package com.sixlegs.image.png;
 
 import java.io.IOException;
 
-class Chunk
-implements Cloneable
-{
+
+public class Chunk
+        implements Cloneable {
+
     /* package */ int length;
     /* package */ int type;
 
     protected PngImage img;
     protected ExDataInputStream in_data;
 
-    Chunk(int type)
-    {
+    Chunk(int type) {
         this.type = type;
     }
 
-    Chunk copy()
-    {
+    Chunk copy() {
         try {
-            return (Chunk)clone();
-        } catch (CloneNotSupportedException e) { 
+            return (Chunk) clone();
+        } catch (CloneNotSupportedException e) {
             return null;
         }
     }
 
-    boolean isAncillary()
-    {
+    boolean isAncillary() {
         return ((type & 0x20000000) != 0);
     }
 
-    final boolean isPrivate ()
-    {
+    final boolean isPrivate() {
         return ((type & 0x00200000) != 0);
     }
 
-    final boolean isReservedSet ()
-    {
+    final boolean isReservedSet() {
         return ((type & 0x00002000) != 0);
     }
 
-    final boolean isSafeToCopy ()
-    {
+    final boolean isSafeToCopy() {
         return ((type & 0x00000020) != 0);
     }
 
-    final boolean isUnknown ()
-    {
+    final boolean isUnknown() {
         return getClass() == Chunk.class;
     }
 
-    int bytesRemaining()
-    {
+    int bytesRemaining() {
         return Math.max(0, length + 4 - img.data.in_idat.count());
     }
 
-    protected boolean multipleOK() { return true; }
-    protected boolean beforeIDAT() { return false; }
-  
-    static String typeToString(int x)
-    {
-        return ("" + 
-                (char)((x >>> 24) & 0xFF) + 
-                (char)((x >>> 16) & 0xFF) + 
-                (char)((x >>>  8) & 0xFF) + 
-                (char)((x       ) & 0xFF));
+    protected boolean multipleOK() {
+        return true;
     }
 
-    static int stringToType(String id)
-    {
-        return ((((int)id.charAt(0) & 0xFF) << 24) | 
-                (((int)id.charAt(1) & 0xFF) << 16) | 
-                (((int)id.charAt(2) & 0xFF) <<  8) | 
-                (((int)id.charAt(3) & 0xFF)      ));
+    protected boolean beforeIDAT() {
+        return false;
+    }
+
+    static String typeToString(int x) {
+        return ("" +
+                (char) ((x >>> 24) & 0xFF) +
+                (char) ((x >>> 16) & 0xFF) +
+                (char) ((x >>> 8) & 0xFF) +
+                (char) ((x) & 0xFF));
+    }
+
+    static int stringToType(String id) {
+        return ((((int) id.charAt(0) & 0xFF) << 24) |
+                (((int) id.charAt(1) & 0xFF) << 16) |
+                (((int) id.charAt(2) & 0xFF) << 8) |
+                (((int) id.charAt(3) & 0xFF)));
     }
 
     final void badLength(int correct)
-    throws PngException
-    {
+            throws PngException {
         throw new PngException("Bad " + typeToString(type) +
-                               " chunk length: " + in_data.unsign(length) +
-                               " (expected " + correct + ")");
+                " chunk length: " + ExDataInputStream.unsign(length) +
+                " (expected " + correct + ")");
     }
 
     final void badLength()
-    throws PngException
-    {
+            throws PngException {
         throw new PngException("Bad " + typeToString(type) +
-                               " chunk length: " + in_data.unsign(length));
+                " chunk length: " + ExDataInputStream.unsign(length));
     }
 
     protected void readData()
-    throws IOException
-    {
+            throws IOException {
         in_data.skipBytes(length);
     }
 

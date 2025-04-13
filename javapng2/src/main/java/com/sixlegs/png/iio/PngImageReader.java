@@ -37,6 +37,7 @@ exception statement from your version.
 package com.sixlegs.png.iio;
 
 import com.sixlegs.png.*;
+
 import java.awt.image.BufferedImage;
 import java.awt.color.ColorSpace;
 import javax.imageio.ImageReader;
@@ -48,220 +49,202 @@ import java.io.DataInput;
 import java.io.IOException;
 import java.util.*;
 
+
 public class PngImageReader
-extends ImageReader
-{
+        extends ImageReader {
+
     private PngImage png = new IIOPngImage(new PngConfig.Builder().build());
-	private PngHeader pngHeader;
-	private PngImageMetadata pngMetadata;
-	private BufferedImage pngImage;
-    private Map unknownChunks = new HashMap();
-    
-    public PngImageReader(PngImageReaderSpi provider)
-    {
+    private PngHeader pngHeader;
+    private PngImageMetadata pngMetadata;
+    private BufferedImage pngImage;
+    private Map<Integer, byte[]> unknownChunks = new HashMap<>();
+
+    public PngImageReader(PngImageReaderSpi provider) {
         super(provider);
     }
 
-    public void dispose()
-    {
+    public void dispose() {
         png = null;
-		pngHeader = null;
-		pngMetadata = null;
-		pngImage = null;
+        pngHeader = null;
+        pngMetadata = null;
+        pngImage = null;
         unknownChunks = null;
     }
 
-    public void setInput(Object input, boolean seekForwardOnly, boolean ignoreMetadata)
-    {
-		if (!(input instanceof ImageInputStream))
-			throw new IllegalArgumentException("Expected ImageInputStream, got " + input);
+    public void setInput(Object input, boolean seekForwardOnly, boolean ignoreMetadata) {
+        if (!(input instanceof ImageInputStream))
+            throw new IllegalArgumentException("Expected ImageInputStream, got " + input);
         super.setInput(input, seekForwardOnly, ignoreMetadata);
-		pngHeader = null;
-		pngMetadata = null;
-		pngImage = null;
+        pngHeader = null;
+        pngMetadata = null;
+        pngImage = null;
         unknownChunks.clear();
     }
 
-    public int getNumImages(boolean allowSearch)
-    {
+    public int getNumImages(boolean allowSearch) {
         return 1;
     }
 
-	private void checkIndex(int imageIndex)
-    {
-		if (imageIndex != 0)
-			throw new IndexOutOfBoundsException("Requested image " + imageIndex);
-	}
+    private void checkIndex(int imageIndex) {
+        if (imageIndex != 0)
+            throw new IndexOutOfBoundsException("Requested image " + imageIndex);
+    }
 
-	private void readHeader() 
-	throws IOException
-    {
-		if (pngHeader == null)
-			pngHeader = new PngHeader((ImageInputStream)input);
-	}
+    private void readHeader()
+            throws IOException {
+        if (pngHeader == null)
+            pngHeader = new PngHeader((ImageInputStream) input);
+    }
 
     public int getWidth(int imageIndex)
-	throws IOException
-    {
-		checkIndex(imageIndex);
-		readHeader();
-		return pngHeader.width;
+            throws IOException {
+        checkIndex(imageIndex);
+        readHeader();
+        return pngHeader.width;
     }
 
     public int getHeight(int imageIndex)
-	throws IOException
-    {
-		checkIndex(imageIndex);
-		readHeader();
-		return pngHeader.height;
+            throws IOException {
+        checkIndex(imageIndex);
+        readHeader();
+        return pngHeader.height;
     }
 
-    public Iterator getImageTypes(int imageIndex)
-    throws IOException
-    {
-		checkIndex(imageIndex);
-		readHeader();
+    public Iterator<ImageTypeSpecifier> getImageTypes(int imageIndex)
+            throws IOException {
+        checkIndex(imageIndex);
+        readHeader();
 
-		int datatype = java.awt.image.DataBuffer.TYPE_BYTE;
-		int[] bandOffsets = null;
-		ImageTypeSpecifier imageType = null;
-		ColorSpace rgb = null;
+        int datatype = java.awt.image.DataBuffer.TYPE_BYTE;
+        int[] bandOffsets = null;
+        ImageTypeSpecifier imageType = null;
+        ColorSpace rgb = null;
 
-		// FIXME: These need to be checked
-		switch (pngHeader.colorType) {
-			case PngConstants.COLOR_TYPE_GRAY:
-				imageType = ImageTypeSpecifier.createGrayscale(
-						pngHeader.bitDepth,
-						datatype,
-						false);
-				break;
-			case PngConstants.COLOR_TYPE_GRAY_ALPHA:
-				imageType = ImageTypeSpecifier.createGrayscale(
-						pngHeader.bitDepth,
-						datatype,
-						false,
-						true);
-				break;
-			//FIXME Are the palette entries needed if PngImage deals with them?
-			case PngConstants.COLOR_TYPE_PALETTE:
-				imageType = ImageTypeSpecifier.createIndexed(
-						null,//redLUT,
-						null,//greenLUT,
-						null,//blueLUT,
-						null,//alphaLUT,
-						pngHeader.bitDepth,
-						datatype);
-				break;
-			case PngConstants.COLOR_TYPE_RGB:
-				rgb = ColorSpace.getInstance(ColorSpace.CS_sRGB);
-				bandOffsets = new int[3];
-				bandOffsets[0] = 0;
-				bandOffsets[1] = 1;
-				bandOffsets[2] = 2;
-				imageType = ImageTypeSpecifier.createInterleaved(rgb,
-								bandOffsets,
-								datatype,
-								false,
-								false);
-				break;				
-			case PngConstants.COLOR_TYPE_RGB_ALPHA:
-				rgb = ColorSpace.getInstance(ColorSpace.CS_sRGB);
-				bandOffsets = new int[3];
-				bandOffsets[0] = 0;
-				bandOffsets[1] = 1;
-				bandOffsets[2] = 2;
-				imageType = ImageTypeSpecifier.createInterleaved(rgb,
-								bandOffsets,
-								datatype,
-								true,
-								false);
-				break;
-		}
+        // FIXME: These need to be checked
+        switch (pngHeader.colorType) {
+        case PngConstants.COLOR_TYPE_GRAY:
+            imageType = ImageTypeSpecifier.createGrayscale(
+                    pngHeader.bitDepth,
+                    datatype,
+                    false);
+            break;
+        case PngConstants.COLOR_TYPE_GRAY_ALPHA:
+            imageType = ImageTypeSpecifier.createGrayscale(
+                    pngHeader.bitDepth,
+                    datatype,
+                    false,
+                    true);
+            break;
+        //FIXME Are the palette entries needed if PngImage deals with them?
+        case PngConstants.COLOR_TYPE_PALETTE:
+            imageType = ImageTypeSpecifier.createIndexed(
+                    new byte[0],//redLUT,
+                    new byte[0],//greenLUT,
+                    new byte[0],//blueLUT,
+                    null,//alphaLUT,
+                    pngHeader.bitDepth,
+                    datatype);
+            break;
+        case PngConstants.COLOR_TYPE_RGB:
+            rgb = ColorSpace.getInstance(ColorSpace.CS_sRGB);
+            bandOffsets = new int[3];
+            bandOffsets[0] = 0;
+            bandOffsets[1] = 1;
+            bandOffsets[2] = 2;
+            imageType = ImageTypeSpecifier.createInterleaved(rgb,
+                    bandOffsets,
+                    datatype,
+                    false,
+                    false);
+            break;
+        case PngConstants.COLOR_TYPE_RGB_ALPHA:
+            rgb = ColorSpace.getInstance(ColorSpace.CS_sRGB);
+            bandOffsets = new int[3];
+            bandOffsets[0] = 0;
+            bandOffsets[1] = 1;
+            bandOffsets[2] = 2;
+            imageType = ImageTypeSpecifier.createInterleaved(rgb,
+                    bandOffsets,
+                    datatype,
+                    true,
+                    false);
+            break;
+        }
 
-		return Arrays.asList(new ImageTypeSpecifier[]{
-			imageType
-		}).iterator();
-	}
+        return Arrays.asList(new ImageTypeSpecifier[] {
+                imageType
+        }).iterator();
+    }
 
     public IIOMetadata getImageMetadata(int imageIndex)
-	throws IOException
-    {
-		checkIndex(imageIndex);
-		readMetadata();
+            throws IOException {
+        checkIndex(imageIndex);
+        readMetadata();
         return pngMetadata;
     }
 
-    public IIOMetadata getStreamMetadata()
-    {
-		return null;
+    public IIOMetadata getStreamMetadata() {
+        return null;
     }
 
-	public void readMetadata() 
-	throws IOException 
-	{
-		if (pngMetadata == null && !ignoreMetadata) {
-			readHeader();
-			readImage();
-			pngMetadata = new PngImageMetadata(new HashMap(png.getProperties()),
-                                               new HashMap(unknownChunks));
-		}
-	}
+    public void readMetadata()
+            throws IOException {
+        if (pngMetadata == null && !ignoreMetadata) {
+            readHeader();
+            readImage();
+            pngMetadata = new PngImageMetadata(new HashMap<>(png.getProperties()),
+                    new HashMap<>(unknownChunks));
+        }
+    }
 
-	private void readImage()
-	throws IOException
-	{
-		if (pngImage == null) {
-			clearAbortRequest();
-			processImageStarted(0);
-			pngImage = png.read(new StreamWrapper((ImageInputStream)input), false);
-			processImageComplete();
-		}
-	}
+    private void readImage()
+            throws IOException {
+        if (pngImage == null) {
+            clearAbortRequest();
+            processImageStarted(0);
+            pngImage = png.read(new StreamWrapper((ImageInputStream) input), false);
+            processImageComplete();
+        }
+    }
 
     public BufferedImage read(int imageIndex, ImageReadParam param)
-    throws IOException
-    {
-		checkIndex(imageIndex);
- 		readMetadata();
-		readImage();
-        
-        /*
-        PngConfig config = new PngConfig.Builder().build();
-        if (param != null) {
-            config.setSourceSubsampling(param.getSourceXSubsampling(),
-                                        param.getSourceYSubsampling(),
-                                        param.getSubsamplingXOffset(),
-                                        param.getSubsamplingYOffset());
-        }
-        */
+            throws IOException {
+        checkIndex(imageIndex);
+        readMetadata();
+        readImage();
 
-		//FIXME use param to get a destination image. Not exactly sure how to
-		//go about this.
-		//
-		//BufferedImage dst = getDestination(param, getImageTypes(0),
-		//		pngHeader.width, pngHeader.height);
-		//
-		//Copy pixels from pngImage to dst???
+//        PngConfig config = new PngConfig.Builder().build();
+//        if (param != null) {
+//            config.setSourceSubsampling(param.getSourceXSubsampling(),
+//                    param.getSourceYSubsampling(),
+//                    param.getSubsamplingXOffset(),
+//                    param.getSubsamplingYOffset());
+//        }
 
-		return pngImage;
+        //FIXME use param to get a destination image. Not exactly sure how to
+        //go about this.
+        //
+        //BufferedImage dst = getDestination(param, getImageTypes(0),
+        //		pngHeader.width, pngHeader.height);
+        //
+        //Copy pixels from pngImage to dst???
+
+        return pngImage;
     }
 
     private class IIOPngImage
-    extends PngImage
-    {
-        public IIOPngImage(PngConfig cfg)
-        {
+            extends PngImage {
+
+        public IIOPngImage(PngConfig cfg) {
             super(cfg);
         }
-        
+
         protected void handleWarning(PngException e)
-        throws PngException
-        {
+                throws PngException {
             processWarningOccurred(e.getMessage());
         }
 
-        protected boolean handlePass(BufferedImage image, int pass)
-        {
+        protected boolean handlePass(BufferedImage image, int pass) {
             // TODO: processPassXXX
             if (pass == 6 || !isInterlaced()) {
                 processImageComplete();
@@ -272,8 +255,7 @@ extends ImageReader
             return true;
         }
 
-        protected boolean handleProgress(BufferedImage image, float pct)
-        {
+        protected boolean handleProgress(BufferedImage image, float pct) {
             processImageProgress(pct);
             if (abortRequested()) {
                 processReadAborted();
@@ -283,8 +265,7 @@ extends ImageReader
         }
 
         protected void readChunk(int type, DataInput in, long offset, int length)
-        throws IOException
-        {
+                throws IOException {
             if (ignoreMetadata) {
                 switch (type) {
                 case PngConstants.IHDR:
@@ -302,13 +283,12 @@ extends ImageReader
             } else {
                 byte[] bytes = new byte[length];
                 in.readFully(bytes);
-                unknownChunks.put(new Integer(type), bytes);
+                unknownChunks.put(type, bytes);
             }
         }
     }
 
-    private static boolean isKnownChunkType(int type)
-    {
+    private static boolean isKnownChunkType(int type) {
         switch (type) {
         case PngConstants.IHDR:
         case PngConstants.IEND:
@@ -337,30 +317,29 @@ extends ImageReader
         return false;
     }
 
-	/* Reads a PNG header */
-	private static class PngHeader
-	{
-		public final int width;
-		public final int height;
-		public final int colorType;
-		public final int bitDepth;
-		public final int interlaceType;
+    /* Reads a PNG header */
+    private static class PngHeader {
 
-		public PngHeader(ImageInputStream in)
-		throws IOException
-		{
-			in.mark();
+        public final int width;
+        public final int height;
+        public final int colorType;
+        public final int bitDepth;
+        public final int interlaceType;
 
-			in.seek(16);
-			width 			= in.readInt();
-			height 			= in.readInt();
-			colorType 		= in.read();
+        public PngHeader(ImageInputStream in)
+                throws IOException {
+            in.mark();
 
-			in.skipBytes(2);
-			bitDepth 		= in.read();
-			interlaceType 	= in.read();
+            in.seek(16);
+            width = in.readInt();
+            height = in.readInt();
+            colorType = in.read();
 
-			in.reset();
-		}
-	}
+            in.skipBytes(2);
+            bitDepth = in.read();
+            interlaceType = in.read();
+
+            in.reset();
+        }
+    }
 }

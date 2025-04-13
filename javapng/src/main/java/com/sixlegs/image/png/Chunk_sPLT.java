@@ -2,24 +2,23 @@
 // Please see included LICENSE.TXT
 
 package com.sixlegs.image.png;
+
 import java.io.IOException;
 
+
 final class Chunk_sPLT
-extends Chunk
-{
-    Chunk_sPLT()
-    {
+        extends Chunk {
+
+    Chunk_sPLT() {
         super(sPLT);
     }
 
-    protected boolean beforeIDAT()
-    {
+    protected boolean beforeIDAT() {
         return true;
     }
-    
+
     protected void readData()
-    throws IOException
-    {
+            throws IOException {
         String name;
         if ((name = in_data.readString()).length() > 79)
             throw new PngExceptionSoft("sPLT palette name too long");

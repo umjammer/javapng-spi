@@ -6,10 +6,11 @@ package com.sixlegs.image.png;
 import java.io.IOException;
 import java.io.InputStream;
 
+
 final class IDATInputStream
-extends InputStream
-{
-    private static final int[] signature = { 137, 80, 78, 71, 13, 10, 26, 10 };
+        extends InputStream {
+
+    private static final int[] signature = {137, 80, 78, 71, 13, 10, 26, 10};
 
     private InputStream in_raw;
     private CRCInputStream in_crc;
@@ -20,20 +21,18 @@ extends InputStream
     private int chunk_left;
     private boolean close;
 
-    public IDATInputStream(PngImage img, InputStream in_raw, boolean close)
-    {
+    public IDATInputStream(PngImage img, InputStream in_raw, boolean close) {
         this.img = img;
         this.in_raw = in_raw;
         this.close = close;
-        in_crc  = new CRCInputStream(in_raw);
+        in_crc = new CRCInputStream(in_raw);
         in_data = new ExDataInputStream(in_crc);
     }
 
     // TODO: worry about non-consecutive IDAT chunks
 
     /* package */ void readToData()
-    throws IOException
-    {
+            throws IOException {
         if (cur != null) return;
         for (int i = 0; i < 8; i++) {
             int b = in_data.readUnsignedByte();
@@ -45,7 +44,7 @@ extends InputStream
             if (getNextChunk().type != Chunk.IHDR) {
                 throw new PngException("IHDR chunk must be first chunk");
             }
-            while (getNextChunk().type != Chunk.IDAT);
+            while (getNextChunk().type != Chunk.IDAT) ;
             if (img.data.palette == null) {
                 if (img.data.header.paletteUsed) {
                     throw new PngException("Required PLTE chunk not found");
@@ -57,14 +56,12 @@ extends InputStream
         }
     }
 
-    /* package */ int count()
-    {
+    /* package */ int count() {
         return in_crc.count();
     }
 
     private void readChunk(Chunk chunk)
-    throws IOException
-    {
+            throws IOException {
         try {
             if (!chunk.multipleOK() && img.getChunk(chunk.type) != null) {
                 String msg = "Multiple " + Chunk.typeToString(chunk.type) + " chunks are not allowed";
@@ -88,10 +85,9 @@ extends InputStream
             }
         }
     }
-  
+
     private Chunk getNextChunk()
-    throws IOException
-    {
+            throws IOException {
         if (cur != null) {
             readChunk(cur);
             if (cur.type == Chunk.IEND) {
@@ -105,7 +101,7 @@ extends InputStream
         int type = in_data.readInt();
 
         if (chunk_left < 0) {
-            throw new PngException("Bad " + Chunk.typeToString(type) + " chunk length: " + in_data.unsign(chunk_left));
+            throw new PngException("Bad " + Chunk.typeToString(type) + " chunk length: " + ExDataInputStream.unsign(chunk_left));
         }
 
         cur = PngImage.getRegisteredChunk(type);
@@ -128,9 +124,8 @@ extends InputStream
         return cur;
     }
 
-    public int read(byte b[], int off, int len)
-    throws IOException
-    {
+    public int read(byte[] b, int off, int len)
+            throws IOException {
         if (cur == null)
             readToData();
         if (chunk_left == 0)
@@ -154,14 +149,12 @@ extends InputStream
     private byte[] _b = new byte[1];
 
     public int read()
-    throws IOException
-    {
+            throws IOException {
         return read(_b, 0, 1) > 0 ? _b[0] & 0xff : -1;
     }
 
     public void close()
-    throws IOException
-    {
+            throws IOException {
         in_data.close();
     }
 }

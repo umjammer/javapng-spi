@@ -40,36 +40,31 @@ import com.sixlegs.png.PngConfig;
 import com.sixlegs.png.PngImage;
 import com.sixlegs.png.AnimatedPngImage;
 import com.sixlegs.png.Animator;
+
 import java.awt.*;
-import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import javax.swing.*;
 
-public class Viewer
-{
+
+public class Viewer {
+
     private PngConfig config = new PngConfig.Builder().progressive(true).warningsFatal(true).build();
     private int progressiveDelay = 0; // TODO
     private ImagePanel imagePanel;
     private Paint checker;
 
-    public static void main(final String[] args)
-    throws Exception
-    {
+    public static void main(String[] args)
+            throws Exception {
         if (args.length != 1) {
             System.err.println("Usage: java -jar pngviewer.jar <example.png>");
             return;
         }
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                new Viewer(args);
-            }
-        });
+        SwingUtilities.invokeLater(() -> new Viewer(args));
     }
 
-    private Viewer(String[] args)
-    {
+    private Viewer(String[] args) {
         BufferedImage image = readPngResource("checker.png");
         Rectangle rect = new Rectangle(0, 0, image.getWidth(), image.getHeight());
         checker = new TexturePaint(image, rect);
@@ -82,7 +77,7 @@ public class Viewer
         File file = (args.length > 0) ? new File(args[0]) : null;
         if (file != null) {
             try {
-                PngImage png = readHeader(file);        
+                PngImage png = readHeader(file);
                 size.setSize(png.getWidth(), png.getHeight());
             } catch (IOException e) {
                 // ignore here, open will re-throw
@@ -102,10 +97,9 @@ public class Viewer
             open(file);
     }
 
-    private void open(File file)
-    {
-        new Thread(new ReadPngAction(new AnimatedPngImage(config){
-            protected boolean handlePass(final BufferedImage image, int pass) {
+    private void open(File file) {
+        new Thread(new ReadPngAction(new AnimatedPngImage(config) {
+            protected boolean handlePass(BufferedImage image, int pass) {
                 if (isAnimated())
                     return true;
                 SwingUtilities.invokeLater(new UpdateImageAction(imagePanel, image));
@@ -122,15 +116,13 @@ public class Viewer
     }
 
     private static PngImage readHeader(File file)
-    throws IOException
-    {
+            throws IOException {
         PngImage png = new PngImage(new PngConfig.Builder().readLimit(PngConfig.READ_HEADER).build());
         png.read(file);
         return png;
     }
 
-    private BufferedImage readPngResource(String path)
-    {
+    private BufferedImage readPngResource(String path) {
         try {
             return new PngImage().read(getClass().getResourceAsStream(path), true);
         } catch (IOException e) {
@@ -139,38 +131,32 @@ public class Viewer
     }
 
     private static class ReadPngAction
-    implements Runnable
-    {
+            implements Runnable {
+
         private AnimatedPngImage png;
         private File file;
         private ImagePanel panel;
 
-        public ReadPngAction(AnimatedPngImage png, File file, ImagePanel panel)
-        {
+        public ReadPngAction(AnimatedPngImage png, File file, ImagePanel panel) {
             this.png = png;
             this.file = file;
             this.panel = panel;
         }
-            
-        public void run()
-        {
+
+        public void run() {
             try {
                 // TODO: disable loading
                 BufferedImage[] frames = png.readAllFrames(file);
                 if (png.isAnimated()) {
                     panel.setPreferredSize(new Dimension(png.getWidth(), png.getHeight()));
-                    final BufferedImage target =
-                        panel.getGraphicsConfiguration().createCompatibleImage(png.getWidth(), png.getHeight(),
-                                                                               Transparency.TRANSLUCENT);
-                    final Animator animator = new Animator(png, frames, target);
+                    BufferedImage target =
+                            panel.getGraphicsConfiguration().createCompatibleImage(png.getWidth(), png.getHeight(),
+                                    Transparency.TRANSLUCENT);
+                    Animator animator = new Animator(png, frames, target);
                     Timer timer = new Timer(50, null);
                     timer.setInitialDelay(0);
                     timer.addActionListener(animator);
-                    timer.addActionListener(new ActionListener() {
-                        public void actionPerformed(ActionEvent e) {
-                            panel.setImage(target);
-                        }
-                    });
+                    timer.addActionListener(e -> panel.setImage(target));
                     timer.start();
                 }
             } catch (IOException e) {
@@ -183,19 +169,17 @@ public class Viewer
     }
 
     private static class UpdateImageAction
-    implements Runnable
-    {
+            implements Runnable {
+
         private ImagePanel panel;
         private BufferedImage image;
 
-        public UpdateImageAction(ImagePanel panel, BufferedImage image)
-        {
+        public UpdateImageAction(ImagePanel panel, BufferedImage image) {
             this.panel = panel;
             this.image = image;
         }
 
-        public void run()
-        {
+        public void run() {
             Dimension size = new Dimension(image.getWidth(), image.getHeight());
             panel.setPreferredSize(size);
             panel.setImage(image);

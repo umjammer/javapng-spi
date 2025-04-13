@@ -20,6 +20,7 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -41,7 +42,8 @@ public class TestSimple extends PngTestCase {
     @Test
     public void testReadSuggestedPalette() throws Exception {
         PngImage png = readResource("/images/misc/ps2n2c16.png");
-        SuggestedPalette splt = (SuggestedPalette) ((List) png.getProperty(PngConstants.SUGGESTED_PALETTES)).get(0);
+        @SuppressWarnings("unchecked")
+        SuggestedPalette splt = ((List<SuggestedPalette>) png.getProperty(PngConstants.SUGGESTED_PALETTES)).get(0);
         assertEquals("six-cube", splt.getName());
         assertEquals(16, splt.getSampleDepth());
         assertEquals(216, splt.getSampleCount());
@@ -84,8 +86,8 @@ public class TestSimple extends PngTestCase {
 
     @Test
     public void testSubsampling() throws Exception {
-        subsamplingHelper("/images/misc/penguin.png", 3, 3, 923164955L);
-        subsamplingHelper("/images/misc/pngtest.png", 3, 3, 1930297805L);
+        subsamplingHelper("/images/misc/penguin.png", 3, 3, 519906279L);
+        subsamplingHelper("/images/misc/pngtest.png", 3, 3, 3542899589L);
         try {
             readResource("/images/suite/s02n3p01.png", new PngImage(new PngConfig.Builder().sourceSubsampling(3, 3, 2, 2).build()));
             fail("expected exception");
@@ -93,7 +95,6 @@ public class TestSimple extends PngTestCase {
         }
     }
 
-    @Test
     private BufferedImage subsamplingHelper(String path, int xsub, int ysub, long expect) throws Exception {
         PngImage png = new PngImage(new PngConfig.Builder().sourceSubsampling(xsub, ysub, 0, 0).build());
         BufferedImage image = png.read(getClass().getResourceAsStream(path), true);
@@ -103,8 +104,8 @@ public class TestSimple extends PngTestCase {
 
     @Test
     public void testSourceRegions() throws Exception {
-        regionHelper("/images/misc/penguin.png", new Rectangle(75, 0, 105, 125), 490287408L);
-        regionHelper("/images/misc/pngtest.png", new Rectangle(10, 20, 30, 40), 2689440455L);
+        regionHelper("/images/misc/penguin.png", new Rectangle(75, 0, 105, 125), 2735568317L);
+        regionHelper("/images/misc/pngtest.png", new Rectangle(10, 20, 30, 40), 3206807821L);
         try {
             regionHelper("/images/misc/pngtest.png", new Rectangle(10, 20, 100, 100), 0L);
             fail("expected exception");
@@ -132,8 +133,8 @@ public class TestSimple extends PngTestCase {
         PngImage png = new PngImage() {
             protected BufferedImage createImage(InputStream in, Dimension size) throws IOException {
                 if (getBitDepth() == 1 && getColorType() == PngConstants.COLOR_TYPE_GRAY) {
-                    Map props = getProperties();
-                    props.put(PngConstants.COLOR_TYPE, new Integer(PngConstants.COLOR_TYPE_PALETTE));
+                    Map<String, Object> props = getProperties();
+                    props.put(PngConstants.COLOR_TYPE, PngConstants.COLOR_TYPE_PALETTE);
                     props.put(PngConstants.PALETTE, new byte[] {(byte) 255, 0, 0, (byte) 255, (byte) 255, 0});
                 }
                 return super.createImage(in, size);
@@ -142,12 +143,13 @@ public class TestSimple extends PngTestCase {
         InputStream in = getClass().getResourceAsStream("/images/suite/basn0g01.png");
         File file = File.createTempFile("recolor", ".png");
         javax.imageio.ImageIO.write(png.read(in, true), "PNG", file);
-        assertEquals(2661639413L, getChecksum(new java.util.zip.CRC32(), file, buf));
+        assertEquals(3348316076L, getChecksum(new java.util.zip.CRC32(), file, buf));
         new PngImage().read(file); // test reading from a file
         file.delete();
     }
 
     abstract private static class PrivateChunkReader extends PngImage {
+
         private final int type;
 
         public PrivateChunkReader(int type) {
@@ -170,8 +172,8 @@ public class TestSimple extends PngTestCase {
     void testDataInputMethods() throws Exception {
         readResource("/images/misc/herbio.png", new PrivateChunkReader(heRB_type) {
             protected void readChunk(DataInput in) throws IOException {
-                assertEquals(true, in.readBoolean());
-                assertEquals(false, in.readBoolean());
+                assertTrue(in.readBoolean());
+                assertFalse(in.readBoolean());
                 assertEquals(250, in.readUnsignedByte());
                 assertEquals((byte) 250, in.readByte());
                 assertEquals(50000, in.readUnsignedShort());
@@ -486,8 +488,8 @@ public class TestSimple extends PngTestCase {
             fail("Expected exception in " + path);
         } catch (Exception e) {
             System.err.println(new File(path).getName() + ": " + e.getMessage());
-            // StackTraceElement stack = e.getStackTrace()[0];
-            // System.err.println("\t" + stack.getFileName() + ":" + stack.getLineNumber());
+//            StackTraceElement stack = e.getStackTrace()[0];
+//             System.err.println("\t" + stack.getFileName() + ":" + stack.getLineNumber());
             if (e.getMessage() == null) e.printStackTrace(System.err);
         }
     }

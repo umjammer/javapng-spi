@@ -1,6 +1,7 @@
 package com.sixlegs.examples;
 
 import com.sixlegs.image.png.PngImage;
+
 import java.applet.Applet;
 import java.awt.Color;
 import java.awt.Graphics;
@@ -11,19 +12,18 @@ import java.awt.image.FilteredImageSource;
 import java.io.IOException;
 import java.net.URL;
 
+
 public class PngApplet
-extends Applet
-{
+        extends Applet {
+
     private Color imgbg;
     private Image img;
     private PngImage png;
 
-    public PngApplet()
-    {
+    public PngApplet() {
     }
 
-    public void init()
-    {
+    public void init() {
         String loc = getParameter("URL");
         try {
             if (loc != null) {
@@ -31,7 +31,7 @@ extends Applet
                 png = new PngImage(url);
                 String bgparam = getParameter("bgcolor");
                 if (bgparam != null)
-                    imgbg = new Color(Integer.valueOf(bgparam, 16).intValue());
+                    imgbg = new Color(Integer.valueOf(bgparam, 16));
                 if (imgbg == null)
                     imgbg = png.getBackgroundColor();
                 if (imgbg == null)
@@ -44,21 +44,19 @@ extends Applet
     }
 
     protected ImageProducer filter(PngImage png, ImageProducer in)
-    throws IOException
-    {
+            throws IOException {
         return new FilteredImageSource(in, new RemoveAlphaFilter(imgbg));
     }
 
-    public void update(Graphics g)
-    {
+    public void update(Graphics g) {
         paint(g);
     }
 
-    public void paint(Graphics g)
-    {
+    public void paint(Graphics g) {
         try {
             if (img != null)
                 g.drawImage(img, 0, 0, png.getWidth(), png.getHeight(), imgbg, null);
-        } catch (Exception e) { }
+        } catch (Exception e) {
+        }
     }
 }

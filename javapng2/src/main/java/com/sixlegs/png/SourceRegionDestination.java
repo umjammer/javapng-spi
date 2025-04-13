@@ -39,14 +39,14 @@ package com.sixlegs.png;
 import java.awt.image.WritableRaster;
 import java.awt.Rectangle;
 
+
 final class SourceRegionDestination
-extends Destination
-{
+        extends Destination {
+
     private final Destination dst;
     private final int xoff, yoff, xlen, ylen, samples;
-    
-    public SourceRegionDestination(Destination dst, Rectangle sourceRegion)
-    {
+
+    public SourceRegionDestination(Destination dst, Rectangle sourceRegion) {
         this.dst = dst;
         xoff = sourceRegion.x;
         yoff = sourceRegion.y;
@@ -55,8 +55,7 @@ extends Destination
         samples = dst.getRaster().getNumBands();
     }
 
-    public void setPixels(int x, int y, int w, int[] pixels)
-    {
+    public void setPixels(int x, int y, int w, int[] pixels) {
         if (y >= yoff && y < yoff + ylen) {
             int newx = Math.max(x, xoff);
             int neww = Math.min(x + w, xoff + xlen) - newx;
@@ -68,31 +67,26 @@ extends Destination
         }
     }
 
-    public void setPixel(int x, int y, int[] pixel)
-    {
+    public void setPixel(int x, int y, int[] pixel) {
         x -= xoff;
         y -= yoff;
         if (x >= 0 && y >= 0 && x < xlen && y < ylen)
             dst.setPixel(x, y, pixel);
     }
 
-    public void getPixel(int x, int y, int[] pixel)
-    {
+    public void getPixel(int x, int y, int[] pixel) {
         throw new UnsupportedOperationException();
     }
 
-    public WritableRaster getRaster()
-    {
+    public WritableRaster getRaster() {
         return dst.getRaster();
     }
 
-    public int getSourceWidth()
-    {
+    public int getSourceWidth() {
         return dst.getSourceWidth();
     }
 
-    public void done()
-    {
+    public void done() {
         dst.done();
-    }    
+    }
 }

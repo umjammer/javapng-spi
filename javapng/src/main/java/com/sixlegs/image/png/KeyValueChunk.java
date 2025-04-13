@@ -8,34 +8,31 @@ import java.io.IOException;
 import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
 
+
 abstract class KeyValueChunk
-extends Chunk
-{
+        extends Chunk {
+
     protected String key;
     protected String value;
 
-    KeyValueChunk(int type)
-    {
+    KeyValueChunk(int type) {
         super(type);
     }
 
     protected abstract boolean isCompressed();
 
-    protected String getEncoding()
-    {
+    protected String getEncoding() {
         return PngImage.LATIN1_ENCODING;
-    };
+    }
 
     protected void readData()
-    throws IOException
-    {
+            throws IOException {
         key = readKey();
         value = readValue();
     }
 
     protected String readKey()
-    throws IOException
-    {
+            throws IOException {
         String raw_key = in_data.readString();
         if (raw_key.length() > 79)
             throw new PngExceptionSoft(typeToString(type) + " string too long");
@@ -43,8 +40,7 @@ extends Chunk
     }
 
     protected String readValue()
-    throws IOException
-    {
+            throws IOException {
         int L = bytesRemaining();
         byte[] buf = new byte[L];
         in_data.readFully(buf);
@@ -53,7 +49,7 @@ extends Chunk
             byte method = buf[0];
             if (method != PngImage.COMPRESSION_TYPE_BASE) {
                 throw new PngExceptionSoft("Unrecognized " + typeToString(type) +
-                                           " compression method: " + method);
+                        " compression method: " + method);
             }
             ByteArrayOutputStream bytes = new ByteArrayOutputStream(L * 3);
             byte[] tbuf = new byte[512];
@@ -73,11 +69,12 @@ extends Chunk
         }
     }
 
-    /* package */ static String repairKey (String k) {
+    /* package */
+    static String repairKey(String k) {
         char[] chs = k.toCharArray();
         int i = 0, p = 0;
         int L = chs.length;
-      BIGLOOP:
+        BIGLOOP:
         while (p < L) {
             char ch = chs[p++];
             if (Character.isWhitespace(ch)) {
@@ -87,7 +84,7 @@ extends Chunk
             }
             chs[i++] = ch;
         }
-        if (Character.isWhitespace(chs[i-1])) i--;
+        if (Character.isWhitespace(chs[i - 1])) i--;
         return new String(chs, 0, i);
     }
 }

@@ -42,35 +42,33 @@ import javax.imageio.ImageReader;
 import javax.imageio.spi.ImageReaderSpi;
 import javax.imageio.stream.ImageInputStream;
 
+
 public class PngImageReaderSpi
-extends ImageReaderSpi
-{
+        extends ImageReaderSpi {
+
     private static final long SIGNATURE = 0x89504E470D0A1A0AL;
 
-    public PngImageReaderSpi()
-    {
+    public PngImageReaderSpi() {
         super("Chris Nokleberg",
-              "2.0",
-              new String[]{ "png", "PNG" },
-              new String[]{ "png", "PNG" },
-              new String[]{ "image/png", "image/x-png"},
-              "com.sixlegs.png.iio.PngImageReader",
-              new Class[]{ ImageInputStream.class, },
-              null, // writer
-              false, null, null, null, null,
-              false, null, null, null, null);
+                "2.0",
+                new String[] {"png", "PNG"},
+                new String[] {"png", "PNG"},
+                new String[] {"image/png", "image/x-png"},
+                "com.sixlegs.png.iio.PngImageReader",
+                new Class[] {ImageInputStream.class,},
+                null, // writer
+                false, null, null, null, null,
+                false, null, null, null, null);
     }
 
-    public String getDescription(Locale locale)
-    {
+    public String getDescription(Locale locale) {
         return "com.sixlegs.png ImageIO plugin";
     }
 
     public boolean canDecodeInput(Object source)
-    throws IOException
-    {
+            throws IOException {
         if (source instanceof ImageInputStream) {
-            ImageInputStream in = (ImageInputStream)source;
+            ImageInputStream in = (ImageInputStream) source;
             in.mark();
             long sig = in.readLong();
             in.reset();
@@ -79,8 +77,7 @@ extends ImageReaderSpi
         return false;
     }
 
-    public ImageReader createReaderInstance(Object extension)
-    {
+    public ImageReader createReaderInstance(Object extension) {
         return new PngImageReader(this);
     }
 }

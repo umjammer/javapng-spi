@@ -40,66 +40,57 @@ import java.io.InputStream;
 import java.io.IOException;
 import javax.imageio.stream.ImageInputStream;
 
+
 // TODO: add flushing for performance?
 class StreamWrapper
-extends InputStream
-{
+        extends InputStream {
+
     private ImageInputStream in;
-    
-    public StreamWrapper(ImageInputStream in)
-    {
+
+    public StreamWrapper(ImageInputStream in) {
         this.in = in;
     }
 
     public int available()
-    throws IOException
-    {
-        return (int)(in.length() - in.getStreamPosition());
+            throws IOException {
+        return (int) (in.length() - in.getStreamPosition());
     }
-    
+
     public void close()
-    throws IOException
-    {
+            throws IOException {
         in.close();
     }
-    
-    public void mark(int readlimit)
-    {
+
+    public void mark(int readlimit) {
         in.mark();
     }
-    
-    public boolean markSupported()
-    {
+
+    public boolean markSupported() {
         return true;
     }
-    
+
     public int read()
-    throws IOException
-    {
+            throws IOException {
         return in.read();
     }
-    
+
     public int read(byte[] b)
-    throws IOException
-    {
+            throws IOException {
         return in.read(b);
     }
-    
+
     public int read(byte[] b, int off, int len)
-    throws IOException
-    {
+            throws IOException {
         return in.read(b, off, len);
     }
-    
+
     public void reset()
-    throws IOException
-    {
+            throws IOException {
         in.reset();
     }
-    
+
     public long skip(long n)
-    throws IOException
-    {
+            throws IOException {
         return in.skipBytes(n);
     }
 }

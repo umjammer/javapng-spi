@@ -38,11 +38,12 @@ package com.sixlegs.png;
 
 import java.awt.Rectangle;
 
+
 /**
  * TODO
  */
-public class FrameControl
-{
+public class FrameControl {
+
     /** TODO */
     public static final int DISPOSE_NONE = 0;
     /** TODO */
@@ -54,14 +55,13 @@ public class FrameControl
     public static final int BLEND_SOURCE = 0;
     /** TODO */
     public static final int BLEND_OVER = 1;
-    
+
     private final Rectangle bounds;
     private final float delay;
     private final int dispose;
     private final int blend;
-        
-    FrameControl(Rectangle bounds, float delay, int dispose, int blend)
-    {
+
+    FrameControl(Rectangle bounds, float delay, int dispose, int blend) {
         this.bounds = bounds;
         this.delay = delay;
         this.dispose = dispose;
@@ -71,38 +71,33 @@ public class FrameControl
     /**
      * TODO
      */
-    public Rectangle getBounds()
-    {
+    public Rectangle getBounds() {
         return new Rectangle(bounds);
     }
 
     /**
      * TODO
      */
-    public float getDelay()
-    {
+    public float getDelay() {
         return delay;
     }
 
     /**
      * TODO
      */
-    public int getDispose()
-    {
+    public int getDispose() {
         return dispose;
     }
 
     /**
      * TODO
      */
-    public int getBlend()
-    {
+    public int getBlend() {
         return blend;
     }
 
-    public String toString()
-    {
+    public String toString() {
         return "FrameControl{bounds=" + bounds + ",delay=" + delay +
-            ",dispose=" + dispose + ",blend=" + blend + "}";
+                ",dispose=" + dispose + ",blend=" + blend + "}";
     }
 }

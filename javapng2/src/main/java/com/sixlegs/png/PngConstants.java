@@ -40,22 +40,22 @@ package com.sixlegs.png;
  * This interface defines all registered chunk types and provides methods
  * helper methods to examine them. It also defines all of the keys used in the property map
  * of a decoded {@link PngImage}, and applicable enumerated values.
+ *
  * @see PngImage#getProperty
  * @see PngImage#getProperties
  */
-abstract public class PngConstants
-{
-    
+abstract public class PngConstants {
+
     /**
      * Returns {@code true} if the given chunk type has the ancillary bit set
      * (the first letter is lowercase).
      * An ancillary chunk is once which is not strictly necessary
      * in order to meaningfully display the contents of the file.
+     *
      * @param chunkType the chunk type
      * @return whether the chunk type ancillary bit is set
      */
-    public static boolean isAncillary(int chunkType)
-    {
+    public static boolean isAncillary(int chunkType) {
         return ((chunkType & 0x20000000) != 0);
     }
 
@@ -63,11 +63,11 @@ abstract public class PngConstants
      * Returns {@code true} if the given chunk type has the private bit set
      * (the second letter is lowercase).
      * All unregistered chunk types should have this bit set.
+     *
      * @param chunkType the chunk type
      * @return whether the chunk type private bit is set
      */
-    public static boolean isPrivate(int chunkType)
-    {
+    public static boolean isPrivate(int chunkType) {
         return ((chunkType & 0x00200000) != 0);
     }
 
@@ -77,11 +77,11 @@ abstract public class PngConstants
      * The meaning of this bit is currently undefined, but reserved for future use.
      * Images conforming to the current version of the PNG specification must
      * not have this bit set.
+     *
      * @param chunkType the chunk type
      * @return whether the chunk type reserved bit is set
      */
-    public static boolean isReserved(int chunkType)
-    {
+    public static boolean isReserved(int chunkType) {
         return ((chunkType & 0x00002000) != 0);
     }
 
@@ -90,11 +90,11 @@ abstract public class PngConstants
      * (the fourth letter is lowercase).
      * Chunks marked as safe-to-copy may be copied to a modified PNG file
      * whether or not the software recognizes the chunk type.
+     *
      * @param chunkType the chunk type
      * @return whether the chunk safe-to-copy bit is set
      */
-    public static boolean isSafeToCopy(int chunkType)
-    {
+    public static boolean isSafeToCopy(int chunkType) {
         return ((chunkType & 0x00000020) != 0);
     }
 
@@ -102,37 +102,37 @@ abstract public class PngConstants
      * Returns the four-character ASCII name corresponding to the given
      * chunk type. For example, {@code PngConstants.getChunkName(PngConstants.IHDR)} will
      * return {@code "IHDR"}.
+     *
      * @param chunkType the chunk type
      * @return the four-character ASCII chunk name
      */
-    public static String getChunkName(int chunkType)
-    {
-        return ("" + 
-                (char)((chunkType >>> 24) & 0xFF) + 
-                (char)((chunkType >>> 16) & 0xFF) + 
-                (char)((chunkType >>>  8) & 0xFF) + 
-                (char)((chunkType       ) & 0xFF));
+    public static String getChunkName(int chunkType) {
+        return ("" +
+                (char) ((chunkType >>> 24) & 0xFF) +
+                (char) ((chunkType >>> 16) & 0xFF) +
+                (char) ((chunkType >>> 8) & 0xFF) +
+                (char) ((chunkType) & 0xFF));
     }
 
     /**
      * Returns the chunk type corresponding to the given four-character
      * ASCII chunk name.
+     *
      * @param chunkName the four-character ASCII chunk name
      * @return the chunk type
-     * @throws NullPointerException if {@code name} is null
+     * @throws NullPointerException      if {@code name} is null
      * @throws IndexOutOfBoundsException if {@code name} has less than four characters
      */
-    public static int getChunkType(String chunkName)
-    {
-        return ((((int)chunkName.charAt(0) & 0xFF) << 24) | 
-                (((int)chunkName.charAt(1) & 0xFF) << 16) | 
-                (((int)chunkName.charAt(2) & 0xFF) <<  8) | 
-                (((int)chunkName.charAt(3) & 0xFF)      ));
+    public static int getChunkType(String chunkName) {
+        return ((((int) chunkName.charAt(0) & 0xFF) << 24) |
+                (((int) chunkName.charAt(1) & 0xFF) << 16) |
+                (((int) chunkName.charAt(2) & 0xFF) << 8) |
+                (((int) chunkName.charAt(3) & 0xFF)));
     }
 
     /** Eight byte magic number that begins all PNG images */
     public static final long SIGNATURE = 0x89504E470D0A1A0AL;
-    
+
     /** Image header */
     public static final int IHDR = 0x49484452;
     /** Palette */
@@ -184,7 +184,7 @@ abstract public class PngConstants
     /** Indicator of Stereo Image */
     public static final int sTER = 0x73544552;
 
-    
+
     /** {@link #IHDR IHDR}: Bit depth */
     public static final String BIT_DEPTH = "bit_depth";
     /** {@link #IHDR IHDR}: Color type */
@@ -271,7 +271,7 @@ abstract public class PngConstants
     public static final int FILTER_BASE = 0;
 
     /** {@link #IHDR IHDR}: Deflate/inflate compression */
-    public static final int COMPRESSION_BASE = 0;  
+    public static final int COMPRESSION_BASE = 0;
 
     /** {@link #pHYs pHYs}: Unit is unknown */
     public static final int UNIT_UNKNOWN = 0;

@@ -37,16 +37,15 @@ exception statement from your version.
 package com.sixlegs.png;
 
 final class GammaPixelProcessor
-extends BasicPixelProcessor
-{
+        extends BasicPixelProcessor {
+
     final private short[] gammaTable;
     final private int shift;
     final private int samplesNoAlpha;
     final private boolean hasAlpha;
     final private boolean shiftAlpha;
-    
-    public GammaPixelProcessor(Destination dst, short[] gammaTable, int shift)
-    {
+
+    public GammaPixelProcessor(Destination dst, short[] gammaTable, int shift) {
         super(dst, dst.getRaster().getNumBands());
         this.gammaTable = gammaTable;
         this.shift = shift;
@@ -54,9 +53,8 @@ extends BasicPixelProcessor
         samplesNoAlpha = hasAlpha ? samples - 1 : samples; // don't change alpha channel
         shiftAlpha = hasAlpha && shift > 0;
     }
-    
-    public boolean process(int[] row, int xOffset, int xStep, int yStep, int y, int width)
-    {
+
+    public boolean process(int[] row, int xOffset, int xStep, int yStep, int y, int width) {
         int total = samples * width;
         for (int i = 0; i < samplesNoAlpha; i++)
             for (int index = i; index < total; index += samples)

@@ -7,29 +7,30 @@ import java.util.Hashtable;
 import java.awt.image.ColorModel;
 import java.awt.image.ImageConsumer;
 
+
 class DummyImageConsumer
-implements ImageConsumer
-{
-    public void setDimensions(int width, int height)
-    { }
+        implements ImageConsumer {
 
-    public void setProperties(Hashtable props)
-    { }
+    public void setDimensions(int width, int height) {
+    }
 
-    public void setHints(int hintflags)
-    { }
+    public void setProperties(Hashtable<?, ?> props) {
+    }
 
-    public void setPixels(int x, int y, int w, int h,
-                          ColorModel model, byte pixels[], int off, int scansize)
-    { }
+    public void setHints(int hintflags) {
+    }
 
     public void setPixels(int x, int y, int w, int h,
-                          ColorModel model, int pixels[], int off, int scansize)
-    { }
+                          ColorModel model, byte[] pixels, int off, int scansize) {
+    }
 
-    public void imageComplete(int status)
-    { }
+    public void setPixels(int x, int y, int w, int h,
+                          ColorModel model, int[] pixels, int off, int scansize) {
+    }
 
-    public void setColorModel(ColorModel model)
-    { }
+    public void imageComplete(int status) {
+    }
+
+    public void setColorModel(ColorModel model) {
+    }
 }

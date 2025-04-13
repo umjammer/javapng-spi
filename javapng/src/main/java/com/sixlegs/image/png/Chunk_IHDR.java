@@ -7,9 +7,10 @@ import java.awt.image.ColorModel;
 import java.awt.image.DirectColorModel;
 import java.io.IOException;
 
+
 final class Chunk_IHDR
-extends Chunk
-{
+        extends Chunk {
+
     /* package */ int width;
     /* package */ int height;
     /* package */ int depth;
@@ -26,32 +27,29 @@ extends Chunk
     /* package */ boolean paletteUsed = false;
     /* package */ boolean colorUsed = false;
     /* package */ boolean alphaUsed = false;
-  
+
     /* package */ ColorModel alphaModel;
     /* package */ ColorModel model;
 
-    Chunk_IHDR()
-    {
+    Chunk_IHDR() {
         super(IHDR);
     }
 
-    protected boolean multipleOK()
-    {
+    protected boolean multipleOK() {
         return false;
     }
 
     // TODO: shorten
     protected void readData()
-    throws IOException
-    {
-        img.data.header = this; 
+            throws IOException {
+        img.data.header = this;
         if (length != 13) badLength(13);
 
         width = in_data.readInt();
         height = in_data.readInt();
         if (width <= 0 || height <= 0) {
-            throw new PngException("Bad image size: " + in_data.unsign(width) +
-                                   "x" + in_data.unsign(height));
+            throw new PngException("Bad image size: " + ExDataInputStream.unsign(width) +
+                    "x" + ExDataInputStream.unsign(height));
         }
 
         depth = in_data.readUnsignedByte();
@@ -59,50 +57,58 @@ extends Chunk
 
         int blue = 0;
         switch (outputDepth) {
-        case 1:  blue = 0x01; break;
-        case 2:  blue = 0x03; break;
-        case 4:  blue = 0x0F; break;
-        case 8:  blue = 0xFF; break;
+        case 1:
+            blue = 0x01;
+            break;
+        case 2:
+            blue = 0x03;
+            break;
+        case 4:
+            blue = 0x0F;
+            break;
+        case 8:
+            blue = 0xFF;
+            break;
         default:
             throw new PngException("Bad bit depth: " + depth);
         }
 
         byte[] sbit = null;
 
-        int green = blue  << outputDepth;
-        int red   = green << outputDepth;
-        int alpha = red   << outputDepth;
-    
-        byte b_depth = (byte)depth;
+        int green = blue << outputDepth;
+        int red = green << outputDepth;
+        int alpha = red << outputDepth;
+
+        byte b_depth = (byte) depth;
 
         colorType = in_data.readUnsignedByte();
         switch (colorType) {
-        case PngImage.COLOR_TYPE_GRAY: 
-            sbit = new byte[]{b_depth, b_depth, b_depth};
+        case PngImage.COLOR_TYPE_GRAY:
+            sbit = new byte[] {b_depth, b_depth, b_depth};
             cmBits = 3 * outputDepth;
             break;
-        case PngImage.COLOR_TYPE_RGB: 
-            sbit = new byte[]{b_depth, b_depth, b_depth};
+        case PngImage.COLOR_TYPE_RGB:
+            sbit = new byte[] {b_depth, b_depth, b_depth};
             cmBits = 3 * outputDepth;
             samples = 3;
             colorUsed = true;
             break;
-        case PngImage.COLOR_TYPE_PALETTE: 
-            sbit = new byte[]{8, 8, 8};
+        case PngImage.COLOR_TYPE_PALETTE:
+            sbit = new byte[] {8, 8, 8};
             cmBits = outputDepth;
             colorUsed = paletteUsed = true;
             break;
-        case PngImage.COLOR_TYPE_GRAY_ALPHA: 
-            sbit = new byte[]{b_depth, b_depth, b_depth, b_depth};
+        case PngImage.COLOR_TYPE_GRAY_ALPHA:
+            sbit = new byte[] {b_depth, b_depth, b_depth, b_depth};
             cmBits = 4 * outputDepth;
             samples = 2;
-            alphaUsed = true; 
+            alphaUsed = true;
             break;
-        case PngImage.COLOR_TYPE_RGB_ALPHA: 
-            sbit = new byte[]{b_depth, b_depth, b_depth, b_depth};
+        case PngImage.COLOR_TYPE_RGB_ALPHA:
+            sbit = new byte[] {b_depth, b_depth, b_depth, b_depth};
             cmBits = 4 * outputDepth;
             samples = 4;
-            alphaUsed = colorUsed = true; 
+            alphaUsed = colorUsed = true;
             break;
         default:
             cmBits = 0;
@@ -114,7 +120,7 @@ extends Chunk
         if (!paletteUsed) {
             if (alphaUsed) {
                 model = alphaModel = new DirectColorModel(cmBits, red, green, blue, alpha);
-            } else { 
+            } else {
                 // we may switch to alphaModel if a tRNS chunk is found later
                 alphaModel = ColorModel.getRGBdefault();
                 model = new DirectColorModel(24, 0xFF0000, 0x00FF00, 0x0000FF);
@@ -122,7 +128,7 @@ extends Chunk
         }
 
         switch (colorType) {
-        case PngImage.COLOR_TYPE_GRAY: 
+        case PngImage.COLOR_TYPE_GRAY:
             break;
         case PngImage.COLOR_TYPE_PALETTE:
             if (depth == 16)
@@ -133,7 +139,7 @@ extends Chunk
                 throw new PngException("Bad bit depth for color type " + colorType + ": " + depth);
         }
 
-        if ((compress = in_data.readUnsignedByte()) != PngImage.COMPRESSION_TYPE_BASE) 
+        if ((compress = in_data.readUnsignedByte()) != PngImage.COMPRESSION_TYPE_BASE)
             throw new PngException("Unrecognized compression method: " + compress);
 
         if ((filter = in_data.readUnsignedByte()) != PngImage.FILTER_TYPE_BASE)
@@ -151,12 +157,12 @@ extends Chunk
             throw new PngException("Unrecognized interlace method: " + interlace);
         }
 
-        img.data.properties.put("width", new Integer(width));
-        img.data.properties.put("height", new Integer(height));
-        img.data.properties.put("bit depth", new Integer(depth));
-        img.data.properties.put("interlace type", new Integer(interlace));
-        img.data.properties.put("compression type", new Integer(compress));
-        img.data.properties.put("filter type", new Integer(filter));
-        img.data.properties.put("color type", new Integer(colorType));
+        img.data.properties.put("width", width);
+        img.data.properties.put("height", height);
+        img.data.properties.put("bit depth", depth);
+        img.data.properties.put("interlace type", interlace);
+        img.data.properties.put("compression type", compress);
+        img.data.properties.put("filter type", filter);
+        img.data.properties.put("color type", colorType);
     }
 }

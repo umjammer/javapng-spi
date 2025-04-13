@@ -38,29 +38,27 @@ package com.sixlegs.png;
 
 import java.io.*;
 
+
 class ImageDataInputStream
-extends InputStream
-{
+        extends InputStream {
+
     private final PngInputStream in;
     private final StateMachine machine;
     private final byte[] onebyte = new byte[1];
     private boolean done;
 
-    public ImageDataInputStream(PngInputStream in, StateMachine machine)
-    {
+    public ImageDataInputStream(PngInputStream in, StateMachine machine) {
         this.in = in;
         this.machine = machine;
     }
-    
+
     public int read()
-    throws IOException
-    {
+            throws IOException {
         return (read(onebyte, 0, 1) == -1) ? -1 : 0xFF & onebyte[0];
     }
 
     public int read(byte[] b, int off, int len)
-    throws IOException
-    {
+            throws IOException {
         if (done)
             return -1;
         try {

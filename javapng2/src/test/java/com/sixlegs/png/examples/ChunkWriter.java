@@ -39,25 +39,23 @@ package com.sixlegs.png.examples;
 import java.io.*;
 import java.util.zip.*;
 
+
 class ChunkWriter
-extends DataOutputStream
-{
-    public ChunkWriter()
-    {
+        extends DataOutputStream {
+
+    public ChunkWriter() {
         super(new ByteArrayOutputStream());
     }
 
     public void start(int type)
-    throws IOException
-    {
-        ((ByteArrayOutputStream)out).reset();
+            throws IOException {
+        ((ByteArrayOutputStream) out).reset();
         writeInt(type);
     }
 
     public int finish(DataOutput data)
-    throws IOException
-    {
-        byte[] bytes = ((ByteArrayOutputStream)out).toByteArray();
+            throws IOException {
+        byte[] bytes = ((ByteArrayOutputStream) out).toByteArray();
         int crc = crc(bytes);
         data.writeInt(bytes.length - 4);
         data.write(bytes);
@@ -66,19 +64,23 @@ extends DataOutputStream
     }
 
     private static int crc(byte[] bytes)
-    throws IOException
-    {
+            throws IOException {
         CheckedOutputStream checked = new CheckedOutputStream(new NullOutputStream(), new CRC32());
         DataOutputStream data = new DataOutputStream(checked);
         data.write(bytes);
         data.close();
-        return (int)checked.getChecksum().getValue();
+        return (int) checked.getChecksum().getValue();
     }
 
-    private static class NullOutputStream extends OutputStream
-    {
-        public void write(int b) { }
-        public void write(byte[] b) { }
-        public void write(byte[] b, int off, int len) { }
+    private static class NullOutputStream extends OutputStream {
+
+        public void write(int b) {
+        }
+
+        public void write(byte[] b) {
+        }
+
+        public void write(byte[] b, int off, int len) {
+        }
     }
 }

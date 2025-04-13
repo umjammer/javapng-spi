@@ -2,29 +2,27 @@
 // Please see included LICENSE.TXT
 
 package com.sixlegs.image.png;
+
 import java.io.IOException;
 
+
 final class Chunk_sBIT
-extends Chunk
-{
-    Chunk_sBIT()
-    {
+        extends Chunk {
+
+    Chunk_sBIT() {
         super(sBIT);
     }
 
-    protected boolean multipleOK()
-    {
+    protected boolean multipleOK() {
         return false;
     }
 
-    protected boolean beforeIDAT()
-    {
+    protected boolean beforeIDAT() {
         return true;
     }
 
     protected void readData()
-    throws IOException
-    {
+            throws IOException {
         byte[] sbit = null;
         if (img.data.palette != null)
             throw new PngException("sBIT chunk must precede PLTE chunk");
@@ -32,7 +30,7 @@ extends Chunk
         switch (img.data.header.colorType) {
         case PngImage.COLOR_TYPE_GRAY:
             sbit = new byte[3];
-            sbit[0] = sbit[1] = sbit[2] = in_data.readByte(); 
+            sbit[0] = sbit[1] = sbit[2] = in_data.readByte();
             break;
         case PngImage.COLOR_TYPE_PALETTE:
             compare_depth = 8;
@@ -56,8 +54,8 @@ extends Chunk
             sbit[3] = in_data.readByte();
             break;
         }
-        for (int i = 0; i < sbit.length; i++) {
-            if (sbit[i] <= 0 || sbit[i] > compare_depth)
+        for (byte b : sbit) {
+            if (b <= 0 || b > compare_depth)
                 throw new PngExceptionSoft("Illegal sBIT component depth");
         }
 

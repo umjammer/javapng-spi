@@ -2,30 +2,28 @@
 // Please see included LICENSE.TXT
 
 package com.sixlegs.image.png;
+
 import java.awt.Color;
 import java.io.IOException;
 
+
 final class Chunk_bKGD
-extends Chunk
-{
-    Chunk_bKGD()
-    {
+        extends Chunk {
+
+    Chunk_bKGD() {
         super(bKGD);
     }
 
-    protected boolean multipleOK()
-    {
+    protected boolean multipleOK() {
         return false;
     }
-    
-    protected boolean beforeIDAT()
-    {
+
+    protected boolean beforeIDAT() {
         return true;
     }
 
     protected void readData()
-    throws IOException
-    {
+            throws IOException {
         int index, r, g, b;
         switch (img.data.header.colorType) {
         case PngImage.COLOR_TYPE_PALETTE:
@@ -33,7 +31,7 @@ extends Chunk
             index = in_data.readUnsignedByte();
             if (img.data.palette == null)
                 throw new PngException("hIST chunk must follow PLTE chunk");
-            img.data.properties.put("background index", new Integer(index));
+            img.data.properties.put("background index", index);
             r = img.data.palette.r_raw[index];
             g = img.data.palette.g_raw[index];
             b = img.data.palette.b_raw[index];

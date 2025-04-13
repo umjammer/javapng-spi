@@ -36,262 +36,240 @@ exception statement from your version.
 
 package com.sixlegs.png.iio;
 
-import java.awt.*;
 import javax.imageio.ImageTypeSpecifier;
 import javax.imageio.metadata.IIOMetadataFormatImpl;
 import java.util.*;
 
-public class PngImageMetadataFormat 
-extends IIOMetadataFormatImpl 
-{
-	private static final String rootName = "javax_imageio_png_1.0";
 
-    private static final Set validNodes = Collections.unmodifiableSet(new HashSet(Arrays.asList(new String[]{
-        "IHDR", "iCCP", "cHRM", "sRGB", "gAMA", "pHYS", "tIME",
-        "sPLT", "sPLTEntry",
-        "hIST", "hISTEntry",
-        "sBIT", "sBIT_Grayscale", "sBIT_GrayAlpha", "sBIT_RGB", "sBIT_RGBAlpha", "sBIT_Palette",
-        "PLTE", "PLTEEntry",
-        "tRNS", "tRNS_Grayscale", "tRNS_RGB", "tRNS_Palette",
-        "bKGD", "bKGD_Grayscale", "bKGD_Palette", "bKGD_Palette", "bKGD_RGB",
-        "iTXt", "iTXtEntry", "zTXt", "zTXtEntry", "tEXt", "tEXtEntry",
-        "UnknownChunks", "UnknownChunk",
-    })));
+public class PngImageMetadataFormat
+        extends IIOMetadataFormatImpl {
 
-	// singleton
-	private static final PngImageMetadataFormat defaultInstance =
-		new PngImageMetadataFormat();
+    private static final String rootName = "javax_imageio_png_1.0";
 
-	// Make constructor private to enforce the singleton pattern
-	private PngImageMetadataFormat() 
-	{
-		// Set the name of the root node
-		super(rootName, CHILD_POLICY_REPEAT);
+    private static final Set<String> validNodes = Collections.unmodifiableSet(new HashSet<>(Arrays.asList("IHDR", "iCCP", "cHRM", "sRGB", "gAMA", "pHYS", "tIME",
+            "sPLT", "sPLTEntry",
+            "hIST", "hISTEntry",
+            "sBIT", "sBIT_Grayscale", "sBIT_GrayAlpha", "sBIT_RGB", "sBIT_RGBAlpha", "sBIT_Palette",
+            "PLTE", "PLTEEntry",
+            "tRNS", "tRNS_Grayscale", "tRNS_RGB", "tRNS_Palette",
+            "bKGD", "bKGD_Grayscale", "bKGD_Palette", "bKGD_Palette", "bKGD_RGB",
+            "iTXt", "iTXtEntry", "zTXt", "zTXtEntry", "tEXt", "tEXtEntry",
+            "UnknownChunks", "UnknownChunk")));
 
-		setup_IHDR();
-		setup_PLTE();
-		setup_bKGD();
-		setup_cHRM();
-		setup_gAMA();
-		setup_hIST();
-		setup_iCCP();
-		setup_iTXt();
-		setup_pHYS();
-		setup_sBIT();
-		setup_sPLT();
-		setup_sRGB();
-		setup_tEXt();
-		setup_tIME();
-		setup_tRNS();
-		setup_zTXt();
-		setup_unknownChunks();
-	}
+    // singleton
+    private static final PngImageMetadataFormat defaultInstance =
+            new PngImageMetadataFormat();
 
-	private void setup_IHDR()
-	{
-		addElement("IHDR", rootName, CHILD_POLICY_EMPTY);
+    // Make constructor private to enforce the singleton pattern
+    private PngImageMetadataFormat() {
+        // Set the name of the root node
+        super(rootName, CHILD_POLICY_REPEAT);
 
-		addAttribute("IHDR", "width", DATATYPE_INTEGER, true, null);
-		addAttribute("IHDR", "height", DATATYPE_INTEGER, true, null);
-		addAttribute("IHDR", "bitDepth", DATATYPE_INTEGER, true, null);
-		addAttribute("IHDR", "colorType", DATATYPE_STRING, true, null);
-		addAttribute("IHDR", "compressionMethod", DATATYPE_STRING, true, null);
-		addAttribute("IHDR", "filterMethod", DATATYPE_STRING, true, null);
-		addAttribute("IHDR", "interlaceMethod", DATATYPE_STRING, true, null);
-	}
+        setup_IHDR();
+        setup_PLTE();
+        setup_bKGD();
+        setup_cHRM();
+        setup_gAMA();
+        setup_hIST();
+        setup_iCCP();
+        setup_iTXt();
+        setup_pHYS();
+        setup_sBIT();
+        setup_sPLT();
+        setup_sRGB();
+        setup_tEXt();
+        setup_tIME();
+        setup_tRNS();
+        setup_zTXt();
+        setup_unknownChunks();
+    }
 
-	private void setup_sPLT()
-	{
-		addElement("sPLT", rootName, CHILD_POLICY_REPEAT);
+    private void setup_IHDR() {
+        addElement("IHDR", rootName, CHILD_POLICY_EMPTY);
 
-		addElement("sPLTEntry", "sPLT", CHILD_POLICY_EMPTY);
-		addAttribute("sPLTEntry", "index", DATATYPE_INTEGER, true, null);
-		addAttribute("sPLTEntry", "red", DATATYPE_INTEGER, true, null);
-		addAttribute("sPLTEntry", "green", DATATYPE_INTEGER, true, null);
-		addAttribute("sPLTEntry", "blue", DATATYPE_INTEGER, true, null);
-		addAttribute("sPLTEntry", "alpha", DATATYPE_INTEGER, true, null);
-	}
+        addAttribute("IHDR", "width", DATATYPE_INTEGER, true, null);
+        addAttribute("IHDR", "height", DATATYPE_INTEGER, true, null);
+        addAttribute("IHDR", "bitDepth", DATATYPE_INTEGER, true, null);
+        addAttribute("IHDR", "colorType", DATATYPE_STRING, true, null);
+        addAttribute("IHDR", "compressionMethod", DATATYPE_STRING, true, null);
+        addAttribute("IHDR", "filterMethod", DATATYPE_STRING, true, null);
+        addAttribute("IHDR", "interlaceMethod", DATATYPE_STRING, true, null);
+    }
 
-	private void setup_hIST()
-	{
-		addElement("hIST", rootName, CHILD_POLICY_REPEAT);
+    private void setup_sPLT() {
+        addElement("sPLT", rootName, CHILD_POLICY_REPEAT);
 
-		addElement("hISTEntry", "hIST", CHILD_POLICY_EMPTY);
-		addAttribute("hISTEntry", "index", DATATYPE_INTEGER, true, null);
-		addAttribute("hISTEntry", "value", DATATYPE_INTEGER, true, null);
-	}
+        addElement("sPLTEntry", "sPLT", CHILD_POLICY_EMPTY);
+        addAttribute("sPLTEntry", "index", DATATYPE_INTEGER, true, null);
+        addAttribute("sPLTEntry", "red", DATATYPE_INTEGER, true, null);
+        addAttribute("sPLTEntry", "green", DATATYPE_INTEGER, true, null);
+        addAttribute("sPLTEntry", "blue", DATATYPE_INTEGER, true, null);
+        addAttribute("sPLTEntry", "alpha", DATATYPE_INTEGER, true, null);
+    }
 
-	private void setup_iCCP()
-	{
-		addElement("iCCP", rootName, CHILD_POLICY_EMPTY);
-		addAttribute("iCCP", "profileName", DATATYPE_STRING, true, null);
-		addAttribute("iCCP", "compressionMethod", DATATYPE_STRING, true, null);
-	}
+    private void setup_hIST() {
+        addElement("hIST", rootName, CHILD_POLICY_REPEAT);
 
-	private void setup_cHRM()
-	{
-		addElement("cHRM", rootName, CHILD_POLICY_EMPTY);
+        addElement("hISTEntry", "hIST", CHILD_POLICY_EMPTY);
+        addAttribute("hISTEntry", "index", DATATYPE_INTEGER, true, null);
+        addAttribute("hISTEntry", "value", DATATYPE_INTEGER, true, null);
+    }
 
-		addAttribute("cHRM", "whitePointX", DATATYPE_INTEGER, true, null);
-		addAttribute("cHRM", "whitePointY", DATATYPE_INTEGER, true, null);
-		addAttribute("cHRM", "redX", DATATYPE_INTEGER, true, null);
-		addAttribute("cHRM", "redY", DATATYPE_INTEGER, true, null);
-		addAttribute("cHRM", "greenX", DATATYPE_INTEGER, true, null);
-		addAttribute("cHRM", "greenY", DATATYPE_INTEGER, true, null);
-		addAttribute("cHRM", "blueX", DATATYPE_INTEGER, true, null);
-		addAttribute("cHRM", "blueY", DATATYPE_INTEGER, true, null);
-	}
+    private void setup_iCCP() {
+        addElement("iCCP", rootName, CHILD_POLICY_EMPTY);
+        addAttribute("iCCP", "profileName", DATATYPE_STRING, true, null);
+        addAttribute("iCCP", "compressionMethod", DATATYPE_STRING, true, null);
+    }
 
-	private void setup_sBIT()
-	{
-		addElement("sBIT", rootName, CHILD_POLICY_CHOICE);
+    private void setup_cHRM() {
+        addElement("cHRM", rootName, CHILD_POLICY_EMPTY);
 
-		addElement("sBIT_Grayscale", "sBIT", CHILD_POLICY_EMPTY);
-		addAttribute("sBIT_Grayscale", "gray", DATATYPE_INTEGER, true, null);
+        addAttribute("cHRM", "whitePointX", DATATYPE_INTEGER, true, null);
+        addAttribute("cHRM", "whitePointY", DATATYPE_INTEGER, true, null);
+        addAttribute("cHRM", "redX", DATATYPE_INTEGER, true, null);
+        addAttribute("cHRM", "redY", DATATYPE_INTEGER, true, null);
+        addAttribute("cHRM", "greenX", DATATYPE_INTEGER, true, null);
+        addAttribute("cHRM", "greenY", DATATYPE_INTEGER, true, null);
+        addAttribute("cHRM", "blueX", DATATYPE_INTEGER, true, null);
+        addAttribute("cHRM", "blueY", DATATYPE_INTEGER, true, null);
+    }
 
-		addElement("sBIT_GrayAlpha", "sBIT", CHILD_POLICY_EMPTY);
-		addAttribute("sBIT_GrayAlpha", "gray", DATATYPE_INTEGER, true, null);
-		addAttribute("sBIT_GrayAlpha", "alpha", DATATYPE_INTEGER, true, null);
+    private void setup_sBIT() {
+        addElement("sBIT", rootName, CHILD_POLICY_CHOICE);
 
-		addElement("sBIT_RGB", "sBIT", CHILD_POLICY_EMPTY);
-		addAttribute("sBIT_RGB", "red", DATATYPE_INTEGER, true, null);
-		addAttribute("sBIT_RGB", "green", DATATYPE_INTEGER, true, null);
-		addAttribute("sBIT_RGB", "blue", DATATYPE_INTEGER, true, null);
+        addElement("sBIT_Grayscale", "sBIT", CHILD_POLICY_EMPTY);
+        addAttribute("sBIT_Grayscale", "gray", DATATYPE_INTEGER, true, null);
 
-		addElement("sBIT_RGBAlpha", "sBIT", CHILD_POLICY_EMPTY);
-		addAttribute("sBIT_RGBAlpha", "red", DATATYPE_INTEGER, true, null);
-		addAttribute("sBIT_RGBAlpha", "green", DATATYPE_INTEGER, true, null);
-		addAttribute("sBIT_RGBAlpha", "blue", DATATYPE_INTEGER, true, null);
-		addAttribute("sBIT_RGBAlpha", "alpha", DATATYPE_INTEGER, true, null);
+        addElement("sBIT_GrayAlpha", "sBIT", CHILD_POLICY_EMPTY);
+        addAttribute("sBIT_GrayAlpha", "gray", DATATYPE_INTEGER, true, null);
+        addAttribute("sBIT_GrayAlpha", "alpha", DATATYPE_INTEGER, true, null);
 
-		addElement("sBIT_Palette", "sBIT", CHILD_POLICY_EMPTY);
-		addAttribute("sBIT_Palette", "red", DATATYPE_INTEGER, true, null);
-		addAttribute("sBIT_Palette", "green", DATATYPE_INTEGER, true, null);
-		addAttribute("sBIT_Palette", "blue", DATATYPE_INTEGER, true, null);
-	}
+        addElement("sBIT_RGB", "sBIT", CHILD_POLICY_EMPTY);
+        addAttribute("sBIT_RGB", "red", DATATYPE_INTEGER, true, null);
+        addAttribute("sBIT_RGB", "green", DATATYPE_INTEGER, true, null);
+        addAttribute("sBIT_RGB", "blue", DATATYPE_INTEGER, true, null);
 
-	private void setup_PLTE()
-	{
-		addElement("PLTE", rootName, CHILD_POLICY_REPEAT);
-		addElement("PLTEEntry", "PLTE", CHILD_POLICY_EMPTY);
+        addElement("sBIT_RGBAlpha", "sBIT", CHILD_POLICY_EMPTY);
+        addAttribute("sBIT_RGBAlpha", "red", DATATYPE_INTEGER, true, null);
+        addAttribute("sBIT_RGBAlpha", "green", DATATYPE_INTEGER, true, null);
+        addAttribute("sBIT_RGBAlpha", "blue", DATATYPE_INTEGER, true, null);
+        addAttribute("sBIT_RGBAlpha", "alpha", DATATYPE_INTEGER, true, null);
 
-		addAttribute("PLTEEntry", "index", DATATYPE_INTEGER, true, null);
-		addAttribute("PLTEEntry", "red", DATATYPE_INTEGER, true, null);
-		addAttribute("PLTEEntry", "green", DATATYPE_INTEGER, true, null);
-		addAttribute("PLTEEntry", "blue", DATATYPE_INTEGER, true, null);
-	}
+        addElement("sBIT_Palette", "sBIT", CHILD_POLICY_EMPTY);
+        addAttribute("sBIT_Palette", "red", DATATYPE_INTEGER, true, null);
+        addAttribute("sBIT_Palette", "green", DATATYPE_INTEGER, true, null);
+        addAttribute("sBIT_Palette", "blue", DATATYPE_INTEGER, true, null);
+    }
 
-	private void setup_tRNS()
-	{
-		addElement("tRNS", rootName, CHILD_POLICY_CHOICE);
-		
-		addElement("tRNS_Grayscale", rootName, CHILD_POLICY_CHOICE);
-		addAttribute("tRNS_Grayscale", "gray", DATATYPE_INTEGER, true, null);
+    private void setup_PLTE() {
+        addElement("PLTE", rootName, CHILD_POLICY_REPEAT);
+        addElement("PLTEEntry", "PLTE", CHILD_POLICY_EMPTY);
 
-		addElement("tRNS_RGB", rootName, CHILD_POLICY_CHOICE);
-		addAttribute("tRNS_RGB", "red", DATATYPE_INTEGER, true, null);
-		addAttribute("tRNS_RGB", "green", DATATYPE_INTEGER, true, null);
-		addAttribute("tRNS_RGB", "blue", DATATYPE_INTEGER, true, null);
+        addAttribute("PLTEEntry", "index", DATATYPE_INTEGER, true, null);
+        addAttribute("PLTEEntry", "red", DATATYPE_INTEGER, true, null);
+        addAttribute("PLTEEntry", "green", DATATYPE_INTEGER, true, null);
+        addAttribute("PLTEEntry", "blue", DATATYPE_INTEGER, true, null);
+    }
 
-		addElement("tRNS_Palette", rootName, CHILD_POLICY_CHOICE);
-		addAttribute("tRNS_Palette", "index", DATATYPE_INTEGER, true, null);
-		addAttribute("tRNS_Palette", "alpha", DATATYPE_INTEGER, true, null);
-	}
+    private void setup_tRNS() {
+        addElement("tRNS", rootName, CHILD_POLICY_CHOICE);
 
-	private void setup_bKGD()
-	{
-		addElement("bKGD", rootName, CHILD_POLICY_CHOICE);
+        addElement("tRNS_Grayscale", rootName, CHILD_POLICY_CHOICE);
+        addAttribute("tRNS_Grayscale", "gray", DATATYPE_INTEGER, true, null);
 
-		addElement("bKGD_Grayscale", rootName, CHILD_POLICY_EMPTY);
-		addAttribute("bKGD_Grayscale", "gray", DATATYPE_INTEGER, true, null);
+        addElement("tRNS_RGB", rootName, CHILD_POLICY_CHOICE);
+        addAttribute("tRNS_RGB", "red", DATATYPE_INTEGER, true, null);
+        addAttribute("tRNS_RGB", "green", DATATYPE_INTEGER, true, null);
+        addAttribute("tRNS_RGB", "blue", DATATYPE_INTEGER, true, null);
 
-		addElement("bKGD_Palette", rootName, CHILD_POLICY_EMPTY);
-		addAttribute("bKGD_Palette", "index", DATATYPE_INTEGER, true, null);
+        addElement("tRNS_Palette", rootName, CHILD_POLICY_CHOICE);
+        addAttribute("tRNS_Palette", "index", DATATYPE_INTEGER, true, null);
+        addAttribute("tRNS_Palette", "alpha", DATATYPE_INTEGER, true, null);
+    }
 
-		addElement("bKGD_RGB", rootName, CHILD_POLICY_EMPTY);
-		addAttribute("bKGD_RGB", "red", DATATYPE_INTEGER, true, null);
-		addAttribute("bKGD_RGB", "green", DATATYPE_INTEGER, true, null);
-		addAttribute("bKGD_RGB", "blue", DATATYPE_INTEGER, true, null);
-	}
+    private void setup_bKGD() {
+        addElement("bKGD", rootName, CHILD_POLICY_CHOICE);
 
-	private void setup_sRGB()
-	{
-		addElement("sRGB", rootName, CHILD_POLICY_EMPTY);
-		addAttribute("sRGB", "renderingIntent", DATATYPE_STRING, true, null);
-	}
+        addElement("bKGD_Grayscale", rootName, CHILD_POLICY_EMPTY);
+        addAttribute("bKGD_Grayscale", "gray", DATATYPE_INTEGER, true, null);
 
-	private void setup_gAMA()
-	{
-		addElement("gAMA", rootName, CHILD_POLICY_EMPTY);
-		addAttribute("gAMA", "value", DATATYPE_INTEGER, true, null);
-	}
+        addElement("bKGD_Palette", rootName, CHILD_POLICY_EMPTY);
+        addAttribute("bKGD_Palette", "index", DATATYPE_INTEGER, true, null);
 
-	private void setup_iTXt()
-	{
-		addElement("iTXt", rootName, CHILD_POLICY_REPEAT);
+        addElement("bKGD_RGB", rootName, CHILD_POLICY_EMPTY);
+        addAttribute("bKGD_RGB", "red", DATATYPE_INTEGER, true, null);
+        addAttribute("bKGD_RGB", "green", DATATYPE_INTEGER, true, null);
+        addAttribute("bKGD_RGB", "blue", DATATYPE_INTEGER, true, null);
+    }
 
-		addElement("iTXtEntry", rootName, CHILD_POLICY_EMPTY);
-		addAttribute("iTXtEntry", "keyword", DATATYPE_STRING, true, null);
-		addAttribute("iTXtEntry", "compressionFlag", DATATYPE_STRING, true, null);
-		addAttribute("iTXtEntry", "compressionMethod", DATATYPE_STRING, true, null);
-		addAttribute("iTXtEntry", "languageTag", DATATYPE_STRING, true, null);
-		addAttribute("iTXtEntry", "translatedKeyword", DATATYPE_STRING, true, null);
-		addAttribute("iTXtEntry", "text", DATATYPE_STRING, true, null);
-	}
+    private void setup_sRGB() {
+        addElement("sRGB", rootName, CHILD_POLICY_EMPTY);
+        addAttribute("sRGB", "renderingIntent", DATATYPE_STRING, true, null);
+    }
 
-	private void setup_zTXt()
-	{
-		addElement("zTXt", rootName, CHILD_POLICY_REPEAT);
+    private void setup_gAMA() {
+        addElement("gAMA", rootName, CHILD_POLICY_EMPTY);
+        addAttribute("gAMA", "value", DATATYPE_INTEGER, true, null);
+    }
 
-		addElement("zTXtEntry", "zTXt", CHILD_POLICY_EMPTY);
-		addAttribute("zTXtEntry", "keyword", DATATYPE_STRING, true, null);
-		addAttribute("zTXtEntry", "compressionMethod", DATATYPE_STRING, true, null);
-	}
+    private void setup_iTXt() {
+        addElement("iTXt", rootName, CHILD_POLICY_REPEAT);
 
-	private void setup_tEXt()
-	{
-		addElement("tEXt", rootName, CHILD_POLICY_REPEAT);
-		addElement("tEXtEntry", rootName, CHILD_POLICY_EMPTY);
-		addAttribute("tEXtEntry", "keyword", DATATYPE_STRING, true, null);
-		addAttribute("tEXtEntry", "value", DATATYPE_STRING, true, null);
-	}
+        addElement("iTXtEntry", rootName, CHILD_POLICY_EMPTY);
+        addAttribute("iTXtEntry", "keyword", DATATYPE_STRING, true, null);
+        addAttribute("iTXtEntry", "compressionFlag", DATATYPE_STRING, true, null);
+        addAttribute("iTXtEntry", "compressionMethod", DATATYPE_STRING, true, null);
+        addAttribute("iTXtEntry", "languageTag", DATATYPE_STRING, true, null);
+        addAttribute("iTXtEntry", "translatedKeyword", DATATYPE_STRING, true, null);
+        addAttribute("iTXtEntry", "text", DATATYPE_STRING, true, null);
+    }
 
-	private void setup_pHYS()
-	{
-		addElement("pHYS", rootName, CHILD_POLICY_EMPTY);
-		addAttribute("pHYS", "pixelsPerUnitXAxis", DATATYPE_INTEGER, true, null);
-		addAttribute("pHYS", "pixelsPerUnitYAxis", DATATYPE_INTEGER, true, null);
-		addAttribute("pHYS", "unitSpecifier", DATATYPE_STRING, true, null);
-	}
+    private void setup_zTXt() {
+        addElement("zTXt", rootName, CHILD_POLICY_REPEAT);
 
-	private void setup_tIME()
-	{
-		addElement("tIME", rootName, CHILD_POLICY_EMPTY);
-		addAttribute("tIME", "year",   DATATYPE_INTEGER, true, null);
-		addAttribute("tIME", "month",  DATATYPE_INTEGER, true, null);
-		addAttribute("tIME", "day",    DATATYPE_INTEGER, true, null);
-		addAttribute("tIME", "hour",   DATATYPE_INTEGER, true, null);
-		addAttribute("tIME", "minute", DATATYPE_INTEGER, true, null);
-		addAttribute("tIME", "second", DATATYPE_INTEGER, true, null);
-	}
+        addElement("zTXtEntry", "zTXt", CHILD_POLICY_EMPTY);
+        addAttribute("zTXtEntry", "keyword", DATATYPE_STRING, true, null);
+        addAttribute("zTXtEntry", "compressionMethod", DATATYPE_STRING, true, null);
+    }
 
-	private void setup_unknownChunks()
-	{
-		addElement("UnknownChunks", rootName, CHILD_POLICY_REPEAT);
-		addElement("UnknownChunk", "UnknownChunks", CHILD_POLICY_EMPTY);
-		addAttribute("UnknownChunk", "type", DATATYPE_STRING, true, null);
-	}
+    private void setup_tEXt() {
+        addElement("tEXt", rootName, CHILD_POLICY_REPEAT);
+        addElement("tEXtEntry", rootName, CHILD_POLICY_EMPTY);
+        addAttribute("tEXtEntry", "keyword", DATATYPE_STRING, true, null);
+        addAttribute("tEXtEntry", "value", DATATYPE_STRING, true, null);
+    }
 
-	public boolean canNodeAppear(String e, ImageTypeSpecifier imageType) 
-	{
+    private void setup_pHYS() {
+        addElement("pHYS", rootName, CHILD_POLICY_EMPTY);
+        addAttribute("pHYS", "pixelsPerUnitXAxis", DATATYPE_INTEGER, true, null);
+        addAttribute("pHYS", "pixelsPerUnitYAxis", DATATYPE_INTEGER, true, null);
+        addAttribute("pHYS", "unitSpecifier", DATATYPE_STRING, true, null);
+    }
+
+    private void setup_tIME() {
+        addElement("tIME", rootName, CHILD_POLICY_EMPTY);
+        addAttribute("tIME", "year", DATATYPE_INTEGER, true, null);
+        addAttribute("tIME", "month", DATATYPE_INTEGER, true, null);
+        addAttribute("tIME", "day", DATATYPE_INTEGER, true, null);
+        addAttribute("tIME", "hour", DATATYPE_INTEGER, true, null);
+        addAttribute("tIME", "minute", DATATYPE_INTEGER, true, null);
+        addAttribute("tIME", "second", DATATYPE_INTEGER, true, null);
+    }
+
+    private void setup_unknownChunks() {
+        addElement("UnknownChunks", rootName, CHILD_POLICY_REPEAT);
+        addElement("UnknownChunk", "UnknownChunks", CHILD_POLICY_EMPTY);
+        addAttribute("UnknownChunk", "type", DATATYPE_STRING, true, null);
+    }
+
+    public boolean canNodeAppear(String e, ImageTypeSpecifier imageType) {
         // TODO: A PLTE chunk may not appear in a Gray or GrayAlpha image
         // TODO: A tRNS chunk may not appear in GrayAlpha and RGBA images
         return validNodes.contains(e);
-	}
+    }
 
-	// Return the singleton instance
-	public static PngImageMetadataFormat getDefaultInstance() 
-	{
-		return defaultInstance;
-	}
+    // Return the singleton instance
+    public static PngImageMetadataFormat getDefaultInstance() {
+        return defaultInstance;
+    }
 }

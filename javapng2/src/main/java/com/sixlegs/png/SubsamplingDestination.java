@@ -38,18 +38,18 @@ package com.sixlegs.png;
 
 import java.awt.image.WritableRaster;
 
+
 final class SubsamplingDestination
-extends RasterDestination
-{
+        extends RasterDestination {
+
     private final int xsub;
     private final int ysub;
     private final int xoff;
     private final int yoff;
     private final int[] singlePixel;
-    
+
     public SubsamplingDestination(WritableRaster raster, int sourceWidth,
-                                  int xsub, int ysub, int xoff, int yoff)
-    {
+                                  int xsub, int ysub, int xoff, int yoff) {
         super(raster, sourceWidth);
         this.xsub = xsub;
         this.ysub = ysub;
@@ -58,8 +58,7 @@ extends RasterDestination
         singlePixel = new int[raster.getNumBands()];
     }
 
-    public void setPixels(int x, int y, int w, int[] pixels)
-    {
+    public void setPixels(int x, int y, int w, int[] pixels) {
         if (((y - yoff) % ysub) == 0) {
             int xdst = (x - xoff) / xsub;
             int ydst = (y - yoff) / ysub;
@@ -76,16 +75,14 @@ extends RasterDestination
         }
     }
 
-    public void setPixel(int x, int y, int[] pixel)
-    {
+    public void setPixel(int x, int y, int[] pixel) {
         x -= xoff;
         y -= yoff;
         if (x % xsub == 0 && y % ysub == 0)
             super.setPixel(x / xsub, y / ysub, pixel);
     }
 
-    public void getPixel(int x, int y, int[] pixel)
-    {
+    public void getPixel(int x, int y, int[] pixel) {
         throw new UnsupportedOperationException();
     }
 }

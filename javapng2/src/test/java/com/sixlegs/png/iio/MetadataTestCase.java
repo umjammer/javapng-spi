@@ -20,7 +20,7 @@ abstract public class MetadataTestCase extends IIOTestCase {
     void test(String name, PngImageReader ir, BufferedImage bi) throws Exception {
         System.out.print("================== ");
         System.out.println(name);
-        System.out.println("");
+        System.out.println();
 
         IIOMetadata iiom = ir.getImageMetadata(0);
         Node n = iiom.getAsTree(getFormatName());
@@ -39,11 +39,11 @@ abstract public class MetadataTestCase extends IIOTestCase {
         }
         if (sunTree != null && !compare(n, sunTree)) {
             System.out.println(">>>>>>>> Sun's is different! <<<<<<<<");
-            System.out.println("");
+            System.out.println();
             writeNode(sunTree);
             fail("Sun's metadata is different: " + (sunTree == null ? null : "diff"));
         }
-        System.out.println("");
+        System.out.println();
     }
 
     protected void writeNode(Node n)
