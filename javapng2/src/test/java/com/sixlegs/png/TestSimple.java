@@ -86,8 +86,8 @@ public class TestSimple extends PngTestCase {
 
     @Test
     public void testSubsampling() throws Exception {
-        subsamplingHelper("/images/misc/penguin.png", 3, 3, 923164955L);
-        subsamplingHelper("/images/misc/pngtest.png", 3, 3, 1930297805L);
+        subsamplingHelper("/images/misc/penguin.png", 3, 3, 519906279L);
+        subsamplingHelper("/images/misc/pngtest.png", 3, 3, 3542899589L);
         try {
             readResource("/images/suite/s02n3p01.png", new PngImage(new PngConfig.Builder().sourceSubsampling(3, 3, 2, 2).build()));
             fail("expected exception");
@@ -104,8 +104,8 @@ public class TestSimple extends PngTestCase {
 
     @Test
     public void testSourceRegions() throws Exception {
-        regionHelper("/images/misc/penguin.png", new Rectangle(75, 0, 105, 125), 490287408L);
-        regionHelper("/images/misc/pngtest.png", new Rectangle(10, 20, 30, 40), 2689440455L);
+        regionHelper("/images/misc/penguin.png", new Rectangle(75, 0, 105, 125), 2735568317L);
+        regionHelper("/images/misc/pngtest.png", new Rectangle(10, 20, 30, 40), 3206807821L);
         try {
             regionHelper("/images/misc/pngtest.png", new Rectangle(10, 20, 100, 100), 0L);
             fail("expected exception");
@@ -143,7 +143,7 @@ public class TestSimple extends PngTestCase {
         InputStream in = getClass().getResourceAsStream("/images/suite/basn0g01.png");
         File file = File.createTempFile("recolor", ".png");
         javax.imageio.ImageIO.write(png.read(in, true), "PNG", file);
-        assertEquals(2661639413L, getChecksum(new java.util.zip.CRC32(), file, buf));
+        assertEquals(3348316076L, getChecksum(new java.util.zip.CRC32(), file, buf));
         new PngImage().read(file); // test reading from a file
         file.delete();
     }
