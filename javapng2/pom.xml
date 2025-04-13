@@ -11,6 +11,13 @@
     <version>2.1.4</version>
   </parent>
 
+  <repositories>
+    <repository>
+      <id>jitpack.io</id>
+      <url>https://jitpack.io</url>
+    </repository>
+  </repositories>
+
   <dependencies>
     <dependency>
       <groupId>org.junit.jupiter</groupId>
@@ -42,7 +49,7 @@
     <dependency>
       <groupId>org.apache.ant</groupId>
       <artifactId>ant</artifactId>
-      <version>1.10.12</version>
+      <version>1.10.14</version>
       <scope>test</scope>
     </dependency>
 
@@ -56,7 +63,7 @@
     <dependency>
       <groupId>com.github.umjammer</groupId>
       <artifactId>vavi-image-sandbox</artifactId>
-      <version>1.0.4</version>
+      <version>1.0.7</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

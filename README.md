@@ -1,12 +1,26 @@
 [![Release](https://jitpack.io/v/umjammer/javapng-spi.svg?style=flat-square)](https://jitpack.io/#umjammer/javapng-spi)
 [![Java CI](https://github.com/umjammer/javapng-spi/actions/workflows/maven.yml/badge.svg)](https://github.com/umjammer/javapng-spi/actions/workflows/maven.yml)
-[![CodeQL](https://github.com/umjammer/javapng-spi/actions/workflows/codeql.yml/badge.svg)](https://github.com/umjammer/javapng-spi/actions/workflows/codeql-analysis.yml)
-![Java](https://img.shields.io/badge/Java-8-b07219)
+[![CodeQL](https://github.com/umjammer/javapng-spi/actions/workflows/codeql.yml/badge.svg)](https://github.com/umjammer/javapng-spi/actions/workflows/codeql.yml)
+![Java](https://img.shields.io/badge/Java-17-b07219)
 [![Parent](https://img.shields.io/badge/Parent-vavi--image-pink)](https://github.com/umjammer/vavi-image)
 
 # javapng-spi
 
 mavenized and spi-nised javapng
+
+## Install
+
+* https://jitpack.io/#umjammer/javapng-spi
+
+## Usage
+
+```java
+    BufferedImage image = ImageIO.read(Paths.get("/foo/bar.png").toFile());
+```
+
+## References
+
+## TODO
 
 ---
 
